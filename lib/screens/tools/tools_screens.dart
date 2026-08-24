@@ -23,8 +23,12 @@ class _GpsCalcState extends State<GpsCalc> {
   final lat = TextEditingController();
   final lng = TextEditingController();
   bool loading = false;
-  @override void initState() { super.initState(); for (final c in [lat, lng]) c.addListener(() => setState(() {})); }
-  @override void dispose() { for (final c in [lat, lng]) c.dispose(); super.dispose(); }
+  @override void initState() { super.initState(); for (final c in [lat, lng]) {
+    c.addListener(() => setState(() {}));
+  } }
+  @override void dispose() { for (final c in [lat, lng]) {
+    c.dispose();
+  } super.dispose(); }
 
   String _toDms(double dec, bool isLat) {
     if (!dec.isFinite) return '—';
@@ -96,8 +100,12 @@ class _OhmCalcState extends State<OhmCalc> {
   final i = TextEditingController();
   final r = TextEditingController();
   final p = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [v,i,r,p]) c.addListener(() => setState(() {})); }
-  @override void dispose() { for (final c in [v,i,r,p]) c.dispose(); super.dispose(); }
+  @override void initState() { super.initState(); for (final c in [v,i,r,p]) {
+    c.addListener(() => setState(() {}));
+  } }
+  @override void dispose() { for (final c in [v,i,r,p]) {
+    c.dispose();
+  } super.dispose(); }
   ({double? V, double? I, double? R, double? P}) _solve() {
     double? V = v.text.isEmpty ? null : safeNumber(v.text);
     double? I = i.text.isEmpty ? null : safeNumber(i.text);
@@ -152,8 +160,12 @@ class _BmiCalcState extends State<BmiCalc> {
   String system = 'metric';
   final h = TextEditingController();
   final w = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [h,w]) c.addListener(() => setState(() {})); }
-  @override void dispose() { for (final c in [h,w]) c.dispose(); super.dispose(); }
+  @override void initState() { super.initState(); for (final c in [h,w]) {
+    c.addListener(() => setState(() {}));
+  } }
+  @override void dispose() { for (final c in [h,w]) {
+    c.dispose();
+  } super.dispose(); }
   ({String label, Color color}) _category(double bmi) {
     if (!bmi.isFinite || bmi <= 0) return (label: '—', color: AppColors.textMuted);
     if (bmi < 18.5) return (label: 'Underweight', color: const Color(0xFF7CC8FF));
@@ -506,8 +518,12 @@ class _AdcDacCalcState extends State<AdcDacCalc> {
   final vref = TextEditingController(text: '3.3');
   final analog = TextEditingController();
   final digital = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [bits, vref, analog, digital]) c.addListener(() => setState(() {})); }
-  @override void dispose() { for (final c in [bits, vref, analog, digital]) c.dispose(); super.dispose(); }
+  @override void initState() { super.initState(); for (final c in [bits, vref, analog, digital]) {
+    c.addListener(() => setState(() {}));
+  } }
+  @override void dispose() { for (final c in [bits, vref, analog, digital]) {
+    c.dispose();
+  } super.dispose(); }
   @override
   Widget build(BuildContext context) {
     final n = safeNumber(bits.text).round().clamp(1, 64);
@@ -744,8 +760,12 @@ class _AspectRatioCalcState extends State<AspectRatioCalc> {
   final h1 = TextEditingController(text: '1080');
   final w2 = TextEditingController();
   final h2 = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [w1,h1,w2,h2]) c.addListener(() => setState(() {})); }
-  @override void dispose() { for (final c in [w1,h1,w2,h2]) c.dispose(); super.dispose(); }
+  @override void initState() { super.initState(); for (final c in [w1,h1,w2,h2]) {
+    c.addListener(() => setState(() {}));
+  } }
+  @override void dispose() { for (final c in [w1,h1,w2,h2]) {
+    c.dispose();
+  } super.dispose(); }
 
   String _reduce(double w, double h) {
     if (!w.isFinite || !h.isFinite || w <= 0 || h <= 0) return '—';

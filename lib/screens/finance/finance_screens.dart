@@ -151,7 +151,9 @@ class _TipCalcState extends State<TipCalc> {
     }
   }
   @override
-  void dispose() { for (final c in [bill, tipPct, people]) c.dispose(); super.dispose(); }
+  void dispose() { for (final c in [bill, tipPct, people]) {
+    c.dispose();
+  } super.dispose(); }
   @override
   Widget build(BuildContext context) {
     final region = context.watch<RegionProvider>().region;
@@ -188,8 +190,12 @@ class DiscountCalc extends StatefulWidget {
 class _DiscountCalcState extends State<DiscountCalc> {
   final original = TextEditingController();
   final pct = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [original, pct]) c.addListener(() => setState(() {})); }
-  @override void dispose() { for (final c in [original, pct]) c.dispose(); super.dispose(); }
+  @override void initState() { super.initState(); for (final c in [original, pct]) {
+    c.addListener(() => setState(() {}));
+  } }
+  @override void dispose() { for (final c in [original, pct]) {
+    c.dispose();
+  } super.dispose(); }
   @override
   Widget build(BuildContext context) {
     final region = context.watch<RegionProvider>().region;
@@ -224,8 +230,12 @@ class _CompoundCalcState extends State<CompoundCalc> {
   final years = TextEditingController(text: '10');
   final pmt = TextEditingController();
   String freq = '12';
-  @override void initState() { super.initState(); for (final c in [principal, ratePct, years, pmt]) c.addListener(() => setState(() {})); }
-  @override void dispose() { for (final c in [principal, ratePct, years, pmt]) c.dispose(); super.dispose(); }
+  @override void initState() { super.initState(); for (final c in [principal, ratePct, years, pmt]) {
+    c.addListener(() => setState(() {}));
+  } }
+  @override void dispose() { for (final c in [principal, ratePct, years, pmt]) {
+    c.dispose();
+  } super.dispose(); }
   @override
   Widget build(BuildContext context) {
     final region = context.watch<RegionProvider>().region;
@@ -278,8 +288,12 @@ class _EmiCalcState extends State<EmiCalc> {
   final principal = TextEditingController();
   final ratePct = TextEditingController();
   final years = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [principal, ratePct, years]) c.addListener(() => setState(() {})); }
-  @override void dispose() { for (final c in [principal, ratePct, years]) c.dispose(); super.dispose(); }
+  @override void initState() { super.initState(); for (final c in [principal, ratePct, years]) {
+    c.addListener(() => setState(() {}));
+  } }
+  @override void dispose() { for (final c in [principal, ratePct, years]) {
+    c.dispose();
+  } super.dispose(); }
   @override
   Widget build(BuildContext context) {
     final region = context.watch<RegionProvider>().region;
@@ -385,8 +399,12 @@ class _UnitPriceCalcState extends State<UnitPriceCalc> {
   final qa = TextEditingController();
   final pb = TextEditingController();
   final qb = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [pa, qa, pb, qb]) c.addListener(() => setState(() {})); }
-  @override void dispose() { for (final c in [pa, qa, pb, qb]) c.dispose(); super.dispose(); }
+  @override void initState() { super.initState(); for (final c in [pa, qa, pb, qb]) {
+    c.addListener(() => setState(() {}));
+  } }
+  @override void dispose() { for (final c in [pa, qa, pb, qb]) {
+    c.dispose();
+  } super.dispose(); }
   @override
   Widget build(BuildContext context) {
     final region = context.watch<RegionProvider>().region;
