@@ -1,6 +1,6 @@
 import 'dart:io' show Platform;
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
 
 /// Supabase connection settings.
 ///
@@ -33,12 +33,32 @@ class SupabaseConfig {
   /// Shared test accounts provisioned in the backend (per the org integration
   /// guide). This app does NOT require login — sign-in is optional and only powers
   /// cloud sync — but these back the optional "Use test account" button.
-  static const String qaEmail = 'qa@safecodeg.com';
-  static const String qaPassword = 'QATest@2024!';
-  static const String devEmail = 'dev@safecodeg.com';
-  static const String devPassword = 'DevTest@2024!';
-  static const String adminEmail = 'admin@safecodeg.com';
-  static const String adminPassword = 'AdminTest@2024!';
+  // Supplied at build time for internal/QA builds ONLY — never compiled into a
+  // shipped binary:
+  //
+  //   flutter run --dart-define=QA_EMAIL=... --dart-define=QA_PASSWORD=...
+  //
+  // With no defines (the release default) every one of these is the empty
+  // string and the whole test-account path is inert. Guard any use of them on
+  // [testAccountEnabled]; never compare user input against them directly,
+  // because '' == '' would otherwise authenticate an empty form.
+  static const String qaEmail = String.fromEnvironment('QA_EMAIL');
+  static const String qaPassword = String.fromEnvironment('QA_PASSWORD');
+  static const String devEmail = String.fromEnvironment('DEV_EMAIL');
+  static const String devPassword = String.fromEnvironment('DEV_PASSWORD');
+  static const String adminEmail = String.fromEnvironment('ADMIN_EMAIL');
+  static const String adminPassword = String.fromEnvironment('ADMIN_PASSWORD');
+
+  /// True only in a non-release build that was actually given QA credentials.
+  ///
+  /// [kReleaseMode] is checked as well as the defines so a stray define in a
+  /// release pipeline still cannot surface the shortcut to end users.
+  static bool get testAccountEnabled =>
+      !kReleaseMode && qaEmail.isNotEmpty && qaPassword.isNotEmpty;
+
+  /// True when a dev-tier define pair was supplied to a non-release build.
+  static bool get devAccountEnabled =>
+      !kReleaseMode && devEmail.isNotEmpty && devPassword.isNotEmpty;
 
   // ── Native OAuth client identifiers ────────────────────────────────────────
   // These are PUBLIC OAuth client IDs (safe to ship in the client binary — they

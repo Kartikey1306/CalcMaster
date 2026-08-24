@@ -104,10 +104,16 @@ class AuthProvider extends ChangeNotifier {
   /// (QA or Dev). Comparison is case-insensitive on the email.
   bool _isConfigTestAccount(String email, String password) {
     final e = email.trim().toLowerCase();
-    return (e == SupabaseConfig.qaEmail.toLowerCase() &&
-            password == SupabaseConfig.qaPassword) ||
-        (e == SupabaseConfig.devEmail.toLowerCase() &&
-            password == SupabaseConfig.devPassword);
+    // Each arm is gated on its own *Enabled flag. Without the build-time
+    // defines the constants are '', and an unguarded compare would let an
+    // empty email+password pair authenticate offline.
+    final qaMatch = SupabaseConfig.testAccountEnabled &&
+        e == SupabaseConfig.qaEmail.toLowerCase() &&
+        password == SupabaseConfig.qaPassword;
+    final devMatch = SupabaseConfig.devAccountEnabled &&
+        e == SupabaseConfig.devEmail.toLowerCase() &&
+        password == SupabaseConfig.devPassword;
+    return qaMatch || devMatch;
   }
 
   /// One-tap sign-in with the shared QA test account. Tries Supabase first and

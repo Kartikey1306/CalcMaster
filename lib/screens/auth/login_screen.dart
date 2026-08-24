@@ -432,33 +432,36 @@ class _LoginScreenState extends State<LoginScreen> {
                                         fontWeight: FontWeight.w600)),
                               ),
                             ),
-                            const SizedBox(height: Spacing.md),
-                            // One-tap offline test account (no network). Lands
-                            // on the calculator home. Creds are in the README.
-                            SizedBox(
-                              height: 50,
-                              child: OutlinedButton.icon(
-                                onPressed: _loading ? null : _useTestAccount,
-                                style: OutlinedButton.styleFrom(
-                                  backgroundColor:
-                                      AppColors.success.withValues(alpha: 0.10),
-                                  side: BorderSide(
-                                      color: AppColors.success
-                                          .withValues(alpha: 0.5)),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(Radii.button),
+                            // One-tap QA sign-in. Present only in a
+                            // non-release build that was given
+                            // --dart-define=QA_EMAIL/QA_PASSWORD.
+                            if (SupabaseConfig.testAccountEnabled) ...[
+                              const SizedBox(height: Spacing.md),
+                              SizedBox(
+                                height: 50,
+                                child: OutlinedButton.icon(
+                                  onPressed: _loading ? null : _useTestAccount,
+                                  style: OutlinedButton.styleFrom(
+                                    backgroundColor:
+                                        AppColors.success.withValues(alpha: 0.10),
+                                    side: BorderSide(
+                                        color: AppColors.success
+                                            .withValues(alpha: 0.5)),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(Radii.button),
+                                    ),
                                   ),
+                                  icon: const Icon(Icons.verified_user_outlined,
+                                      color: AppColors.success, size: 20),
+                                  label: const Text('Use test account',
+                                      style: TextStyle(
+                                          color: AppColors.success,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600)),
                                 ),
-                                icon: const Icon(Icons.verified_user_outlined,
-                                    color: AppColors.success, size: 20),
-                                label: const Text('Use test account',
-                                    style: TextStyle(
-                                        color: AppColors.success,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600)),
                               ),
-                            ),
+                            ],
                           ],
                         ),
                       ),
