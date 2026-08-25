@@ -8,9 +8,6 @@ build/
 .flutter-plugins-dependencies
 
 # Signing & store credentials — never commit
-android/key.properties
-*.jks
-*.keystore
 *.p8
 *.p12
 # sigh/get_provisioning_profile drops the fetched profile in the repo root
@@ -22,11 +19,3 @@ fastlane/report.xml
 # crashes under CI's Ruby 3.3). Let CI resolve fresh instead of shipping it.
 Gemfile.lock
 upload_certificate.pem
-
-# ── Android release signing (intentionally tracked) ─────────────────────────
-# These are deliberately committed at the owner's request so the release
-# signing material lives with the repo. The broad rules above still ignore any
-# OTHER keystore that happens to land in the tree; only these two exact paths
-# are re-included.
-!android/key.properties
-!android/upload-keystore.jks

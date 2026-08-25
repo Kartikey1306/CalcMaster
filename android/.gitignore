@@ -9,14 +9,3 @@ GeneratedPluginRegistrant.java
 
 # Remember to never publicly share your keystore.
 # See https://flutter.dev/to/reference-keystore
-key.properties
-**/*.keystore
-**/*.jks
-
-# ── Release signing (intentionally tracked) ─────────────────────────────────
-# Committed deliberately at the owner's request. The broad rules above still
-# ignore any other keystore; only these two exact files are re-included. This
-# nested .gitignore takes precedence over the repo-root one for android/**,
-# so the re-inclusion has to live here.
-!key.properties
-!upload-keystore.jks
