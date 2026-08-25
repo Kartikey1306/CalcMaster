@@ -50,8 +50,10 @@ class _DotPainter extends CustomPainter {
   _DotPainter({required this.t});
 
   static const _spacing = 28.0;
-  static const _baseAlpha = 0.05;
-  static const _peakAlpha = 0.14;
+  // Kept very low: on a pure-black canvas the grid should read as texture,
+  // not as a pattern competing with the amber UI.
+  static const _baseAlpha = 0.025;
+  static const _peakAlpha = 0.07;
 
   @override
   void paint(Canvas canvas, Size size) {

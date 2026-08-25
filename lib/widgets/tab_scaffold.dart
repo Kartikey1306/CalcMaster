@@ -94,7 +94,8 @@ class TabScaffold extends StatelessWidget {
   }
 }
 
-/// Mobile bottom navigation bar with an accented active tab and a top hairline.
+/// Mobile bottom navigation — a floating dark bar with rounded top corners and
+/// an amber active tab, matching the reference instrument-app chrome.
 class _BottomNav extends StatelessWidget {
   final List<({IconData icon, String label})> destinations;
   final int currentIndex;
@@ -108,26 +109,73 @@ class _BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      // Hairline that separates the nav from the content above it.
+    return Container(
       decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: AppColors.borderStrong)),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(Radii.sheet)),
+        border: Border(top: BorderSide(color: AppColors.border)),
       ),
-      child: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: onSelect,
-        type: BottomNavigationBarType.fixed,
-        // Translucent so the gradient bleeds through.
-        backgroundColor: AppColors.surface.withValues(alpha: 0.92),
-        // Accent the active tab so the current section reads at a glance.
-        selectedItemColor: AppColors.accentPrimary,
-        unselectedItemColor: AppColors.textDim,
-        selectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-        unselectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-        items: [
-          for (final d in destinations)
-            BottomNavigationBarItem(icon: Icon(d.icon), label: d.label),
-        ],
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
+          child: Row(
+            children: [
+              for (var i = 0; i < destinations.length; i++)
+                Expanded(
+                  child: _NavItem(
+                    icon: destinations[i].icon,
+                    label: destinations[i].label,
+                    selected: i == currentIndex,
+                    onTap: () => onSelect(i),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? AppColors.accentPrimary : AppColors.textDim;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(Radii.button),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 22, color: color),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -184,18 +232,18 @@ class _SideRail extends StatelessWidget {
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF9B7DFF), AppColors.accentPrimary],
+                colors: [Color(0xFFFFC15C), AppColors.accentPrimary],
               ),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.accentPrimary.withValues(alpha: 0.45),
+                  color: AppColors.accentPrimary.withValues(alpha: 0.35),
                   blurRadius: 16,
                   spreadRadius: -2,
                 ),
               ],
             ),
-            child: const Icon(Icons.calculate_outlined, color: Colors.white, size: 22),
+            child: const Icon(Icons.calculate_outlined, color: Colors.black, size: 22),
           ),
         ),
         destinations: [

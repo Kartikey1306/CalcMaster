@@ -22,7 +22,7 @@ Single Flutter client (iOS/Android/Web). Provider (ChangeNotifier) state + go_ro
 | --- | --- |
 | `lib/main.dart` | Entry: Supabase init, MultiProvider, `MaterialApp.router`, i18n setup |
 | `lib/app_router.dart` | go_router: `/splash` → 5-branch `StatefulShellRoute` (tabs) + modal routes |
-| `lib/theme/tokens.dart` | `AppColors`, `CategoryAccent`, `Radii`, `Spacing` — design tokens |
+| `lib/theme/tokens.dart` | `AppColors`, `KeyColors`, `CategoryAccent`, `Radii`, `Spacing` — design tokens (near-black canvas + amber accent) |
 | `lib/theme/app_theme.dart` | `buildAppTheme()` ThemeData (dark) |
 | `lib/lib_units.dart` | `Unit`/`Category` models + 10 conversion categories (to/from base fns) |
 | `lib/lib_currency.dart` | `RegionId` enum, 11 `Region`s, `staticRates`, Frankfurter fetcher |
@@ -42,6 +42,8 @@ Single Flutter client (iOS/Android/Web). Provider (ChangeNotifier) state + go_ro
 | `lib/services/api_client.dart` | REST gateway (Supabase JWT bearer) for profile + AI chat |
 | `lib/screens/` | Feature screens grouped: `calculate/`, `finance/`, `tools/`, `ai/`, `auth/` + top-level |
 | `lib/widgets/` | Reusable UI: `tab_scaffold`, `glass_card`, `hub_tile`, `number_input`, `banner_ad_slot`, etc. |
+| `lib/widgets/calc_key.dart` | `CalcKey` / `CalcKeypad` / `CalcDisplay` — the round-key keypad UI shared by Standard, Scientific and Convert |
+| `lib/widgets/keypad_calc_state.dart` | `KeypadCalcState` — expression state behind every keypad screen (live result, `=` commit, backspace, +/−, %) |
 | `assets/icons/` | 32 line-art SVG category icons |
 | `assets/logo/` | Brand logo master (`calcmaster_icon/logo.svg` + `.png`) |
 | `assets/icon/`, `assets/splash/` | flutter_launcher_icons / native_splash source PNGs |
@@ -61,6 +63,7 @@ Provider / ChangeNotifier via `MultiProvider` in `main.dart`: `RegionProvider`, 
 | Add a calculator/finance/tool screen | add screen in `lib/screens/<group>/`, register `GoRoute` in `app_router.dart`, tile in that group's `*_home.dart` |
 | Add/change a region or currency | `lib/lib_currency.dart` (and `lib/lib_tax.dart` for tax) |
 | Change colors/spacing/typography | `lib/theme/tokens.dart` / `app_theme.dart` |
+| Add/restyle a calculator key | `lib/widgets/calc_key.dart` (visuals) + the screen's keypad rows; key behaviour lives in `lib/widgets/keypad_calc_state.dart` |
 | Add/translate UI strings | `lib/l10n/app_en.arb` (source) + other `app_*.arb`, then `flutter gen-l10n` |
 | Monetization keys / toggle ads-subs-affiliates-analytics-fcm | `lib/monetization/monetization_config.dart` |
 | App icon / splash | edit `assets/logo/*.svg`, re-render, run `dart run tools/gen_icon.dart` then `flutter_launcher_icons`/`native_splash` |
