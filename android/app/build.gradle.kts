@@ -49,6 +49,35 @@ android {
             }
         }
     }
+    buildFeatures {
+        // AGP 9 disables resValue by default; the flavors below use it to set
+        // android:label per environment.
+        resValues = true
+    }
+
+    // dev / staging / prod install side by side via an applicationId suffix, so
+    // a tester can hold all three and staging can never overwrite production.
+    flavorDimensions += "env"
+
+    productFlavors {
+        create("dev") {
+            dimension = "env"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            resValue("string", "app_name", "CalcMaster Dev")
+        }
+        create("staging") {
+            dimension = "env"
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-staging"
+            resValue("string", "app_name", "CalcMaster Staging")
+        }
+        create("prod") {
+            dimension = "env"
+            resValue("string", "app_name", "CalcMaster")
+        }
+    }
+
 
     buildTypes {
         release {

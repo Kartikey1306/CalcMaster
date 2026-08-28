@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'app_env.dart';
 import 'app_router.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'monetization/ad_service.dart';
@@ -18,6 +19,10 @@ import 'theme/tokens.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Fail loudly in dev if this binary was built without (or with the
+  // wrong) --dart-define-from-file=env/<env>.json. Release only reports.
+  AppEnv.validate(urls: const {'SUPABASE_URL': SupabaseConfig.url});
+
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,

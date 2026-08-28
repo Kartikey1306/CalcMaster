@@ -19,3 +19,6 @@ fastlane/report.xml
 # crashes under CI's Ruby 3.3). Let CI resolve fresh instead of shipping it.
 Gemfile.lock
 upload_certificate.pem
+
+# Real secrets for internal builds — never commit
+env/secrets.json
