@@ -208,7 +208,7 @@ development cert on a Release archive.
 - `https://apps.apple.com/app/calcmaster` (replace with real App Store URL after listing)
 - `https://play.google.com/store/apps/details?id=com.americangroupllc.calcmaster` (replace after Play listing)
 
-`marketing/site/privacy.html` and `terms.html` reference the company name "CalcMaster Inc." in section 5 — replace with your registered legal entity name.
+`marketing/site/privacy.html` and `terms.html` name the publisher as "American Group LLC" (corrected 2026-08-28; the pages previously said "CalcMaster Inc.").
 
 ### Firebase Hosting
 
