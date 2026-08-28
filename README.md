@@ -239,8 +239,8 @@ If you ever need a custom backend (e.g., cross-device notes sync), the recommend
 | iOS Simulator (debug) | `flutter build ios --simulator --debug` | `build/ios/iphonesimulator/Runner.app` | 50 MB |
 | iOS Device (signed) | `flutter build ipa --release` | `build/ios/ipa/calcmaster.ipa` | ~20 MB |
 | iOS Device (unsigned, internal QA) | `flutter build ios --release --no-codesign` | `build/ios/iphoneos/Runner.app` | 18 MB |
-| Android APK (release) | `flutter build apk --release` | `build/app/outputs/flutter-apk/app-release.apk` | 53 MB |
-| Android App Bundle (Play Store) | `flutter build appbundle --release` | `build/app/outputs/bundle/release/app-release.aab` | 43 MB |
+| Android APK (release) | `flutter build apk --release --flavor prod --dart-define-from-file=env/prod.json` | `build/app/outputs/flutter-apk/app-prod-release.apk` | 63 MB |
+| Android App Bundle (Play Store) | `flutter build appbundle --release --flavor prod --dart-define-from-file=env/prod.json` | `build/app/outputs/bundle/prodRelease/app-prod-release.aab` | 63 MB |
 | Flutter Web | `flutter build web --release` | `build/web/` | 36 MB |
 
 `./tools/release_all.sh` runs all of these and stages results in `dist/`.

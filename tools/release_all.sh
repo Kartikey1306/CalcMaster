@@ -60,10 +60,10 @@ fi
 # ────────────────── Android ──────────────────
 if $ALL || [[ "$*" == *"--android"* ]]; then
   section "2. Android — release APK + AAB"
-  flutter build apk --release | tail -3
-  flutter build appbundle --release | tail -3
-  cp build/app/outputs/flutter-apk/app-release.apk "$DIST/android/CalcMaster-release.apk"
-  cp build/app/outputs/bundle/release/app-release.aab "$DIST/android/CalcMaster-release.aab"
+  flutter build apk --release --flavor prod --dart-define-from-file=env/prod.json | tail -3
+  flutter build appbundle --release --flavor prod --dart-define-from-file=env/prod.json | tail -3
+  cp build/app/outputs/flutter-apk/app-prod-release.apk "$DIST/android/CalcMaster-release.apk"
+  cp build/app/outputs/bundle/prodRelease/app-prod-release.aab "$DIST/android/CalcMaster-release.aab"
 fi
 
 # ────────────────── iOS ──────────────────

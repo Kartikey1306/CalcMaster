@@ -34,10 +34,10 @@ jobs:
       - name: Build Android
         if: matrix.platform == 'android'
         run: |
-          flutter build apk --release
-          flutter build appbundle --release
-          cp build/app/outputs/flutter-apk/app-release.apk CalcMaster-${{ github.ref_name }}-android.apk
-          cp build/app/outputs/bundle/release/app-release.aab CalcMaster-${{ github.ref_name }}-android.aab
+          flutter build apk --release --flavor prod --dart-define-from-file=env/prod.json
+          flutter build appbundle --release --flavor prod --dart-define-from-file=env/prod.json
+          cp build/app/outputs/flutter-apk/app-prod-release.apk CalcMaster-${{ github.ref_name }}-android.apk
+          cp build/app/outputs/bundle/prodRelease/app-prod-release.aab CalcMaster-${{ github.ref_name }}-android.aab
 
       - name: Build iOS
         if: matrix.platform == 'ios'
