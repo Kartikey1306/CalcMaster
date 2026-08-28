@@ -1,17 +1,13 @@
-import 'dart:ui';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../theme/tokens.dart';
 
-/// Frosted-glass surface with translucent fill, 1 dp inner border, and an
-/// optional accent rim glow. Replaces solid `AppColors.surface` cards across
-/// the app for the futuristic AI look.
+/// Flat dark surface with a 1 dp hairline border and an optional accent rim.
 ///
-/// On web we skip the BackdropFilter (CanvasKit blur is expensive) and fall
-/// back to a slightly more opaque translucent fill that approximates the look.
+/// Named for the frosted-glass treatment it used to carry; on the near-black
+/// canvas a solid, slightly-lifted card reads cleaner (and skips a
+/// BackdropFilter per card, which was the app's most expensive raster work).
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -33,24 +29,21 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accentColor = accent ?? AppColors.accentPrimary;
-    final fillAlpha = kIsWeb ? 0.12 : 0.06;
     final inner = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: fillAlpha),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: glowRim
-              ? accentColor.withValues(alpha: 0.5)
-              : Colors.white.withValues(alpha: 0.08),
+          color: glowRim ? accentColor.withValues(alpha: 0.45) : AppColors.border,
           width: glowRim ? 1.5 : 1,
         ),
         boxShadow: glowRim
             ? [
                 BoxShadow(
-                  color: accentColor.withValues(alpha: 0.18),
+                  color: accentColor.withValues(alpha: 0.14),
                   blurRadius: 24,
-                  spreadRadius: -4,
+                  spreadRadius: -6,
                 ),
               ]
             : null,
@@ -58,17 +51,7 @@ class GlassCard extends StatelessWidget {
       child: child,
     );
 
-    final blurred = kIsWeb
-        ? inner
-        : ClipRRect(
-            borderRadius: BorderRadius.circular(borderRadius),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: inner,
-            ),
-          );
-
-    if (onTap == null) return blurred;
+    if (onTap == null) return inner;
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(borderRadius),
@@ -78,7 +61,7 @@ class GlassCard extends StatelessWidget {
           HapticFeedback.selectionClick();
           onTap!();
         },
-        child: blurred,
+        child: inner,
       ),
     );
   }

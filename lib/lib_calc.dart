@@ -41,20 +41,46 @@ double _apply(String op, double a, double b) {
   }
 }
 
-double _fn(String name, double a) {
+/// Angle unit trig functions are interpreted in. The scientific keypad's
+/// Rad/Deg key flips this per evaluation; the parser itself stays stateless.
+enum AngleUnit { rad, deg }
+
+const _degPerRad = 180 / math.pi;
+
+double _fn(String name, double a, AngleUnit angle) {
+  // Only the trig family cares about the angle unit: inputs come in as
+  // degrees, results of the inverse functions go back out as degrees.
+  final inRad = angle == AngleUnit.deg ? a / _degPerRad : a;
+  double outAngle(double rad) => angle == AngleUnit.deg ? rad * _degPerRad : rad;
+
   switch (name) {
     case 'sin':
-      return math.sin(a);
+      return math.sin(inRad);
     case 'cos':
-      return math.cos(a);
+      return math.cos(inRad);
     case 'tan':
-      return math.tan(a);
+      return math.tan(inRad);
     case 'asin':
-      return math.asin(a);
+      return outAngle(math.asin(a));
     case 'acos':
-      return math.acos(a);
+      return outAngle(math.acos(a));
     case 'atan':
-      return math.atan(a);
+      return outAngle(math.atan(a));
+    case 'sinh':
+      return (math.exp(a) - math.exp(-a)) / 2;
+    case 'cosh':
+      return (math.exp(a) + math.exp(-a)) / 2;
+    case 'tanh':
+      final e2 = math.exp(2 * a);
+      return (e2 - 1) / (e2 + 1);
+    case 'asinh':
+      return math.log(a + math.sqrt(a * a + 1));
+    case 'acosh':
+      return math.log(a + math.sqrt(a * a - 1));
+    case 'atanh':
+      return 0.5 * math.log((1 + a) / (1 - a));
+    case 'cbrt':
+      return a < 0 ? -math.pow(-a, 1 / 3).toDouble() : math.pow(a, 1 / 3).toDouble();
     case 'log':
       return math.log(a) / math.ln10;
     case 'ln':
@@ -149,7 +175,7 @@ List<_Tok> _tokenize(String input) {
   return tokens;
 }
 
-double evaluate(String input) {
+double evaluate(String input, {AngleUnit angle = AngleUnit.rad}) {
   final tokens = _tokenize(input);
   final out = <_Tok>[];
   final ops = <_Tok>[];
@@ -219,7 +245,7 @@ double evaluate(String input) {
     } else if (tok.type == 'fn') {
       if (stack.isEmpty) throw CalcError('Bad expr');
       final a = stack.removeLast();
-      stack.add(_fn(tok.value as String, a));
+      stack.add(_fn(tok.value as String, a, angle));
     }
   }
   if (stack.length != 1) throw CalcError('Invalid expr');

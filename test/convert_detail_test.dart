@@ -10,64 +10,81 @@ MaterialApp _wrap(Widget child) => MaterialApp(
       supportedLocales: AppLocalizations.supportedLocales,
     );
 
+/// The converter is a full-height phone layout (readout + 5-row keypad), so
+/// pump it in a phone-sized window rather than the 800×600 test default.
+Future<void> _pumpConverter(WidgetTester tester, String categoryId) async {
+  tester.view.physicalSize = const Size(390, 844);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+  await tester.pumpWidget(_wrap(ConvertDetail(categoryId: categoryId)));
+  await tester.pumpAndSettle();
+}
+
 void main() {
-  group('ConvertDetail · swap button', () {
+  group('ConvertDetail · keypad + swap', () {
     testWidgets('initial state shows mm → cm conversion', (tester) async {
-      await tester.pumpWidget(_wrap(const ConvertDetail(categoryId: 'distance')));
-      await tester.pumpAndSettle();
+      await _pumpConverter(tester, 'distance');
 
       // Header
       expect(find.text('Distance'), findsOneWidget);
       expect(find.text('9 units available'), findsOneWidget);
 
-      // FROM and TO labels both visible
-      expect(find.text('FROM'), findsOneWidget);
-      expect(find.text('TO'), findsOneWidget);
-      expect(find.text('ALL CONVERSIONS'), findsOneWidget);
+      // FROM/TO unit captions are tappable pickers
+      expect(find.text('MM · MILLIMETER'), findsOneWidget);
+      expect(find.text('CM · CENTIMETER'), findsOneWidget);
 
-      // Swap icon present
-      expect(find.byIcon(Icons.swap_horiz), findsOneWidget);
+      // Swap affordance (icon + keypad key) and the keypad itself
+      expect(find.byIcon(Icons.swap_vert), findsOneWidget);
+      expect(find.text('SWAP'), findsOneWidget);
+      expect(find.text('7'), findsOneWidget);
+
+      // Seeded with 1 mm = 0.1 cm
+      expect(find.text('1'), findsWidgets);
+      expect(find.text('0.1'), findsOneWidget);
     });
 
-    testWidgets('typing 1 mm with TO=cm shows 0.1', (tester) async {
-      await tester.pumpWidget(_wrap(const ConvertDetail(categoryId: 'distance')));
-      await tester.pumpAndSettle();
+    testWidgets('typing on the keypad updates the converted value', (tester) async {
+      await _pumpConverter(tester, 'distance');
 
-      final inputFinder = find.byType(TextField);
-      await tester.enterText(inputFinder, '1');
+      // 1 → 12 mm = 1.2 cm
+      await tester.tap(find.text('2'));
       await tester.pumpAndSettle();
-
-      // 1 mm = 0.1 cm — find that exact value somewhere on screen
-      // (cm is the second unit by default)
-      expect(find.textContaining('0.1'), findsWidgets);
+      expect(find.text('1.2'), findsOneWidget);
     });
 
-    testWidgets('tapping swap button reverses FROM/TO units', (tester) async {
-      await tester.pumpWidget(_wrap(const ConvertDetail(categoryId: 'distance')));
-      await tester.pumpAndSettle();
+    testWidgets('tapping swap reverses FROM/TO units', (tester) async {
+      await _pumpConverter(tester, 'distance');
 
-      // Default state: FROM=mm, TO=cm. ALL CONVERSIONS for 1 mm shows cm row highlighted.
-      await tester.enterText(find.byType(TextField), '1');
-      await tester.pumpAndSettle();
-
-      // Find swap button (by icon) and tap it
-      final swap = find.byIcon(Icons.swap_horiz);
-      expect(swap, findsOneWidget);
-      await tester.tap(swap);
+      await tester.tap(find.byIcon(Icons.swap_vert));
       await tester.pumpAndSettle();
 
       // After swap: FROM=cm, TO=mm. 1 cm = 10 mm.
-      // The big TO value should now show "10".
-      expect(find.text('10'), findsAtLeastNWidgets(1));
+      expect(find.text('CM · CENTIMETER'), findsOneWidget);
+      expect(find.text('10'), findsOneWidget);
     });
 
-    testWidgets('volume: 1 L → mL after typing', (tester) async {
-      await tester.pumpWidget(_wrap(const ConvertDetail(categoryId: 'volume')));
+    testWidgets('unit picker sheet lists the category units', (tester) async {
+      await _pumpConverter(tester, 'distance');
+
+      await tester.tap(find.text('CM · CENTIMETER'));
       await tester.pumpAndSettle();
-      // Default first units. Just confirm 1 of base unit produces nonzero output.
-      await tester.enterText(find.byType(TextField), '1');
+
+      expect(find.text('CONVERT TO'), findsOneWidget);
+      expect(find.text('Meter (m)'), findsOneWidget);
+
+      await tester.tap(find.text('Meter (m)'));
       await tester.pumpAndSettle();
-      expect(find.byIcon(Icons.swap_horiz), findsOneWidget);
+
+      // 1 mm = 0.001 m
+      expect(find.text('M · METER'), findsOneWidget);
+      expect(find.text('0.001'), findsOneWidget);
+    });
+
+    testWidgets('volume category renders its keypad without crashing', (tester) async {
+      await _pumpConverter(tester, 'volume');
+      expect(find.byIcon(Icons.swap_vert), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
   });
 }

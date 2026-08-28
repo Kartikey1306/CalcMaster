@@ -29,16 +29,8 @@ class ConvertCard extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.18),
+                  color: accent.withValues(alpha: 0.16),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: accent.withValues(alpha: 0.5)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: accent.withValues(alpha: 0.2),
-                      blurRadius: 12,
-                      spreadRadius: -2,
-                    ),
-                  ],
                 ),
                 child: Center(
                   child: SvgPicture.asset(

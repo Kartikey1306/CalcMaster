@@ -39,6 +39,30 @@ void main() {
     test('round(2.5)', () => expect(evaluate('round(2.5)'), 3.0));
   });
 
+  group('evaluate — hyperbolic & roots', () {
+    test('sinh(0)', () => expect(evaluate('sinh(0)'), closeTo(0.0, 1e-10)));
+    test('cosh(0)', () => expect(evaluate('cosh(0)'), closeTo(1.0, 1e-10)));
+    test('tanh(1)', () => expect(evaluate('tanh(1)'), closeTo(0.76159416, 1e-8)));
+    test('asinh(sinh(2))', () => expect(evaluate('asinh(sinh(2))'), closeTo(2.0, 1e-8)));
+    test('acosh(1)', () => expect(evaluate('acosh(1)'), closeTo(0.0, 1e-10)));
+    test('atanh(0.5)', () => expect(evaluate('atanh(0.5)'), closeTo(0.54930614, 1e-8)));
+    test('cbrt(27)', () => expect(evaluate('cbrt(27)'), closeTo(3.0, 1e-10)));
+    test('cbrt(-8)', () => expect(evaluate('cbrt(-8)'), closeTo(-2.0, 1e-10)));
+  });
+
+  group('evaluate — angle unit', () {
+    test('sin(90) in degrees', () =>
+        expect(evaluate('sin(90)', angle: AngleUnit.deg), closeTo(1.0, 1e-10)));
+    test('cos(180) in degrees', () =>
+        expect(evaluate('cos(180)', angle: AngleUnit.deg), closeTo(-1.0, 1e-10)));
+    test('asin(1) returns degrees', () =>
+        expect(evaluate('asin(1)', angle: AngleUnit.deg), closeTo(90.0, 1e-10)));
+    test('radians remain the default', () =>
+        expect(evaluate('sin(${math.pi / 2})'), closeTo(1.0, 1e-10)));
+    test('non-trig functions ignore the angle unit', () =>
+        expect(evaluate('sqrt(9)', angle: AngleUnit.deg), 3.0));
+  });
+
   group('evaluate — constants', () {
     test('pi', () => expect(evaluate('pi'), closeTo(math.pi, 1e-10)));
     test('e', () => expect(evaluate('e'), closeTo(math.e, 1e-10)));

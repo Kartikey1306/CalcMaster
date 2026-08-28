@@ -40,9 +40,8 @@ class HubTile extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceAlt,
+                    color: iconColor.withValues(alpha: 0.16),
                     borderRadius: BorderRadius.circular(Radii.button),
-                    border: Border.all(color: iconColor.withValues(alpha: 0.33)),
                   ),
                   child: Icon(icon, size: 22, color: iconColor),
                 ),

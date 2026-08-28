@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/tokens.dart';
 
-/// Slowly shifting linear gradient backdrop (purple → cyan → mint, ~18 s loop).
+/// Slowly shifting near-black backdrop (~18 s loop) with a faint amber bloom.
 /// Wrap the body of any Scaffold in a Stack with this at index 0.
 class AnimatedGradientBackground extends StatefulWidget {
   final Widget child;
@@ -35,11 +35,12 @@ class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
     super.dispose();
   }
 
-  // Three palette anchors that the gradient cycles through.
+  // Three palette anchors that the gradient cycles through. All near-black so
+  // the amber accent stays the only saturated thing on screen.
   static const _palette = [
-    Color(0xFF0B1020), // bg
-    Color(0xFF1A1442), // deep purple
-    Color(0xFF0F2540), // teal-navy
+    Color(0xFF000000), // bg
+    Color(0xFF0B0A08), // warm charcoal
+    Color(0xFF07070A), // cool charcoal
   ];
 
   Color _lerp3(double t) {
@@ -84,7 +85,7 @@ class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppColors.accentPrimary.withValues(alpha: 0.18),
+                      AppColors.accentPrimary.withValues(alpha: 0.10),
                       Colors.transparent,
                     ],
                   ),
