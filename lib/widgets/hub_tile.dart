@@ -50,10 +50,16 @@ class HubTile extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: const TextStyle(color: AppColors.text, fontSize: 16, fontWeight: FontWeight.w600)),
+                      Text(title,
+                          style: const TextStyle(
+                              color: AppColors.text,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
-                        child: Text(description, style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+                        child: Text(description,
+                            style: const TextStyle(
+                                color: AppColors.textMuted, fontSize: 13)),
                       ),
                     ],
                   ),

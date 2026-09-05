@@ -35,7 +35,8 @@ class GlassCard extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: glowRim ? accentColor.withValues(alpha: 0.45) : AppColors.border,
+          color:
+              glowRim ? accentColor.withValues(alpha: 0.45) : AppColors.border,
           width: glowRim ? 1.5 : 1,
         ),
         boxShadow: glowRim

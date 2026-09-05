@@ -69,8 +69,8 @@ void main() {
     ErrorReporter.install();
 
     // Returning true is what stops one failed Future killing the isolate.
-    final handled = PlatformDispatcher.instance
-        .onError!(StateError('async boom'), StackTrace.current);
+    final handled = PlatformDispatcher.instance.onError!(
+        StateError('async boom'), StackTrace.current);
 
     expect(handled, isTrue);
     expect(seen, hasLength(1));

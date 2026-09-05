@@ -74,7 +74,8 @@ class PremiumProvider extends ChangeNotifier {
 
   /// Store-fetched details (localized price, title) for a tier, or `null` when
   /// the product could not be loaded (e.g. simulator / not yet configured).
-  ProductDetails? productFor(SubscriptionTier tier) => _products[tier.productId];
+  ProductDetails? productFor(SubscriptionTier tier) =>
+      _products[tier.productId];
 
   Future<void> _hydrate() async {
     final sp = await SharedPreferences.getInstance();

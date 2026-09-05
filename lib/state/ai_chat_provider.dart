@@ -111,8 +111,7 @@ class AiChatProvider extends ChangeNotifier {
     } catch (e) {
       // Network/connectivity failure (no route, DNS, timeout, TLS, etc.).
       _messages = _messages.where((m) => !m.isLoading).toList();
-      _error =
-          'AI chat needs a connection. Check your internet and try again.';
+      _error = 'AI chat needs a connection. Check your internet and try again.';
     }
 
     _isSending = false;

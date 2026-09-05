@@ -76,7 +76,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   ),
                   if (chat.error != null)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: Spacing.lg),
                       child: Text(
                         chat.error!,
                         style: const TextStyle(
@@ -97,12 +98,14 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Spacing.sm, vertical: Spacing.sm),
+      padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.sm, vertical: Spacing.sm),
       child: Row(
         children: [
           IconButton(
             tooltip: 'Go back',
-            icon: const Icon(Icons.chevron_left, color: AppColors.text, size: 28),
+            icon:
+                const Icon(Icons.chevron_left, color: AppColors.text, size: 28),
             onPressed: () => context.pop(),
           ),
           Expanded(
@@ -235,8 +238,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   colors: [AppColors.accentPrimary, Color(0xFF5CE0A8)],
                 ),
               ),
-              child: const Icon(Icons.auto_awesome,
-                  color: Colors.white, size: 16),
+              child:
+                  const Icon(Icons.auto_awesome, color: Colors.white, size: 16),
             ),
           Flexible(
             child: Container(
@@ -386,7 +389,8 @@ class _TypingIndicatorState extends State<_TypingIndicator>
                 margin: const EdgeInsets.symmetric(horizontal: 2),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.accentPrimary.withValues(alpha: 0.4 + 0.6 * t),
+                  color:
+                      AppColors.accentPrimary.withValues(alpha: 0.4 + 0.6 * t),
                 ),
               ),
             );

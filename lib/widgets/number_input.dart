@@ -83,9 +83,7 @@ class NumberInput extends StatelessWidget {
                       ),
                     ),
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'[0-9.\-]')
-                      ),
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.\-]')),
                     ],
                   ),
                 ),

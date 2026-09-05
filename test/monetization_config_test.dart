@@ -35,20 +35,25 @@ void main() {
       expect(manifest, contains(MonetizationConfig.admobAppIdAndroid));
     });
 
-    test('iOS AdMob units are still Google test IDs (replace before App Store)', () {
+    test('iOS AdMob units are still Google test IDs (replace before App Store)',
+        () {
       expect(MonetizationConfig.admobIosBanner, contains('3940256099942544'));
-      expect(MonetizationConfig.admobIosInterstitial, contains('3940256099942544'));
+      expect(MonetizationConfig.admobIosInterstitial,
+          contains('3940256099942544'));
     });
 
-    test('RevenueCat keys still hold dummy markers (replace before launch)', () {
+    test('RevenueCat keys still hold dummy markers (replace before launch)',
+        () {
       expect(MonetizationConfig.revenueCatIosKey, contains('DUMMY'));
       expect(MonetizationConfig.revenueCatAndroidKey, contains('DUMMY'));
     });
 
     test('Product IDs default to canonical names', () {
-      expect(MonetizationConfig.productMonthly, equals('calcmaster_pro_monthly'));
+      expect(
+          MonetizationConfig.productMonthly, equals('calcmaster_pro_monthly'));
       expect(MonetizationConfig.productAnnual, equals('calcmaster_pro_annual'));
-      expect(MonetizationConfig.productLifetime, equals('calcmaster_pro_lifetime'));
+      expect(MonetizationConfig.productLifetime,
+          equals('calcmaster_pro_lifetime'));
     });
 
     test('Display prices have ready-to-show strings', () {
@@ -58,10 +63,18 @@ void main() {
     });
 
     test('Affiliate slot map covers known slots', () {
-      expect(MonetizationConfig.affiliateSlots.containsKey('volume_buy_measuring_set'), isTrue);
-      expect(MonetizationConfig.affiliateSlots.containsKey('bmi_smart_scale'), isTrue);
-      expect(MonetizationConfig.affiliateSlots.containsKey('compound_savings_account'), isTrue);
-      expect(MonetizationConfig.affiliateSlots['_fallback'], contains('amazon'));
+      expect(
+          MonetizationConfig.affiliateSlots
+              .containsKey('volume_buy_measuring_set'),
+          isTrue);
+      expect(MonetizationConfig.affiliateSlots.containsKey('bmi_smart_scale'),
+          isTrue);
+      expect(
+          MonetizationConfig.affiliateSlots
+              .containsKey('compound_savings_account'),
+          isTrue);
+      expect(
+          MonetizationConfig.affiliateSlots['_fallback'], contains('amazon'));
     });
 
     test('Legal URLs and support email are present', () {

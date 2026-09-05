@@ -141,7 +141,8 @@ class AuthProvider extends ChangeNotifier {
   Map<String, dynamic> _userMap(User u) => {
         'id': u.id,
         'email': u.email,
-        'displayName': u.userMetadata?['display_name'] ?? u.userMetadata?['name'],
+        'displayName':
+            u.userMetadata?['display_name'] ?? u.userMetadata?['name'],
       };
 
   Future<bool> register({

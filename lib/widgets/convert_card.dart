@@ -52,7 +52,8 @@ class ConvertCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
-                  style: TextStyle(color: accent, fontSize: 10, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: accent, fontSize: 10, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
@@ -62,7 +63,10 @@ class ConvertCard extends StatelessWidget {
             localizedCategoryLabel(context, category.id),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: AppColors.text, fontSize: 16, fontWeight: FontWeight.w700),
+            style: const TextStyle(
+                color: AppColors.text,
+                fontSize: 16,
+                fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 2),
           Flexible(

@@ -19,16 +19,26 @@ class GpsCalc extends StatefulWidget {
   @override
   State<GpsCalc> createState() => _GpsCalcState();
 }
+
 class _GpsCalcState extends State<GpsCalc> {
   final lat = TextEditingController();
   final lng = TextEditingController();
   bool loading = false;
-  @override void initState() { super.initState(); for (final c in [lat, lng]) {
-    c.addListener(() => setState(() {}));
-  } }
-  @override void dispose() { for (final c in [lat, lng]) {
-    c.dispose();
-  } super.dispose(); }
+  @override
+  void initState() {
+    super.initState();
+    for (final c in [lat, lng]) {
+      c.addListener(() => setState(() {}));
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in [lat, lng]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
 
   String _toDms(double dec, bool isLat) {
     if (!dec.isFinite) return '—';
@@ -48,15 +58,21 @@ class _GpsCalcState extends State<GpsCalc> {
       if (perm == LocationPermission.denied) {
         perm = await Geolocator.requestPermission();
       }
-      if (perm == LocationPermission.deniedForever || perm == LocationPermission.denied) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.actionPermissionDenied)));
+      if (perm == LocationPermission.deniedForever ||
+          perm == LocationPermission.denied) {
+        if (mounted)
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content:
+                  Text(AppLocalizations.of(context)!.actionPermissionDenied)));
         return;
       }
       final pos = await Geolocator.getCurrentPosition();
       lat.text = pos.latitude.toStringAsFixed(6);
       lng.text = pos.longitude.toStringAsFixed(6);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => loading = false);
     }
@@ -74,15 +90,26 @@ class _GpsCalcState extends State<GpsCalc> {
         SizedBox(
           width: double.infinity,
           child: FilledButton.icon(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.text, foregroundColor: AppColors.bg, padding: const EdgeInsets.symmetric(vertical: 14)),
+            style: FilledButton.styleFrom(
+                backgroundColor: AppColors.text,
+                foregroundColor: AppColors.bg,
+                padding: const EdgeInsets.symmetric(vertical: 14)),
             onPressed: loading ? null : _useMyLoc,
             icon: const Icon(Icons.navigation, size: 18),
-            label: Text(loading ? AppLocalizations.of(context)!.actionLocating : AppLocalizations.of(context)!.actionUseMyLocation),
+            label: Text(loading
+                ? AppLocalizations.of(context)!.actionLocating
+                : AppLocalizations.of(context)!.actionUseMyLocation),
           ),
         ),
         const SizedBox(height: Spacing.lg),
-        ResultRow(label: 'Latitude (DMS)', value: _toDms(safeNumber(lat.text), true), highlight: true),
-        ResultRow(label: 'Longitude (DMS)', value: _toDms(safeNumber(lng.text), false), highlight: true),
+        ResultRow(
+            label: 'Latitude (DMS)',
+            value: _toDms(safeNumber(lat.text), true),
+            highlight: true),
+        ResultRow(
+            label: 'Longitude (DMS)',
+            value: _toDms(safeNumber(lng.text), false),
+            highlight: true),
       ]),
     );
   }
@@ -95,17 +122,28 @@ class OhmCalc extends StatefulWidget {
   @override
   State<OhmCalc> createState() => _OhmCalcState();
 }
+
 class _OhmCalcState extends State<OhmCalc> {
   final v = TextEditingController();
   final i = TextEditingController();
   final r = TextEditingController();
   final p = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [v,i,r,p]) {
-    c.addListener(() => setState(() {}));
-  } }
-  @override void dispose() { for (final c in [v,i,r,p]) {
-    c.dispose();
-  } super.dispose(); }
+  @override
+  void initState() {
+    super.initState();
+    for (final c in [v, i, r, p]) {
+      c.addListener(() => setState(() {}));
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in [v, i, r, p]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
   ({double? V, double? I, double? R, double? P}) _solve() {
     double? V = v.text.isEmpty ? null : safeNumber(v.text);
     double? I = i.text.isEmpty ? null : safeNumber(i.text);
@@ -125,10 +163,12 @@ class _OhmCalcState extends State<OhmCalc> {
     }
     return (V: V, I: I, R: R, P: P);
   }
+
   @override
   Widget build(BuildContext context) {
     final s = _solve();
-    String f(double? x, String unit) => (x == null || !x.isFinite) ? '—' : '${formatNumber(x)} $unit';
+    String f(double? x, String unit) =>
+        (x == null || !x.isFinite) ? '—' : '${formatNumber(x)} $unit';
     return InnerScaffold(
       title: AppLocalizations.of(context)!.toolOhm,
       subtitle: 'Enter any two values',
@@ -138,12 +178,29 @@ class _OhmCalcState extends State<OhmCalc> {
         NumberInput(label: 'Resistance (Ω)', controller: r),
         NumberInput(label: 'Power (W)', controller: p),
         const SizedBox(height: Spacing.lg),
-        const Text('Solved', style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
+        const Text('Solved',
+            style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
         const SizedBox(height: Spacing.sm),
-        ResultRow(label: 'V', caption: 'Voltage', value: f(s.V, 'V'), highlight: s.V != null && v.text.isEmpty),
-        ResultRow(label: 'I', caption: 'Current', value: f(s.I, 'A'), highlight: s.I != null && i.text.isEmpty),
-        ResultRow(label: 'R', caption: 'Resistance', value: f(s.R, 'Ω'), highlight: s.R != null && r.text.isEmpty),
-        ResultRow(label: 'P', caption: 'Power', value: f(s.P, 'W'), highlight: s.P != null && p.text.isEmpty),
+        ResultRow(
+            label: 'V',
+            caption: 'Voltage',
+            value: f(s.V, 'V'),
+            highlight: s.V != null && v.text.isEmpty),
+        ResultRow(
+            label: 'I',
+            caption: 'Current',
+            value: f(s.I, 'A'),
+            highlight: s.I != null && i.text.isEmpty),
+        ResultRow(
+            label: 'R',
+            caption: 'Resistance',
+            value: f(s.R, 'Ω'),
+            highlight: s.R != null && r.text.isEmpty),
+        ResultRow(
+            label: 'P',
+            caption: 'Power',
+            value: f(s.P, 'W'),
+            highlight: s.P != null && p.text.isEmpty),
       ]),
     );
   }
@@ -156,23 +213,37 @@ class BmiCalc extends StatefulWidget {
   @override
   State<BmiCalc> createState() => _BmiCalcState();
 }
+
 class _BmiCalcState extends State<BmiCalc> {
   String system = 'metric';
   final h = TextEditingController();
   final w = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [h,w]) {
-    c.addListener(() => setState(() {}));
-  } }
-  @override void dispose() { for (final c in [h,w]) {
-    c.dispose();
-  } super.dispose(); }
+  @override
+  void initState() {
+    super.initState();
+    for (final c in [h, w]) {
+      c.addListener(() => setState(() {}));
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in [h, w]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
   ({String label, Color color}) _category(double bmi) {
-    if (!bmi.isFinite || bmi <= 0) return (label: '—', color: AppColors.textMuted);
-    if (bmi < 18.5) return (label: 'Underweight', color: const Color(0xFF7CC8FF));
+    if (!bmi.isFinite || bmi <= 0)
+      return (label: '—', color: AppColors.textMuted);
+    if (bmi < 18.5)
+      return (label: 'Underweight', color: const Color(0xFF7CC8FF));
     if (bmi < 25) return (label: 'Healthy weight', color: AppColors.success);
     if (bmi < 30) return (label: 'Overweight', color: AppColors.warning);
     return (label: 'Obese', color: AppColors.danger);
   }
+
   @override
   Widget build(BuildContext context) {
     final hv = safeNumber(h.text);
@@ -191,15 +262,23 @@ class _BmiCalcState extends State<BmiCalc> {
       title: AppLocalizations.of(context)!.toolBmi,
       subtitle: 'Body Mass Index',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('Units', style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
+        const Text('Units',
+            style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
         const SizedBox(height: Spacing.sm),
         ChipPicker<String>(
-          options: const [(id: 'metric', label: 'Metric (cm, kg)'), (id: 'imperial', label: 'Imperial (in, lb)')],
+          options: const [
+            (id: 'metric', label: 'Metric (cm, kg)'),
+            (id: 'imperial', label: 'Imperial (in, lb)')
+          ],
           value: system,
           onChange: (v) => setState(() => system = v),
         ),
-        NumberInput(label: system == 'metric' ? 'Height (cm)' : 'Height (in)', controller: h),
-        NumberInput(label: system == 'metric' ? 'Weight (kg)' : 'Weight (lb)', controller: w),
+        NumberInput(
+            label: system == 'metric' ? 'Height (cm)' : 'Height (in)',
+            controller: h),
+        NumberInput(
+            label: system == 'metric' ? 'Weight (kg)' : 'Weight (lb)',
+            controller: w),
         const SizedBox(height: Spacing.lg),
         Container(
           padding: const EdgeInsets.all(Spacing.lg),
@@ -209,8 +288,16 @@ class _BmiCalcState extends State<BmiCalc> {
             borderRadius: BorderRadius.circular(Radii.card),
           ),
           child: Column(children: [
-            Text(bmi.isFinite ? formatNumber(bmi, maxDigits: 1) : '—', style: const TextStyle(color: AppColors.text, fontSize: 32, fontWeight: FontWeight.w700)),
-            Text(cat.label, style: TextStyle(color: cat.color, fontSize: 16, fontWeight: FontWeight.w600)),
+            Text(bmi.isFinite ? formatNumber(bmi, maxDigits: 1) : '—',
+                style: const TextStyle(
+                    color: AppColors.text,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700)),
+            Text(cat.label,
+                style: TextStyle(
+                    color: cat.color,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600)),
           ]),
         ),
         const SizedBox(height: Spacing.md),
@@ -226,7 +313,8 @@ DateTime? _parseDate(String input) {
   final m = RegExp(r'^(\d{4})-(\d{1,2})-(\d{1,2})$').firstMatch(input);
   if (m == null) return null;
   try {
-    return DateTime(int.parse(m.group(1)!), int.parse(m.group(2)!), int.parse(m.group(3)!));
+    return DateTime(
+        int.parse(m.group(1)!), int.parse(m.group(2)!), int.parse(m.group(3)!));
   } catch (_) {
     return null;
   }
@@ -397,7 +485,6 @@ class _DateDiffCalcState extends State<DateDiffCalc> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           NumberInput(
             label: 'From',
             controller: from,
@@ -405,7 +492,6 @@ class _DateDiffCalcState extends State<DateDiffCalc> {
             readOnly: true,
             onTap: () => _pickDate(from),
           ),
-
           NumberInput(
             label: 'To',
             controller: to,
@@ -413,25 +499,20 @@ class _DateDiffCalcState extends State<DateDiffCalc> {
             readOnly: true,
             onTap: () => _pickDate(to),
           ),
-
           const SizedBox(height: Spacing.lg),
-
           ResultRow(
             label: 'Calendar',
             value: calendar,
             highlight: true,
           ),
-
           ResultRow(
             label: 'Total days',
             value: totalDays,
           ),
-
           ResultRow(
             label: 'Weeks',
             value: weeks,
           ),
-
           ResultRow(
             label: 'Hours',
             value: hours,
@@ -448,10 +529,20 @@ class TimeZonesScreen extends StatefulWidget {
   @override
   State<TimeZonesScreen> createState() => _TimeZonesScreenState();
 }
+
 class _TimeZonesScreenState extends State<TimeZonesScreen> {
   Timer? _timer;
-  @override void initState() { super.initState(); _timer = Timer.periodic(const Duration(seconds: 1), (_) => setState(() {})); }
-  @override void dispose() { _timer?.cancel(); super.dispose(); }
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   // Approximate fixed UTC offsets (no DST handling).
   final List<({String label, String flag, double offsetHours})> zones = const [
@@ -476,12 +567,14 @@ class _TimeZonesScreenState extends State<TimeZonesScreen> {
       child: Column(children: [
         for (final z in zones)
           Builder(builder: (_) {
-            final dt = nowUtc.add(Duration(minutes: (z.offsetHours * 60).round()));
+            final dt =
+                nowUtc.add(Duration(minutes: (z.offsetHours * 60).round()));
             final time = DateFormat('h:mm:ss a').format(dt);
             final day = DateFormat('EEE, MMM d').format(dt);
             return Container(
               margin: const EdgeInsets.symmetric(vertical: 4),
-              padding: const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: Spacing.md),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Spacing.lg, vertical: Spacing.md),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 border: Border.all(color: AppColors.border),
@@ -491,12 +584,24 @@ class _TimeZonesScreenState extends State<TimeZonesScreen> {
                 Text(z.flag, style: const TextStyle(fontSize: 22)),
                 const SizedBox(width: Spacing.md),
                 Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(z.label, style: const TextStyle(color: AppColors.text, fontSize: 16, fontWeight: FontWeight.w600)),
-                    Text(day, style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
-                  ]),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(z.label,
+                            style: const TextStyle(
+                                color: AppColors.text,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600)),
+                        Text(day,
+                            style: const TextStyle(
+                                color: AppColors.textMuted, fontSize: 13)),
+                      ]),
                 ),
-                Text(time, style: const TextStyle(color: AppColors.text, fontSize: 16, fontWeight: FontWeight.w700)),
+                Text(time,
+                    style: const TextStyle(
+                        color: AppColors.text,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700)),
               ]),
             );
           }),
@@ -512,18 +617,29 @@ class AdcDacCalc extends StatefulWidget {
   @override
   State<AdcDacCalc> createState() => _AdcDacCalcState();
 }
+
 class _AdcDacCalcState extends State<AdcDacCalc> {
   String mode = 'adc';
   final bits = TextEditingController(text: '12');
   final vref = TextEditingController(text: '3.3');
   final analog = TextEditingController();
   final digital = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [bits, vref, analog, digital]) {
-    c.addListener(() => setState(() {}));
-  } }
-  @override void dispose() { for (final c in [bits, vref, analog, digital]) {
-    c.dispose();
-  } super.dispose(); }
+  @override
+  void initState() {
+    super.initState();
+    for (final c in [bits, vref, analog, digital]) {
+      c.addListener(() => setState(() {}));
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in [bits, vref, analog, digital]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final n = safeNumber(bits.text).round().clamp(1, 64);
@@ -544,16 +660,38 @@ class _AdcDacCalcState extends State<AdcDacCalc> {
       title: AppLocalizations.of(context)!.toolAdcDac,
       subtitle: mode == 'adc' ? 'Analog → Digital' : 'Digital → Analog',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        ChipPicker<String>(options: const [(id: 'adc', label: 'ADC'), (id: 'dac', label: 'DAC')], value: mode, onChange: (v) => setState(() => mode = v)),
-        NumberInput(label: 'Resolution (bits)', controller: bits, keyboardType: TextInputType.number),
+        ChipPicker<String>(options: const [
+          (id: 'adc', label: 'ADC'),
+          (id: 'dac', label: 'DAC')
+        ], value: mode, onChange: (v) => setState(() => mode = v)),
+        NumberInput(
+            label: 'Resolution (bits)',
+            controller: bits,
+            keyboardType: TextInputType.number),
         NumberInput(label: 'Reference voltage (V)', controller: vref),
-        if (mode == 'adc') NumberInput(label: 'Analog input (V)', controller: analog) else NumberInput(label: 'Digital code', controller: digital, keyboardType: TextInputType.number),
+        if (mode == 'adc')
+          NumberInput(label: 'Analog input (V)', controller: analog)
+        else
+          NumberInput(
+              label: 'Digital code',
+              controller: digital,
+              keyboardType: TextInputType.number),
         const SizedBox(height: Spacing.lg),
         if (mode == 'adc') ...[
-          ResultRow(label: 'Digital code (decimal)', value: code?.toString() ?? '—', highlight: true),
-          ResultRow(label: 'Digital code (hex)', value: code != null ? '0x${code.toRadixString(16).toUpperCase()}' : '—'),
+          ResultRow(
+              label: 'Digital code (decimal)',
+              value: code?.toString() ?? '—',
+              highlight: true),
+          ResultRow(
+              label: 'Digital code (hex)',
+              value: code != null
+                  ? '0x${code.toRadixString(16).toUpperCase()}'
+                  : '—'),
         ] else
-          ResultRow(label: 'Analog output (V)', value: voltage != null ? '${formatNumber(voltage)} V' : '—', highlight: true),
+          ResultRow(
+              label: 'Analog output (V)',
+              value: voltage != null ? '${formatNumber(voltage)} V' : '—',
+              highlight: true),
         ResultRow(label: 'Full-scale code', value: '$maxCode'),
         ResultRow(label: 'LSB step', value: '${formatNumber(lsb)} V'),
       ]),
@@ -709,7 +847,6 @@ class _AgeCalcState extends State<AgeCalc> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           NumberInput(
             label: 'Date of birth',
             controller: dob,
@@ -717,7 +854,6 @@ class _AgeCalcState extends State<AgeCalc> {
             readOnly: true,
             onTap: () => _pickDate(dob),
           ),
-
           NumberInput(
             label: 'Reference date',
             controller: ref,
@@ -725,20 +861,16 @@ class _AgeCalcState extends State<AgeCalc> {
             readOnly: true,
             onTap: () => _pickDate(ref),
           ),
-
           const SizedBox(height: Spacing.lg),
-
           ResultRow(
             label: 'Age',
             value: age,
             highlight: true,
           ),
-
           ResultRow(
             label: 'Total days lived',
             value: total,
           ),
-
           ResultRow(
             label: 'Next birthday',
             value: next,
@@ -755,17 +887,27 @@ class AspectRatioCalc extends StatefulWidget {
   @override
   State<AspectRatioCalc> createState() => _AspectRatioCalcState();
 }
+
 class _AspectRatioCalcState extends State<AspectRatioCalc> {
   final w1 = TextEditingController(text: '1920');
   final h1 = TextEditingController(text: '1080');
   final w2 = TextEditingController();
   final h2 = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [w1,h1,w2,h2]) {
-    c.addListener(() => setState(() {}));
-  } }
-  @override void dispose() { for (final c in [w1,h1,w2,h2]) {
-    c.dispose();
-  } super.dispose(); }
+  @override
+  void initState() {
+    super.initState();
+    for (final c in [w1, h1, w2, h2]) {
+      c.addListener(() => setState(() {}));
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in [w1, h1, w2, h2]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
 
   String _reduce(double w, double h) {
     if (!w.isFinite || !h.isFinite || w <= 0 || h <= 0) return '—';
@@ -775,7 +917,11 @@ class _AspectRatioCalcState extends State<AspectRatioCalc> {
     for (int b = 1; b <= 50; b++) {
       final a = (target * b).round();
       final err = (target - a / b).abs();
-      if (err < bestErr) { bestErr = err; bestA = a; bestB = b; }
+      if (err < bestErr) {
+        bestErr = err;
+        bestA = a;
+        bestB = b;
+      }
     }
     return '$bestA:$bestB';
   }
@@ -803,20 +949,27 @@ class _AspectRatioCalcState extends State<AspectRatioCalc> {
       subtitle: 'Solve missing W or H',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Expanded(child: Column(children: [
+          Expanded(
+              child: Column(children: [
             NumberInput(label: 'W₁', controller: w1),
             NumberInput(label: 'H₁', controller: h1),
           ])),
           const SizedBox(width: Spacing.md),
-          Expanded(child: Column(children: [
+          Expanded(
+              child: Column(children: [
             NumberInput(label: 'W₂ (optional)', controller: w2),
             NumberInput(label: 'H₂ (optional)', controller: h2),
           ])),
         ]),
         const SizedBox(height: Spacing.lg),
-        ResultRow(label: 'Ratio (decimal)', value: ratio.isFinite ? formatNumber(ratio, maxDigits: 4) : '—'),
-        ResultRow(label: 'Ratio (a:b)', value: _reduce(W1, H1), highlight: true),
-        if (computedLabel != null) ResultRow(label: computedLabel, value: computedValue!, highlight: true),
+        ResultRow(
+            label: 'Ratio (decimal)',
+            value: ratio.isFinite ? formatNumber(ratio, maxDigits: 4) : '—'),
+        ResultRow(
+            label: 'Ratio (a:b)', value: _reduce(W1, H1), highlight: true),
+        if (computedLabel != null)
+          ResultRow(
+              label: computedLabel, value: computedValue!, highlight: true),
       ]),
     );
   }

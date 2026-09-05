@@ -40,7 +40,8 @@ void main() {
       expect(find.byIcon(Icons.backspace_outlined), findsNothing);
     });
 
-    testWidgets('typing shows the expression above the live result', (tester) async {
+    testWidgets('typing shows the expression above the live result',
+        (tester) async {
       await _pumpCalc(tester, const StandardCalc());
 
       await _tapKey(tester, '5');
@@ -55,7 +56,8 @@ void main() {
       expect(find.byIcon(Icons.backspace_outlined), findsOneWidget);
     });
 
-    testWidgets('equals commits the expression with a trailing =', (tester) async {
+    testWidgets('equals commits the expression with a trailing =',
+        (tester) async {
       await _pumpCalc(tester, const StandardCalc());
 
       await _tapKey(tester, '8');

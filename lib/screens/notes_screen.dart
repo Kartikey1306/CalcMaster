@@ -65,22 +65,29 @@ class _NotesScreenState extends State<NotesScreen> {
     final q = _searchC.text.trim().toLowerCase();
     final filtered = q.isEmpty
         ? all
-        : all.where((n) => n.title.toLowerCase().contains(q) || n.body.toLowerCase().contains(q)).toList();
+        : all
+            .where((n) =>
+                n.title.toLowerCase().contains(q) ||
+                n.body.toLowerCase().contains(q))
+            .toList();
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, Spacing.xxl),
+          padding: const EdgeInsets.fromLTRB(
+              Spacing.lg, Spacing.lg, Spacing.lg, Spacing.xxl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               PillBadge(label: loc.pillSavedNotes, color: accent),
               const SizedBox(height: Spacing.md),
-              Text(loc.notesHubHeading, style: Theme.of(context).textTheme.displayLarge),
+              Text(loc.notesHubHeading,
+                  style: Theme.of(context).textTheme.displayLarge),
               const SizedBox(height: 4),
               Text(loc.notesHubSubheading,
-                  style: const TextStyle(color: AppColors.textMuted, fontSize: 14)),
+                  style: const TextStyle(
+                      color: AppColors.textMuted, fontSize: 14)),
               const SizedBox(height: Spacing.lg),
 
               // Search
@@ -92,15 +99,18 @@ class _NotesScreenState extends State<NotesScreen> {
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
                 child: Row(children: [
-                  const Icon(Icons.search, size: 16, color: AppColors.textMuted),
+                  const Icon(Icons.search,
+                      size: 16, color: AppColors.textMuted),
                   const SizedBox(width: 8),
                   Expanded(
                     child: TextField(
                       controller: _searchC,
-                      style: const TextStyle(color: AppColors.text, fontSize: 15),
+                      style:
+                          const TextStyle(color: AppColors.text, fontSize: 15),
                       decoration: InputDecoration(
                         isCollapsed: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 14),
                         border: InputBorder.none,
                         hintText: loc.notesSearch,
                         hintStyle: const TextStyle(color: AppColors.textDim),
@@ -122,12 +132,17 @@ class _NotesScreenState extends State<NotesScreen> {
                 child: Column(children: [
                   TextField(
                     controller: _titleC,
-                    style: const TextStyle(color: AppColors.text, fontSize: 18, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                        color: AppColors.text,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600),
                     decoration: InputDecoration(
                       isCollapsed: true,
                       contentPadding: const EdgeInsets.symmetric(vertical: 6),
                       border: InputBorder.none,
-                      hintText: _editingId != null ? loc.notesTitleHint : loc.notesNewTitleHint,
+                      hintText: _editingId != null
+                          ? loc.notesTitleHint
+                          : loc.notesNewTitleHint,
                       hintStyle: const TextStyle(color: AppColors.textDim),
                     ),
                   ),
@@ -150,10 +165,13 @@ class _NotesScreenState extends State<NotesScreen> {
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.text,
                         foregroundColor: AppColors.bg,
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 18, vertical: 10),
                       ),
                       onPressed: _save,
-                      child: Text(_editingId != null ? loc.notesSaveChanges : loc.notesAddNote),
+                      child: Text(_editingId != null
+                          ? loc.notesSaveChanges
+                          : loc.notesAddNote),
                     ),
                   ),
                 ]),
@@ -165,7 +183,8 @@ class _NotesScreenState extends State<NotesScreen> {
                   padding: const EdgeInsets.symmetric(vertical: Spacing.lg),
                   child: Text(
                     loc.notesEmpty,
-                    style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+                    style: const TextStyle(
+                        color: AppColors.textMuted, fontSize: 14),
                   ),
                 ),
               for (final n in filtered)
@@ -184,9 +203,9 @@ class _NotesScreenState extends State<NotesScreen> {
                             backgroundColor: AppColors.surface,
                             title: Text(loc.deleteNoteTitle,
                                 style: const TextStyle(color: AppColors.text)),
-                            content: Text(
-                                loc.notesDeleteHint,
-                                style: const TextStyle(color: AppColors.textMuted)),
+                            content: Text(loc.notesDeleteHint,
+                                style: const TextStyle(
+                                    color: AppColors.textMuted)),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(ctx, false),
@@ -195,7 +214,8 @@ class _NotesScreenState extends State<NotesScreen> {
                               TextButton(
                                 onPressed: () => Navigator.pop(ctx, true),
                                 child: Text(loc.deleteNoteConfirm,
-                                    style: const TextStyle(color: AppColors.danger)),
+                                    style: const TextStyle(
+                                        color: AppColors.danger)),
                               ),
                             ],
                           ),
@@ -229,13 +249,16 @@ class _NotesScreenState extends State<NotesScreen> {
                                       n.body,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+                                      style: const TextStyle(
+                                          color: AppColors.textMuted,
+                                          fontSize: 13),
                                     ),
                                   ),
                               ],
                             ),
                           ),
-                          const Icon(Icons.chevron_right, color: AppColors.textDim),
+                          const Icon(Icons.chevron_right,
+                              color: AppColors.textDim),
                         ]),
                       ),
                     ),
@@ -246,7 +269,8 @@ class _NotesScreenState extends State<NotesScreen> {
                   padding: const EdgeInsets.only(top: Spacing.sm),
                   child: Text(
                     loc.notesDeleteHint,
-                    style: const TextStyle(color: AppColors.textDim, fontSize: 12),
+                    style:
+                        const TextStyle(color: AppColors.textDim, fontSize: 12),
                   ),
                 ),
             ],

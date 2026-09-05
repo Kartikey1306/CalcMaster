@@ -23,20 +23,64 @@ const Map<RegionId, double> salesTaxRate = {
 };
 
 const Map<RegionId, Map<FilingStatus, double>> standardDeduction = {
-  RegionId.US: {FilingStatus.single: 15000, FilingStatus.joint: 30000, FilingStatus.head: 22500},
+  RegionId.US: {
+    FilingStatus.single: 15000,
+    FilingStatus.joint: 30000,
+    FilingStatus.head: 22500
+  },
   // UK: the £12,570 personal allowance is already modelled as the 0% band in
   // the bracket table below, so applying it again as a standard deduction would
   // double-count it. Keep this at 0 and let the brackets handle the allowance.
-  RegionId.UK: {FilingStatus.single: 0, FilingStatus.joint: 0, FilingStatus.head: 0},
-  RegionId.EU: {FilingStatus.single: 10908, FilingStatus.joint: 21816, FilingStatus.head: 10908},
-  RegionId.CA: {FilingStatus.single: 15705, FilingStatus.joint: 15705, FilingStatus.head: 15705},
-  RegionId.AU: {FilingStatus.single: 18200, FilingStatus.joint: 18200, FilingStatus.head: 18200},
-  RegionId.IN: {FilingStatus.single: 75000, FilingStatus.joint: 75000, FilingStatus.head: 75000},
-  RegionId.JP: {FilingStatus.single: 480000, FilingStatus.joint: 480000, FilingStatus.head: 480000},
-  RegionId.BR: {FilingStatus.single: 28560, FilingStatus.joint: 28560, FilingStatus.head: 28560},
-  RegionId.MX: {FilingStatus.single: 0, FilingStatus.joint: 0, FilingStatus.head: 0},
-  RegionId.KR: {FilingStatus.single: 1500000, FilingStatus.joint: 1500000, FilingStatus.head: 1500000},
-  RegionId.AE: {FilingStatus.single: 0, FilingStatus.joint: 0, FilingStatus.head: 0},
+  RegionId.UK: {
+    FilingStatus.single: 0,
+    FilingStatus.joint: 0,
+    FilingStatus.head: 0
+  },
+  RegionId.EU: {
+    FilingStatus.single: 10908,
+    FilingStatus.joint: 21816,
+    FilingStatus.head: 10908
+  },
+  RegionId.CA: {
+    FilingStatus.single: 15705,
+    FilingStatus.joint: 15705,
+    FilingStatus.head: 15705
+  },
+  RegionId.AU: {
+    FilingStatus.single: 18200,
+    FilingStatus.joint: 18200,
+    FilingStatus.head: 18200
+  },
+  RegionId.IN: {
+    FilingStatus.single: 75000,
+    FilingStatus.joint: 75000,
+    FilingStatus.head: 75000
+  },
+  RegionId.JP: {
+    FilingStatus.single: 480000,
+    FilingStatus.joint: 480000,
+    FilingStatus.head: 480000
+  },
+  RegionId.BR: {
+    FilingStatus.single: 28560,
+    FilingStatus.joint: 28560,
+    FilingStatus.head: 28560
+  },
+  RegionId.MX: {
+    FilingStatus.single: 0,
+    FilingStatus.joint: 0,
+    FilingStatus.head: 0
+  },
+  RegionId.KR: {
+    FilingStatus.single: 1500000,
+    FilingStatus.joint: 1500000,
+    FilingStatus.head: 1500000
+  },
+  RegionId.AE: {
+    FilingStatus.single: 0,
+    FilingStatus.joint: 0,
+    FilingStatus.head: 0
+  },
 };
 
 const inf = double.infinity;
@@ -115,17 +159,61 @@ const _jpAll = [
 ];
 
 const Map<RegionId, Map<FilingStatus, List<Bracket>>> incomeTaxBrackets = {
-  RegionId.US: {FilingStatus.single: _usSingle, FilingStatus.joint: _usJoint, FilingStatus.head: _usHead},
-  RegionId.UK: {FilingStatus.single: _ukAll, FilingStatus.joint: _ukAll, FilingStatus.head: _ukAll},
-  RegionId.EU: {FilingStatus.single: _euAll, FilingStatus.joint: _euAll, FilingStatus.head: _euAll},
-  RegionId.CA: {FilingStatus.single: _caAll, FilingStatus.joint: _caAll, FilingStatus.head: _caAll},
-  RegionId.AU: {FilingStatus.single: _auAll, FilingStatus.joint: _auAll, FilingStatus.head: _auAll},
-  RegionId.IN: {FilingStatus.single: _inAll, FilingStatus.joint: _inAll, FilingStatus.head: _inAll},
-  RegionId.JP: {FilingStatus.single: _jpAll, FilingStatus.joint: _jpAll, FilingStatus.head: _jpAll},
-  RegionId.BR: {FilingStatus.single: _brAll, FilingStatus.joint: _brAll, FilingStatus.head: _brAll},
-  RegionId.MX: {FilingStatus.single: _mxAll, FilingStatus.joint: _mxAll, FilingStatus.head: _mxAll},
-  RegionId.KR: {FilingStatus.single: _krAll, FilingStatus.joint: _krAll, FilingStatus.head: _krAll},
-  RegionId.AE: {FilingStatus.single: _aeAll, FilingStatus.joint: _aeAll, FilingStatus.head: _aeAll},
+  RegionId.US: {
+    FilingStatus.single: _usSingle,
+    FilingStatus.joint: _usJoint,
+    FilingStatus.head: _usHead
+  },
+  RegionId.UK: {
+    FilingStatus.single: _ukAll,
+    FilingStatus.joint: _ukAll,
+    FilingStatus.head: _ukAll
+  },
+  RegionId.EU: {
+    FilingStatus.single: _euAll,
+    FilingStatus.joint: _euAll,
+    FilingStatus.head: _euAll
+  },
+  RegionId.CA: {
+    FilingStatus.single: _caAll,
+    FilingStatus.joint: _caAll,
+    FilingStatus.head: _caAll
+  },
+  RegionId.AU: {
+    FilingStatus.single: _auAll,
+    FilingStatus.joint: _auAll,
+    FilingStatus.head: _auAll
+  },
+  RegionId.IN: {
+    FilingStatus.single: _inAll,
+    FilingStatus.joint: _inAll,
+    FilingStatus.head: _inAll
+  },
+  RegionId.JP: {
+    FilingStatus.single: _jpAll,
+    FilingStatus.joint: _jpAll,
+    FilingStatus.head: _jpAll
+  },
+  RegionId.BR: {
+    FilingStatus.single: _brAll,
+    FilingStatus.joint: _brAll,
+    FilingStatus.head: _brAll
+  },
+  RegionId.MX: {
+    FilingStatus.single: _mxAll,
+    FilingStatus.joint: _mxAll,
+    FilingStatus.head: _mxAll
+  },
+  RegionId.KR: {
+    FilingStatus.single: _krAll,
+    FilingStatus.joint: _krAll,
+    FilingStatus.head: _krAll
+  },
+  RegionId.AE: {
+    FilingStatus.single: _aeAll,
+    FilingStatus.joint: _aeAll,
+    FilingStatus.head: _aeAll
+  },
 };
 
 // Brazil: progressive 2024-26 (BRL)
@@ -194,8 +282,10 @@ TaxResult computeIncomeTax(
   bool applyStandardDeduction = true,
   double stateLocalRate = 0,
 }) {
-  final deduction = applyStandardDeduction ? (standardDeduction[region]![status] ?? 0) : 0;
-  final taxable = (grossIncome - deduction).clamp(0, double.infinity).toDouble();
+  final deduction =
+      applyStandardDeduction ? (standardDeduction[region]![status] ?? 0) : 0;
+  final taxable =
+      (grossIncome - deduction).clamp(0, double.infinity).toDouble();
   final brackets = incomeTaxBrackets[region]![status]!;
 
   double owed = 0;

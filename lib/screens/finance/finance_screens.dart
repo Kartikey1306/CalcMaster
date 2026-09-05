@@ -34,7 +34,8 @@ class _TaxCalcState extends State<TaxCalc> {
   void initState() {
     super.initState();
     final region = context.read<RegionProvider>().region.id;
-    salesRate = TextEditingController(text: ((salesTaxRate[region] ?? 0) * 100).toStringAsFixed(1));
+    salesRate = TextEditingController(
+        text: ((salesTaxRate[region] ?? 0) * 100).toStringAsFixed(1));
     for (final c in [income, stateRate, salePrice, salesRate]) {
       c.addListener(() => setState(() {}));
     }
@@ -69,14 +70,24 @@ class _TaxCalcState extends State<TaxCalc> {
       subtitle: '${region.flag} ${region.label} · ${region.currency}',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Expanded(child: _ModePill(label: 'Income', active: mode == 'income', onTap: () => setState(() => mode = 'income'))),
+          Expanded(
+              child: _ModePill(
+                  label: 'Income',
+                  active: mode == 'income',
+                  onTap: () => setState(() => mode = 'income'))),
           const SizedBox(width: Spacing.sm),
-          Expanded(child: _ModePill(label: 'Sales / VAT', active: mode == 'sales', onTap: () => setState(() => mode = 'sales'))),
+          Expanded(
+              child: _ModePill(
+                  label: 'Sales / VAT',
+                  active: mode == 'sales',
+                  onTap: () => setState(() => mode = 'sales'))),
         ]),
         if (mode == 'income') ...[
-          NumberInput(label: 'Annual gross (${region.currency})', controller: income),
+          NumberInput(
+              label: 'Annual gross (${region.currency})', controller: income),
           const SizedBox(height: Spacing.md),
-          Text(AppLocalizations.of(context)!.labelFilingStatus, style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+          Text(AppLocalizations.of(context)!.labelFilingStatus,
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
           const SizedBox(height: Spacing.sm),
           ChipPicker<FilingStatus>(
             options: const [
@@ -90,17 +101,28 @@ class _TaxCalcState extends State<TaxCalc> {
           NumberInput(label: 'State / local rate (%)', controller: stateRate),
           const SizedBox(height: Spacing.lg),
           ResultRow(label: 'Taxable income', value: cur(result.taxableIncome)),
-          ResultRow(label: 'Tax owed', value: cur(result.taxOwed), highlight: true),
-          ResultRow(label: 'Effective rate', value: formatPercent(result.effectiveRate)),
-          ResultRow(label: 'Marginal rate', value: formatPercent(result.marginalRate)),
-          ResultRow(label: 'Take-home (year)', value: cur(result.takeHome), highlight: true),
-          ResultRow(label: 'Take-home (month)', value: cur(result.takeHomeMonthly)),
+          ResultRow(
+              label: 'Tax owed', value: cur(result.taxOwed), highlight: true),
+          ResultRow(
+              label: 'Effective rate',
+              value: formatPercent(result.effectiveRate)),
+          ResultRow(
+              label: 'Marginal rate',
+              value: formatPercent(result.marginalRate)),
+          ResultRow(
+              label: 'Take-home (year)',
+              value: cur(result.takeHome),
+              highlight: true),
+          ResultRow(
+              label: 'Take-home (month)', value: cur(result.takeHomeMonthly)),
         ] else ...[
-          NumberInput(label: 'Sale price (${region.currency})', controller: salePrice),
+          NumberInput(
+              label: 'Sale price (${region.currency})', controller: salePrice),
           NumberInput(label: 'Tax rate (%)', controller: salesRate),
           const SizedBox(height: Spacing.lg),
           ResultRow(label: 'Tax amount', value: cur(salesTax)),
-          ResultRow(label: 'Total with tax', value: cur(salesTotal), highlight: true),
+          ResultRow(
+              label: 'Total with tax', value: cur(salesTotal), highlight: true),
         ],
       ]),
     );
@@ -111,7 +133,8 @@ class _ModePill extends StatelessWidget {
   final String label;
   final bool active;
   final VoidCallback onTap;
-  const _ModePill({required this.label, required this.active, required this.onTap});
+  const _ModePill(
+      {required this.label, required this.active, required this.onTap});
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -123,8 +146,15 @@ class _ModePill extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           alignment: Alignment.center,
-          decoration: BoxDecoration(border: Border.all(color: active ? AppColors.text : AppColors.border), borderRadius: BorderRadius.circular(Radii.button)),
-          child: Text(label, style: TextStyle(color: active ? AppColors.bg : AppColors.text, fontSize: 14, fontWeight: FontWeight.w600)),
+          decoration: BoxDecoration(
+              border:
+                  Border.all(color: active ? AppColors.text : AppColors.border),
+              borderRadius: BorderRadius.circular(Radii.button)),
+          child: Text(label,
+              style: TextStyle(
+                  color: active ? AppColors.bg : AppColors.text,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600)),
         ),
       ),
     );
@@ -150,10 +180,15 @@ class _TipCalcState extends State<TipCalc> {
       c.addListener(() => setState(() {}));
     }
   }
+
   @override
-  void dispose() { for (final c in [bill, tipPct, people]) {
-    c.dispose();
-  } super.dispose(); }
+  void dispose() {
+    for (final c in [bill, tipPct, people]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final region = context.watch<RegionProvider>().region;
@@ -169,7 +204,10 @@ class _TipCalcState extends State<TipCalc> {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         NumberInput(label: 'Bill (${region.currency})', controller: bill),
         NumberInput(label: 'Tip %', controller: tipPct),
-        NumberInput(label: 'People', controller: people, keyboardType: TextInputType.number),
+        NumberInput(
+            label: 'People',
+            controller: people,
+            keyboardType: TextInputType.number),
         const SizedBox(height: Spacing.lg),
         ResultRow(label: 'Tip', value: cur(tip)),
         ResultRow(label: 'Total', value: cur(total), highlight: true),
@@ -187,15 +225,26 @@ class DiscountCalc extends StatefulWidget {
   @override
   State<DiscountCalc> createState() => _DiscountCalcState();
 }
+
 class _DiscountCalcState extends State<DiscountCalc> {
   final original = TextEditingController();
   final pct = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [original, pct]) {
-    c.addListener(() => setState(() {}));
-  } }
-  @override void dispose() { for (final c in [original, pct]) {
-    c.dispose();
-  } super.dispose(); }
+  @override
+  void initState() {
+    super.initState();
+    for (final c in [original, pct]) {
+      c.addListener(() => setState(() {}));
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in [original, pct]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final region = context.watch<RegionProvider>().region;
@@ -207,7 +256,8 @@ class _DiscountCalcState extends State<DiscountCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeDiscount,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        NumberInput(label: 'Original (${region.currency})', controller: original),
+        NumberInput(
+            label: 'Original (${region.currency})', controller: original),
         NumberInput(label: 'Discount %', controller: pct),
         const SizedBox(height: Spacing.lg),
         ResultRow(label: 'You save', value: cur(savings)),
@@ -224,18 +274,29 @@ class CompoundCalc extends StatefulWidget {
   @override
   State<CompoundCalc> createState() => _CompoundCalcState();
 }
+
 class _CompoundCalcState extends State<CompoundCalc> {
   final principal = TextEditingController();
   final ratePct = TextEditingController(text: '7');
   final years = TextEditingController(text: '10');
   final pmt = TextEditingController();
   String freq = '12';
-  @override void initState() { super.initState(); for (final c in [principal, ratePct, years, pmt]) {
-    c.addListener(() => setState(() {}));
-  } }
-  @override void dispose() { for (final c in [principal, ratePct, years, pmt]) {
-    c.dispose();
-  } super.dispose(); }
+  @override
+  void initState() {
+    super.initState();
+    for (final c in [principal, ratePct, years, pmt]) {
+      c.addListener(() => setState(() {}));
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in [principal, ratePct, years, pmt]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final region = context.watch<RegionProvider>().region;
@@ -248,7 +309,8 @@ class _CompoundCalcState extends State<CompoundCalc> {
     double future = P;
     if (n > 0 && t > 0 && r >= 0) {
       final factor = math.pow(1 + r / n, n * t).toDouble();
-      future = P * factor + (PMT > 0 && r > 0 ? PMT * ((factor - 1) / (r / n)) : PMT * n * t);
+      future = P * factor +
+          (PMT > 0 && r > 0 ? PMT * ((factor - 1) / (r / n)) : PMT * n * t);
     }
     final contributed = P + PMT * n * t;
     final interest = future - contributed;
@@ -256,15 +318,24 @@ class _CompoundCalcState extends State<CompoundCalc> {
       title: AppLocalizations.of(context)!.financeCompound,
       subtitle: 'Future value of an investment',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        NumberInput(label: 'Principal (${region.currency})', controller: principal),
+        NumberInput(
+            label: 'Principal (${region.currency})', controller: principal),
         NumberInput(label: 'Annual rate (%)', controller: ratePct),
         NumberInput(label: 'Years', controller: years),
-        NumberInput(label: 'Monthly contribution (optional, ${region.currency})', controller: pmt),
+        NumberInput(
+            label: 'Monthly contribution (optional, ${region.currency})',
+            controller: pmt),
         const SizedBox(height: Spacing.md),
-        Text(AppLocalizations.of(context)!.labelCompoundFreq, style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+        Text(AppLocalizations.of(context)!.labelCompoundFreq,
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
         const SizedBox(height: Spacing.sm),
         ChipPicker<String>(
-          options: const [(id: '1', label: 'Annually'), (id: '4', label: 'Quarterly'), (id: '12', label: 'Monthly'), (id: '365', label: 'Daily')],
+          options: const [
+            (id: '1', label: 'Annually'),
+            (id: '4', label: 'Quarterly'),
+            (id: '12', label: 'Monthly'),
+            (id: '365', label: 'Daily')
+          ],
           value: freq,
           onChange: (v) => setState(() => freq = v),
         ),
@@ -284,16 +355,27 @@ class EmiCalc extends StatefulWidget {
   @override
   State<EmiCalc> createState() => _EmiCalcState();
 }
+
 class _EmiCalcState extends State<EmiCalc> {
   final principal = TextEditingController();
   final ratePct = TextEditingController();
   final years = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [principal, ratePct, years]) {
-    c.addListener(() => setState(() {}));
-  } }
-  @override void dispose() { for (final c in [principal, ratePct, years]) {
-    c.dispose();
-  } super.dispose(); }
+  @override
+  void initState() {
+    super.initState();
+    for (final c in [principal, ratePct, years]) {
+      c.addListener(() => setState(() {}));
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in [principal, ratePct, years]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final region = context.watch<RegionProvider>().region;
@@ -317,7 +399,8 @@ class _EmiCalcState extends State<EmiCalc> {
       title: AppLocalizations.of(context)!.financeEMI,
       subtitle: 'Equated monthly installment',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        NumberInput(label: 'Loan amount (${region.currency})', controller: principal),
+        NumberInput(
+            label: 'Loan amount (${region.currency})', controller: principal),
         NumberInput(label: 'Annual rate (%)', controller: ratePct),
         NumberInput(label: 'Term (years)', controller: years),
         const SizedBox(height: Spacing.lg),
@@ -336,11 +419,22 @@ class CurrencyCalc extends StatefulWidget {
   @override
   State<CurrencyCalc> createState() => _CurrencyCalcState();
 }
+
 class _CurrencyCalcState extends State<CurrencyCalc> {
   final amount = TextEditingController(text: '1');
   String? from;
-  @override void initState() { super.initState(); amount.addListener(() => setState(() {})); }
-  @override void dispose() { amount.dispose(); super.dispose(); }
+  @override
+  void initState() {
+    super.initState();
+    amount.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    amount.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final regionState = context.watch<RegionProvider>();
@@ -348,7 +442,25 @@ class _CurrencyCalcState extends State<CurrencyCalc> {
     final rates = regionState.rates;
     final allCodes = <String>{
       ...regions.map((r) => r.currency),
-      'USD','EUR','GBP','JPY','CAD','AUD','INR','CHF','CNY','MXN','BRL','KRW','SGD','HKD','NZD','ZAR','SEK','NOK','DKK',
+      'USD',
+      'EUR',
+      'GBP',
+      'JPY',
+      'CAD',
+      'AUD',
+      'INR',
+      'CHF',
+      'CNY',
+      'MXN',
+      'BRL',
+      'KRW',
+      'SGD',
+      'HKD',
+      'NZD',
+      'ZAR',
+      'SEK',
+      'NOK',
+      'DKK',
       ...rates.keys,
     }.toList();
     final num = safeNumber(amount.text);
@@ -365,7 +477,8 @@ class _CurrencyCalcState extends State<CurrencyCalc> {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         NumberInput(label: 'Amount', controller: amount),
         const SizedBox(height: Spacing.md),
-        Text(AppLocalizations.of(context)!.labelFrom, style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+        Text(AppLocalizations.of(context)!.labelFrom,
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
         const SizedBox(height: Spacing.sm),
         ChipPicker<String>(
           options: [for (final c in allCodes) (id: c, label: c)],
@@ -394,45 +507,77 @@ class UnitPriceCalc extends StatefulWidget {
   @override
   State<UnitPriceCalc> createState() => _UnitPriceCalcState();
 }
+
 class _UnitPriceCalcState extends State<UnitPriceCalc> {
   final pa = TextEditingController();
   final qa = TextEditingController();
   final pb = TextEditingController();
   final qb = TextEditingController();
-  @override void initState() { super.initState(); for (final c in [pa, qa, pb, qb]) {
-    c.addListener(() => setState(() {}));
-  } }
-  @override void dispose() { for (final c in [pa, qa, pb, qb]) {
-    c.dispose();
-  } super.dispose(); }
+  @override
+  void initState() {
+    super.initState();
+    for (final c in [pa, qa, pb, qb]) {
+      c.addListener(() => setState(() {}));
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in [pa, qa, pb, qb]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final region = context.watch<RegionProvider>().region;
     String cur(double n) => formatCurrency(n, region.locale, region.currency);
-    final upA = safeNumber(qa.text) > 0 ? safeNumber(pa.text) / safeNumber(qa.text) : double.nan;
-    final upB = safeNumber(qb.text) > 0 ? safeNumber(pb.text) / safeNumber(qb.text) : double.nan;
+    final upA = safeNumber(qa.text) > 0
+        ? safeNumber(pa.text) / safeNumber(qa.text)
+        : double.nan;
+    final upB = safeNumber(qb.text) > 0
+        ? safeNumber(pb.text) / safeNumber(qb.text)
+        : double.nan;
     String? cheaper;
-    if (upA.isFinite && upB.isFinite) cheaper = upA < upB ? 'A' : (upB < upA ? 'B' : null);
-    Widget card(String name, TextEditingController p, TextEditingController q, double up, bool win) {
+    if (upA.isFinite && upB.isFinite)
+      cheaper = upA < upB ? 'A' : (upB < upA ? 'B' : null);
+    Widget card(String name, TextEditingController p, TextEditingController q,
+        double up, bool win) {
       return Expanded(
         child: Container(
           padding: const EdgeInsets.all(Spacing.md),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            border: Border.all(color: win ? AppColors.success.withValues(alpha: 0.5) : AppColors.border),
+            border: Border.all(
+                color: win
+                    ? AppColors.success.withValues(alpha: 0.5)
+                    : AppColors.border),
             borderRadius: BorderRadius.circular(Radii.card),
           ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Option $name', style: const TextStyle(color: AppColors.text, fontSize: 18, fontWeight: FontWeight.w700)),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Option $name',
+                style: const TextStyle(
+                    color: AppColors.text,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700)),
             NumberInput(label: 'Price (${region.currency})', controller: p),
             NumberInput(label: 'Quantity', controller: q),
             const SizedBox(height: Spacing.sm),
-            Text(AppLocalizations.of(context)!.labelPerUnit, style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
-            Text(up.isFinite ? cur(up) : '—', style: TextStyle(color: win ? AppColors.success : AppColors.text, fontSize: 22, fontWeight: FontWeight.w700)),
+            Text(AppLocalizations.of(context)!.labelPerUnit,
+                style:
+                    const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+            Text(up.isFinite ? cur(up) : '—',
+                style: TextStyle(
+                    color: win ? AppColors.success : AppColors.text,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700)),
           ]),
         ),
       );
     }
+
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeUnitPrice,
       subtitle: 'Which pack is cheaper?',
@@ -446,7 +591,11 @@ class _UnitPriceCalcState extends State<UnitPriceCalc> {
           Padding(
             padding: const EdgeInsets.only(top: Spacing.lg),
             child: Center(
-              child: Text('Option $cheaper is cheaper per unit.', style: const TextStyle(color: AppColors.success, fontSize: 16, fontWeight: FontWeight.w600)),
+              child: Text('Option $cheaper is cheaper per unit.',
+                  style: const TextStyle(
+                      color: AppColors.success,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600)),
             ),
           ),
       ]),

@@ -42,7 +42,8 @@ final appRouter = GoRouter(
               routes: [
                 GoRoute(
                   path: ':id',
-                  builder: (_, state) => ConvertDetail(categoryId: state.pathParameters['id']!),
+                  builder: (_, state) =>
+                      ConvertDetail(categoryId: state.pathParameters['id']!),
                 ),
               ],
             ),
@@ -55,11 +56,17 @@ final appRouter = GoRouter(
               path: '/calculate',
               builder: (_, __) => const CalculateHome(),
               routes: [
-                GoRoute(path: 'standard', builder: (_, __) => const StandardCalc()),
-                GoRoute(path: 'scientific', builder: (_, __) => const ScientificCalc()),
-                GoRoute(path: 'percentage', builder: (_, __) => const PercentageCalc()),
+                GoRoute(
+                    path: 'standard', builder: (_, __) => const StandardCalc()),
+                GoRoute(
+                    path: 'scientific',
+                    builder: (_, __) => const ScientificCalc()),
+                GoRoute(
+                    path: 'percentage',
+                    builder: (_, __) => const PercentageCalc()),
                 GoRoute(path: 'base', builder: (_, __) => const BaseCalc()),
-                GoRoute(path: 'fraction', builder: (_, __) => const FractionCalc()),
+                GoRoute(
+                    path: 'fraction', builder: (_, __) => const FractionCalc()),
               ],
             ),
           ],
@@ -73,11 +80,16 @@ final appRouter = GoRouter(
               routes: [
                 GoRoute(path: 'tax', builder: (_, __) => const TaxCalc()),
                 GoRoute(path: 'tip', builder: (_, __) => const TipCalc()),
-                GoRoute(path: 'discount', builder: (_, __) => const DiscountCalc()),
-                GoRoute(path: 'compound', builder: (_, __) => const CompoundCalc()),
+                GoRoute(
+                    path: 'discount', builder: (_, __) => const DiscountCalc()),
+                GoRoute(
+                    path: 'compound', builder: (_, __) => const CompoundCalc()),
                 GoRoute(path: 'emi', builder: (_, __) => const EmiCalc()),
-                GoRoute(path: 'currency', builder: (_, __) => const CurrencyCalc()),
-                GoRoute(path: 'unit-price', builder: (_, __) => const UnitPriceCalc()),
+                GoRoute(
+                    path: 'currency', builder: (_, __) => const CurrencyCalc()),
+                GoRoute(
+                    path: 'unit-price',
+                    builder: (_, __) => const UnitPriceCalc()),
               ],
             ),
           ],
@@ -92,12 +104,21 @@ final appRouter = GoRouter(
                 GoRoute(path: 'gps', builder: (_, __) => const GpsCalc()),
                 GoRoute(path: 'ohm', builder: (_, __) => const OhmCalc()),
                 GoRoute(path: 'bmi', builder: (_, __) => const BmiCalc()),
-                GoRoute(path: 'date-diff', builder: (_, __) => const DateDiffCalc()),
-                GoRoute(path: 'time-zones', builder: (_, __) => const TimeZonesScreen()),
-                GoRoute(path: 'adc-dac', builder: (_, __) => const AdcDacCalc()),
+                GoRoute(
+                    path: 'date-diff',
+                    builder: (_, __) => const DateDiffCalc()),
+                GoRoute(
+                    path: 'time-zones',
+                    builder: (_, __) => const TimeZonesScreen()),
+                GoRoute(
+                    path: 'adc-dac', builder: (_, __) => const AdcDacCalc()),
                 GoRoute(path: 'age', builder: (_, __) => const AgeCalc()),
-                GoRoute(path: 'aspect-ratio', builder: (_, __) => const AspectRatioCalc()),
-                GoRoute(path: 'calendar', builder: (_, __) => const CalendarToolScreen()),
+                GoRoute(
+                    path: 'aspect-ratio',
+                    builder: (_, __) => const AspectRatioCalc()),
+                GoRoute(
+                    path: 'calendar',
+                    builder: (_, __) => const CalendarToolScreen()),
               ],
             ),
           ],

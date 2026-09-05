@@ -20,19 +20,25 @@ class AboutScreen extends StatelessWidget {
           icon: const Icon(Icons.close, color: AppColors.text),
           onPressed: () => context.pop(),
         ),
-        title: Text(loc.settingsAbout, style: const TextStyle(color: AppColors.text)),
+        title: Text(loc.settingsAbout,
+            style: const TextStyle(color: AppColors.text)),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(Spacing.lg, 0, Spacing.lg, Spacing.xxl),
+        padding:
+            const EdgeInsets.fromLTRB(Spacing.lg, 0, Spacing.lg, Spacing.xxl),
         children: [
           const SizedBox(height: Spacing.lg),
           Center(
             child: Text(loc.appTitle,
-                style: const TextStyle(color: AppColors.text, fontSize: 32, fontWeight: FontWeight.w800)),
+                style: const TextStyle(
+                    color: AppColors.text,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w800)),
           ),
           Center(
             child: Text(loc.appTagline,
-                style: const TextStyle(color: AppColors.textMuted, fontSize: 14)),
+                style:
+                    const TextStyle(color: AppColors.textMuted, fontSize: 14)),
           ),
           const SizedBox(height: Spacing.lg),
           _Row(label: loc.aboutVersion, value: '4.0.0'),
@@ -41,7 +47,8 @@ class AboutScreen extends StatelessWidget {
           const SizedBox(height: Spacing.xxl),
           Text(
             loc.aboutBlurb,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 14, height: 1.5),
+            style: const TextStyle(
+                color: AppColors.textMuted, fontSize: 14, height: 1.5),
           ),
         ],
       ),
@@ -60,9 +67,15 @@ class _Row extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Expanded(child: Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 14))),
+          Expanded(
+              child: Text(label,
+                  style: const TextStyle(
+                      color: AppColors.textMuted, fontSize: 14))),
           Text(value,
-              style: const TextStyle(color: AppColors.text, fontSize: 14, fontWeight: FontWeight.w600)),
+              style: const TextStyle(
+                  color: AppColors.text,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600)),
         ],
       ),
     );

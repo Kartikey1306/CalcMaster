@@ -26,7 +26,8 @@ class RichHubCard extends StatelessWidget {
     return GlassCard(
       accent: accent,
       onTap: onTap,
-      padding: const EdgeInsets.fromLTRB(Spacing.md, Spacing.md, Spacing.md, Spacing.md),
+      padding: const EdgeInsets.fromLTRB(
+          Spacing.md, Spacing.md, Spacing.md, Spacing.md),
       glowRim: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,8 +53,10 @@ class RichHubCard extends StatelessWidget {
             title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style:
-                const TextStyle(color: AppColors.text, fontSize: 15, fontWeight: FontWeight.w700),
+            style: const TextStyle(
+                color: AppColors.text,
+                fontSize: 15,
+                fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 2),
           Flexible(

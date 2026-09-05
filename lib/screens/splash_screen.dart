@@ -20,7 +20,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _ctl;
 
   late final Animation<double> _letterDrop;
@@ -45,7 +46,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
-    _ctl = AnimationController(vsync: this, duration: const Duration(milliseconds: 2200));
+    _ctl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 2200));
 
     // Stage 1 (0.0–0.4 s): big letter drops in from top with overshoot
     _letterDrop = CurvedAnimation(
@@ -113,9 +115,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 animation: _ctl,
                 builder: (context, _) {
                   final dropY = (1 - _letterDrop.value) * -180;
-                  final scale = 1.0 - (_letterShrink.value * 0.45); // 1.0 → 0.55
-                  final wordRevealCount =
-                      (_wordmarkReveal.value * _word.length).floor().clamp(0, _word.length);
+                  final scale =
+                      1.0 - (_letterShrink.value * 0.45); // 1.0 → 0.55
+                  final wordRevealCount = (_wordmarkReveal.value * _word.length)
+                      .floor()
+                      .clamp(0, _word.length);
                   final exit = _exitFade.value;
 
                   return Opacity(
@@ -132,7 +136,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                               shape: BoxShape.circle,
                               gradient: RadialGradient(
                                 colors: [
-                                  AppColors.accentPrimary.withValues(alpha: 0.25 * _haloGrow.value),
+                                  AppColors.accentPrimary.withValues(
+                                      alpha: 0.25 * _haloGrow.value),
                                   Colors.transparent,
                                 ],
                               ),

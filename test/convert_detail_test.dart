@@ -44,7 +44,8 @@ void main() {
       expect(find.text('0.1'), findsOneWidget);
     });
 
-    testWidgets('typing on the keypad updates the converted value', (tester) async {
+    testWidgets('typing on the keypad updates the converted value',
+        (tester) async {
       await _pumpConverter(tester, 'distance');
 
       // 1 → 12 mm = 1.2 cm
@@ -81,7 +82,8 @@ void main() {
       expect(find.text('0.001'), findsOneWidget);
     });
 
-    testWidgets('volume category renders its keypad without crashing', (tester) async {
+    testWidgets('volume category renders its keypad without crashing',
+        (tester) async {
       await _pumpConverter(tester, 'volume');
       expect(find.byIcon(Icons.swap_vert), findsOneWidget);
       expect(tester.takeException(), isNull);

@@ -82,7 +82,8 @@ class RegionProvider extends ChangeNotifier {
       final pos = await Geolocator.getCurrentPosition();
       final placemarks =
           await placemarkFromCoordinates(pos.latitude, pos.longitude);
-      final iso = placemarks.isNotEmpty ? placemarks.first.isoCountryCode : null;
+      final iso =
+          placemarks.isNotEmpty ? placemarks.first.isoCountryCode : null;
       final matched = iso == null ? null : _regionForCountry(iso);
       if (matched == null) return DetectResult.noMatch;
 
@@ -99,8 +100,26 @@ class RegionProvider extends ChangeNotifier {
   /// Maps an ISO 3166-1 alpha-2 country code to one of the app's regions.
   /// Eurozone countries collapse to the shared EU/euro region.
   static const _eurozone = {
-    'AT', 'BE', 'HR', 'CY', 'EE', 'FI', 'FR', 'DE', 'GR', 'IE', 'IT', 'LV',
-    'LT', 'LU', 'MT', 'NL', 'PT', 'SK', 'SI', 'ES',
+    'AT',
+    'BE',
+    'HR',
+    'CY',
+    'EE',
+    'FI',
+    'FR',
+    'DE',
+    'GR',
+    'IE',
+    'IT',
+    'LV',
+    'LT',
+    'LU',
+    'MT',
+    'NL',
+    'PT',
+    'SK',
+    'SI',
+    'ES',
   };
 
   RegionId? _regionForCountry(String iso) {

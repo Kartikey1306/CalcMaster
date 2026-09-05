@@ -31,8 +31,8 @@ import 'package:flutter/material.dart';
 /// env-key test at the same time: that test greps lib/ for every
 /// `String.fromEnvironment` call and fails on an undocumented one, which is
 /// why the example above does not spell the call out.
-typedef ErrorSink =
-    void Function(Object error, StackTrace? stack, {String? context});
+typedef ErrorSink = void Function(Object error, StackTrace? stack,
+    {String? context});
 
 class ErrorReporter {
   const ErrorReporter._();

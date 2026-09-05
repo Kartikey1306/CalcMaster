@@ -21,7 +21,9 @@ String formatNumber(double value, {int? maxDigits, int minDigits = 0}) {
 String formatCurrency(double value, String locale, String currency) {
   if (!value.isFinite) return '—';
   try {
-    return NumberFormat.currency(locale: locale, name: currency, symbol: _symbolFor(currency)).format(value);
+    return NumberFormat.currency(
+            locale: locale, name: currency, symbol: _symbolFor(currency))
+        .format(value);
   } catch (_) {
     return '${value.toStringAsFixed(2)} $currency';
   }

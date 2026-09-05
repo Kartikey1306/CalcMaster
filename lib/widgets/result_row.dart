@@ -63,9 +63,11 @@ class ResultRow extends StatelessWidget {
             }
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: Spacing.md),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.lg, vertical: Spacing.md),
             decoration: BoxDecoration(
-              border: Border.all(color: highlight ? AppColors.borderStrong : AppColors.border),
+              border: Border.all(
+                  color: highlight ? AppColors.borderStrong : AppColors.border),
               borderRadius: BorderRadius.circular(Radii.button),
             ),
             child: Row(
@@ -103,7 +105,8 @@ class ResultRow extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: Spacing.md),
-                const Icon(Icons.copy_outlined, size: 16, color: AppColors.textDim),
+                const Icon(Icons.copy_outlined,
+                    size: 16, color: AppColors.textDim),
               ],
             ),
           ),

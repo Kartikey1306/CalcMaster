@@ -35,7 +35,8 @@ class AffiliateCta extends StatelessWidget {
             AffiliateService.instance.open(context, slot, region);
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: Spacing.md),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.lg, vertical: Spacing.md),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(Radii.button),
               border: Border.all(color: accent.withValues(alpha: 0.4)),
@@ -55,7 +56,10 @@ class AffiliateCta extends StatelessWidget {
                   ),
                 ),
                 const Text('Sponsored',
-                    style: TextStyle(color: AppColors.textDim, fontSize: 11, fontWeight: FontWeight.w500)),
+                    style: TextStyle(
+                        color: AppColors.textDim,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500)),
                 const SizedBox(width: 6),
                 Icon(Icons.open_in_new, size: 14, color: accent),
               ],

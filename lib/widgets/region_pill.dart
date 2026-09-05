@@ -18,7 +18,8 @@ class RegionPill extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: 8),
+        padding:
+            const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: 8),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(Radii.pill),
@@ -27,7 +28,8 @@ class RegionPill extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.location_on_outlined, size: 14, color: AppColors.text),
+            const Icon(Icons.location_on_outlined,
+                size: 14, color: AppColors.text),
             const SizedBox(width: 6),
             Text(region.flag, style: const TextStyle(fontSize: 16)),
             const SizedBox(width: 6),
@@ -59,7 +61,8 @@ class RegionPickerSheet extends StatelessWidget {
     final loc = AppLocalizations.of(context)!;
     final current = context.watch<RegionProvider>().regionId;
     return Container(
-      padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.lg, Spacing.lg, Spacing.xxxl),
+      padding: const EdgeInsets.fromLTRB(
+          Spacing.lg, Spacing.lg, Spacing.lg, Spacing.xxxl),
       decoration: const BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -97,7 +100,9 @@ class RegionPickerSheet extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(Spacing.md),
                 decoration: BoxDecoration(
-                  color: r.id == current ? AppColors.surfaceAlt : Colors.transparent,
+                  color: r.id == current
+                      ? AppColors.surfaceAlt
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(Radii.button),
                 ),
                 child: Row(

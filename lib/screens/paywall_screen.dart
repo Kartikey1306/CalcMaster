@@ -57,11 +57,13 @@ class _PaywallScreenState extends State<PaywallScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(Spacing.lg, 0, Spacing.lg, Spacing.lg),
+          padding:
+              const EdgeInsets.fromLTRB(Spacing.lg, 0, Spacing.lg, Spacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(Icons.workspace_premium, size: 56, color: AppColors.warning),
+              const Icon(Icons.workspace_premium,
+                  size: 56, color: AppColors.warning),
               const SizedBox(height: Spacing.md),
               Text(
                 loc.paywallTitle,
@@ -72,7 +74,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
               Text(
                 loc.paywallSubtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+                style:
+                    const TextStyle(color: AppColors.textMuted, fontSize: 14),
               ),
               const SizedBox(height: Spacing.lg),
               _Benefit(label: loc.paywallBenefitAdFree),
@@ -86,7 +89,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 priceLine: MonetizationConfig.priceMonthly,
                 detail: loc.paywallCancelAnytime,
                 selected: _selected == SubscriptionTier.monthly,
-                onTap: () => setState(() => _selected = SubscriptionTier.monthly),
+                onTap: () =>
+                    setState(() => _selected = SubscriptionTier.monthly),
               ),
               _TierCard(
                 tier: SubscriptionTier.annual,
@@ -95,7 +99,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 detail: loc.paywallAnnualSavings,
                 badge: loc.paywallBadgeBestValue,
                 selected: _selected == SubscriptionTier.annual,
-                onTap: () => setState(() => _selected = SubscriptionTier.annual),
+                onTap: () =>
+                    setState(() => _selected = SubscriptionTier.annual),
               ),
               _TierCard(
                 tier: SubscriptionTier.lifetime,
@@ -103,7 +108,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 priceLine: MonetizationConfig.priceLifetime,
                 detail: loc.paywallLifetimeForever,
                 selected: _selected == SubscriptionTier.lifetime,
-                onTap: () => setState(() => _selected = SubscriptionTier.lifetime),
+                onTap: () =>
+                    setState(() => _selected = SubscriptionTier.lifetime),
               ),
               const SizedBox(height: Spacing.md),
               SizedBox(
@@ -117,7 +123,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                   onPressed: _busy ? null : _purchase,
                   child: Text(
                     _busy ? loc.paywallProcessing : loc.paywallContinue,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
@@ -148,7 +155,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 child: Text(
                   loc.paywallTermsFooter,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.textDim, fontSize: 11),
+                  style:
+                      const TextStyle(color: AppColors.textDim, fontSize: 11),
                 ),
               ),
               // Guideline 3.1.2 requires the Terms of Use and privacy policy to
@@ -163,7 +171,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       url: MonetizationConfig.termsOfServiceUrl,
                     ),
                     const Text('·',
-                        style: TextStyle(color: AppColors.textDim, fontSize: 11)),
+                        style:
+                            TextStyle(color: AppColors.textDim, fontSize: 11)),
                     _LegalLink(
                       label: loc.settingsPrivacyPolicy,
                       url: MonetizationConfig.privacyPolicyUrl,
@@ -192,8 +201,8 @@ class _LegalLink extends StatelessWidget {
         minimumSize: Size.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
-      onPressed: () => launchUrl(Uri.parse(url),
-          mode: LaunchMode.externalApplication),
+      onPressed: () =>
+          launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
       child: Text(
         label,
         style: const TextStyle(
@@ -219,7 +228,8 @@ class _Benefit extends StatelessWidget {
         children: [
           const Icon(Icons.check_circle, size: 18, color: AppColors.success),
           const SizedBox(width: 8),
-          Text(label, style: const TextStyle(color: AppColors.text, fontSize: 14)),
+          Text(label,
+              style: const TextStyle(color: AppColors.text, fontSize: 14)),
         ],
       ),
     );
@@ -257,7 +267,8 @@ class _TierCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(Radii.card),
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: Spacing.md),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.lg, vertical: Spacing.md),
             decoration: BoxDecoration(
               border: Border.all(color: accent, width: selected ? 2 : 1),
               borderRadius: BorderRadius.circular(Radii.card),
@@ -265,7 +276,9 @@ class _TierCard extends StatelessWidget {
             child: Row(
               children: [
                 Icon(
-                  selected ? Icons.radio_button_checked : Icons.radio_button_off,
+                  selected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
                   color: selected ? AppColors.warning : AppColors.textDim,
                 ),
                 const SizedBox(width: Spacing.md),
@@ -276,11 +289,14 @@ class _TierCard extends StatelessWidget {
                       Row(children: [
                         Text(title,
                             style: const TextStyle(
-                                color: AppColors.text, fontSize: 17, fontWeight: FontWeight.w700)),
+                                color: AppColors.text,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700)),
                         if (badge != null) ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: AppColors.warning.withValues(alpha: 0.18),
                               borderRadius: BorderRadius.circular(6),
@@ -296,13 +312,16 @@ class _TierCard extends StatelessWidget {
                       ]),
                       const SizedBox(height: 2),
                       Text(detail,
-                          style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+                          style: const TextStyle(
+                              color: AppColors.textMuted, fontSize: 13)),
                     ],
                   ),
                 ),
                 Text(priceLine,
                     style: const TextStyle(
-                        color: AppColors.text, fontSize: 15, fontWeight: FontWeight.w700)),
+                        color: AppColors.text,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700)),
               ],
             ),
           ),

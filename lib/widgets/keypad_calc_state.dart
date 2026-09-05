@@ -78,7 +78,9 @@ abstract class KeypadCalcState<T extends StatefulWidget> extends State<T> {
     if (isIdle) return '0';
     final v = liveValue;
     if (committed != null || (v != null && plain(v) != expr)) {
-      return v == null ? pretty(expr) : formatNumber(v, maxDigits: resultDigits);
+      return v == null
+          ? pretty(expr)
+          : formatNumber(v, maxDigits: resultDigits);
     }
     return pretty(expr);
   }
@@ -87,9 +89,27 @@ abstract class KeypadCalcState<T extends StatefulWidget> extends State<T> {
 
   /// Multi-character tokens that backspace removes in one press.
   static const _tokens = [
-    'asinh(', 'acosh(', 'atanh(', 'sinh(', 'cosh(', 'tanh(',
-    'asin(', 'acos(', 'atan(', 'sqrt(', 'cbrt(', 'sin(', 'cos(', 'tan(',
-    'exp(', 'log(', 'ln(', 'pi', '*10^', '^(-1)', '^(1/',
+    'asinh(',
+    'acosh(',
+    'atanh(',
+    'sinh(',
+    'cosh(',
+    'tanh(',
+    'asin(',
+    'acos(',
+    'atan(',
+    'sqrt(',
+    'cbrt(',
+    'sin(',
+    'cos(',
+    'tan(',
+    'exp(',
+    'log(',
+    'ln(',
+    'pi',
+    '*10^',
+    '^(-1)',
+    '^(1/',
   ];
 
   void input(String raw) {

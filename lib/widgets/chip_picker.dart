@@ -8,7 +8,11 @@ class ChipPicker<T> extends StatelessWidget {
   final T value;
   final ValueChanged<T> onChange;
 
-  const ChipPicker({super.key, required this.options, required this.value, required this.onChange});
+  const ChipPicker(
+      {super.key,
+      required this.options,
+      required this.value,
+      required this.onChange});
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +68,8 @@ class _Chip extends StatelessWidget {
             onTap();
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: 9),
+            padding:
+                const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: 9),
             decoration: BoxDecoration(
               border: Border.all(
                   color: active ? AppColors.accentPrimary : AppColors.border),

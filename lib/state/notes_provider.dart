@@ -59,14 +59,16 @@ class NotesProvider extends ChangeNotifier {
     if (raw == null) return;
     try {
       final list = jsonDecode(raw) as List<dynamic>;
-      _notes = list.map((e) => Note.fromJson(e as Map<String, dynamic>)).toList();
+      _notes =
+          list.map((e) => Note.fromJson(e as Map<String, dynamic>)).toList();
       notifyListeners();
     } catch (_) {}
   }
 
   Future<void> _persist() async {
     final sp = await SharedPreferences.getInstance();
-    await sp.setString(_kNotes, jsonEncode(_notes.map((n) => n.toJson()).toList()));
+    await sp.setString(
+        _kNotes, jsonEncode(_notes.map((n) => n.toJson()).toList()));
   }
 
   Note add({required String title, required String body}) {
@@ -88,7 +90,10 @@ class NotesProvider extends ChangeNotifier {
     final now = DateTime.now().millisecondsSinceEpoch;
     _notes = [
       for (final n in _notes)
-        if (n.id == id) n.copyWith(title: title, body: body, updatedAt: now) else n,
+        if (n.id == id)
+          n.copyWith(title: title, body: body, updatedAt: now)
+        else
+          n,
     ];
     notifyListeners();
     _persist();

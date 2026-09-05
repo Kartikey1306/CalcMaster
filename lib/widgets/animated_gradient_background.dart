@@ -9,7 +9,8 @@ class AnimatedGradientBackground extends StatefulWidget {
   const AnimatedGradientBackground({super.key, required this.child});
 
   @override
-  State<AnimatedGradientBackground> createState() => _AnimatedGradientBackgroundState();
+  State<AnimatedGradientBackground> createState() =>
+      _AnimatedGradientBackgroundState();
 }
 
 class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
@@ -19,14 +20,17 @@ class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
   @override
   void initState() {
     super.initState();
-    _ctl = AnimationController(vsync: this, duration: const Duration(seconds: 18));
+    _ctl =
+        AnimationController(vsync: this, duration: const Duration(seconds: 18));
     // Don't start the infinite repeat in widget tests (would prevent pumpAndSettle).
     if (!_isInTest()) _ctl.repeat();
   }
 
   static bool _isInTest() {
     return const bool.fromEnvironment('FLUTTER_TEST') ||
-        WidgetsBinding.instance.runtimeType.toString().contains('AutomatedTestWidgetsFlutterBinding');
+        WidgetsBinding.instance.runtimeType
+            .toString()
+            .contains('AutomatedTestWidgetsFlutterBinding');
   }
 
   @override

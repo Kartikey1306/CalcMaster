@@ -42,7 +42,8 @@ void main() {
   }
 
   group('Bottom nav · all 5 tabs render without crash', () {
-    testWidgets('Convert tab loads home with all 10 categories', (tester) async {
+    testWidgets('Convert tab loads home with all 10 categories',
+        (tester) async {
       await tester.pumpWidget(buildApp());
       await tester.pumpAndSettle();
 
@@ -111,20 +112,30 @@ void main() {
 
       expect(find.text('Notes'), findsWidgets);
       expect(find.text('SAVED NOTES'), findsOneWidget);
-      expect(find.text('Save calculations, formulas, and reminders'), findsOneWidget);
+      expect(find.text('Save calculations, formulas, and reminders'),
+          findsOneWidget);
       // Editor button visible
       expect(find.text('Add note'), findsOneWidget);
-      expect(find.text('No notes yet. Add your first one above.'), findsOneWidget);
+      expect(
+          find.text('No notes yet. Add your first one above.'), findsOneWidget);
     });
 
-    testWidgets('Cycle through all 5 tabs in sequence without exception', (tester) async {
+    testWidgets('Cycle through all 5 tabs in sequence without exception',
+        (tester) async {
       await tester.pumpWidget(buildApp());
       await tester.pumpAndSettle();
 
-      for (final label in ['Calculate', 'Finance', 'Tools', 'Notes', 'Convert']) {
+      for (final label in [
+        'Calculate',
+        'Finance',
+        'Tools',
+        'Notes',
+        'Convert'
+      ]) {
         await tapTab(tester, label);
         // No exceptions = pass. tester.takeException() will throw if any flutter error occurred.
-        expect(tester.takeException(), isNull, reason: 'Tab "$label" should not throw');
+        expect(tester.takeException(), isNull,
+            reason: 'Tab "$label" should not throw');
       }
     });
   });

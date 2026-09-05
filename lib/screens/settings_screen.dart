@@ -54,7 +54,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _sendFeedback() async {
-    final uri = Uri.parse('mailto:${MonetizationConfig.supportEmail}?subject=Calculator%20Feedback');
+    final uri = Uri.parse(
+        'mailto:${MonetizationConfig.supportEmail}?subject=Calculator%20Feedback');
     try {
       await launchUrl(uri);
     } catch (_) {
@@ -81,17 +82,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: const Icon(Icons.close, color: AppColors.text),
           onPressed: () => context.pop(),
         ),
-        title: Text(loc.settingsTitle, style: const TextStyle(color: AppColors.text, fontWeight: FontWeight.w700)),
+        title: Text(loc.settingsTitle,
+            style: const TextStyle(
+                color: AppColors.text, fontWeight: FontWeight.w700)),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(Spacing.lg, 0, Spacing.lg, Spacing.xxl),
+        padding:
+            const EdgeInsets.fromLTRB(Spacing.lg, 0, Spacing.lg, Spacing.xxl),
         children: [
           const _SectionHeader(label: 'Account'),
           if (auth.isLoggedIn)
             _Tile(
               icon: Icons.person_outline,
               iconColor: AppColors.accentPrimary,
-              title: (auth.user?['displayName'] ?? auth.user?['email'] ?? 'Signed in')
+              title: (auth.user?['displayName'] ??
+                      auth.user?['email'] ??
+                      'Signed in')
                   .toString(),
               subtitle: auth.user?['email']?.toString(),
               trailing: TextButton(
@@ -120,8 +126,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             icon: Icons.workspace_premium,
             iconColor: AppColors.warning,
             title: isPro ? loc.settingsCalcMasterPro : loc.settingsSubscribePro,
-            subtitle: isPro ? 'Active subscription · thanks!' : 'Remove ads + advanced features',
-            trailing: isPro ? const ProBadge() : const Icon(Icons.chevron_right, color: AppColors.textDim),
+            subtitle: isPro
+                ? 'Active subscription · thanks!'
+                : 'Remove ads + advanced features',
+            trailing: isPro
+                ? const ProBadge()
+                : const Icon(Icons.chevron_right, color: AppColors.textDim),
             onTap: isPro
                 ? null
                 : () {
@@ -238,7 +248,8 @@ class _Tile extends StatelessWidget {
           borderRadius: BorderRadius.circular(Radii.button),
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.md),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.md, vertical: Spacing.md),
             decoration: BoxDecoration(
               border: Border.all(color: AppColors.border),
               borderRadius: BorderRadius.circular(Radii.button),
@@ -261,17 +272,21 @@ class _Tile extends StatelessWidget {
                     children: [
                       Text(title,
                           style: const TextStyle(
-                              color: AppColors.text, fontSize: 16, fontWeight: FontWeight.w600)),
+                              color: AppColors.text,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
                       if (subtitle != null)
                         Padding(
                           padding: const EdgeInsets.only(top: 2),
                           child: Text(subtitle!,
-                              style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+                              style: const TextStyle(
+                                  color: AppColors.textMuted, fontSize: 13)),
                         ),
                     ],
                   ),
                 ),
-                trailing ?? const Icon(Icons.chevron_right, color: AppColors.textDim),
+                trailing ??
+                    const Icon(Icons.chevron_right, color: AppColors.textDim),
               ],
             ),
           ),

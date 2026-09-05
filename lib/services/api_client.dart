@@ -31,7 +31,8 @@ class ApiClient {
   Future<Map<String, dynamic>> getProfile() async =>
       (await _get('/users/me')) as Map<String, dynamic>;
 
-  Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> updates) async =>
+  Future<Map<String, dynamic>> updateProfile(
+          Map<String, dynamic> updates) async =>
       (await _patch('/users/me', updates)) as Map<String, dynamic>;
 
   // ─── AI ───
@@ -154,14 +155,16 @@ class ApiClient {
     return _handleResponse(res, method: 'DELETE');
   }
 
-  dynamic _handleResponse(http.Response res, {String method = 'GET', String? requestBody}) {
+  dynamic _handleResponse(http.Response res,
+      {String method = 'GET', String? requestBody}) {
     if (res.statusCode >= 200 && res.statusCode < 300) {
       if (res.body.isEmpty) return {};
       return jsonDecode(res.body);
     }
 
     if (res.statusCode == 401 && _session != null) {
-      return _refreshAndRetry(res.request!.url, method: method, body: requestBody);
+      return _refreshAndRetry(res.request!.url,
+          method: method, body: requestBody);
     }
 
     final body = res.body.isNotEmpty ? jsonDecode(res.body) : {};
@@ -171,7 +174,8 @@ class ApiClient {
     );
   }
 
-  Future<dynamic> _refreshAndRetry(Uri url, {String method = 'GET', String? body}) async {
+  Future<dynamic> _refreshAndRetry(Uri url,
+      {String method = 'GET', String? body}) async {
     try {
       // Let Supabase mint a fresh JWT, then replay the request with it.
       final refreshed = await Supabase.instance.client.auth.refreshSession();
@@ -200,7 +204,9 @@ class ApiClient {
       return jsonDecode(res.body);
     }
     final body = res.body.isNotEmpty ? jsonDecode(res.body) : {};
-    throw ApiException(statusCode: res.statusCode, message: body['message'] ?? 'Request failed');
+    throw ApiException(
+        statusCode: res.statusCode,
+        message: body['message'] ?? 'Request failed');
   }
 }
 

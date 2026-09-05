@@ -56,7 +56,8 @@ class MonetizationConfig {
   // and android/.../AndroidManifest.xml APPLICATION_ID, or the SDK crashes on
   // init.
   static const String admobAppIdIos = 'ca-app-pub-8528784688453695~9148987425';
-  static const String admobAppIdAndroid = 'ca-app-pub-8528784688453695~5377349094';
+  static const String admobAppIdAndroid =
+      'ca-app-pub-8528784688453695~5377349094';
 
   // ⚠️ STILL TEST UNITS — no revenue. The previous Android values belonged to a
   // different publisher (pub-1804742004018995) and would not serve under the
@@ -64,37 +65,52 @@ class MonetizationConfig {
   // than left mismatched. Replace all six with real unit IDs from
   // AdMob console → Apps → CalcMaster iOS/Android → Ad units.
   // `adUnitsAreReal` below gates ad loading until that happens.
-  static const String admobIosBanner = 'ca-app-pub-3940256099942544/2934735716'; // REPLACE
-  static const String admobAndroidBanner = 'ca-app-pub-3940256099942544/6300978111'; // REPLACE
+  static const String admobIosBanner =
+      'ca-app-pub-3940256099942544/2934735716'; // REPLACE
+  static const String admobAndroidBanner =
+      'ca-app-pub-3940256099942544/6300978111'; // REPLACE
 
-  static const String admobIosInterstitial = 'ca-app-pub-3940256099942544/4411468910'; // REPLACE
-  static const String admobAndroidInterstitial = 'ca-app-pub-3940256099942544/1033173712'; // REPLACE
+  static const String admobIosInterstitial =
+      'ca-app-pub-3940256099942544/4411468910'; // REPLACE
+  static const String admobAndroidInterstitial =
+      'ca-app-pub-3940256099942544/1033173712'; // REPLACE
 
-  static const String admobIosNative = 'ca-app-pub-3940256099942544/3986624511'; // REPLACE
-  static const String admobAndroidNative = 'ca-app-pub-3940256099942544/2247696110'; // REPLACE
+  static const String admobIosNative =
+      'ca-app-pub-3940256099942544/3986624511'; // REPLACE
+  static const String admobAndroidNative =
+      'ca-app-pub-3940256099942544/2247696110'; // REPLACE
 
   // ───────────────────────────────────────────────────────────────────
   //  REVENUECAT · subscriptions
   // ───────────────────────────────────────────────────────────────────
   // REPLACE: app.revenuecat.com → Project → Apps → Public API key
   // Use the platform-specific key — RevenueCat's Flutter SDK requires both.
-  static const String revenueCatIosKey = 'appl_DUMMY_REPLACE_BEFORE_LAUNCH'; // REPLACE
-  static const String revenueCatAndroidKey = 'goog_DUMMY_REPLACE_BEFORE_LAUNCH'; // REPLACE
+  static const String revenueCatIosKey =
+      'appl_DUMMY_REPLACE_BEFORE_LAUNCH'; // REPLACE
+  static const String revenueCatAndroidKey =
+      'goog_DUMMY_REPLACE_BEFORE_LAUNCH'; // REPLACE
 
   // REPLACE: App Store Connect → My Apps → CalcMaster → In-App Purchases  AND
   //          Google Play Console → CalcMaster → Monetize → Products → Subscriptions
   // Both stores must use the SAME identifier strings as below.
-  static const String productMonthly = 'calcmaster_pro_monthly'; // REPLACE if different
-  static const String productAnnual = 'calcmaster_pro_annual'; // REPLACE if different
-  static const String productLifetime = 'calcmaster_pro_lifetime'; // REPLACE if different
+  static const String productMonthly =
+      'calcmaster_pro_monthly'; // REPLACE if different
+  static const String productAnnual =
+      'calcmaster_pro_annual'; // REPLACE if different
+  static const String productLifetime =
+      'calcmaster_pro_lifetime'; // REPLACE if different
 
   // Display prices shown on the paywall. These are *cosmetic only* — the real
   // price is fetched from the store at purchase time. Keep these in sync with
   // App Store Connect / Play Console base pricing for honest UX.
-  static const String priceMonthly = '\$2.99 / month'; // REPLACE with store price
-  static const String priceAnnual = '\$19.99 / year'; // REPLACE with store price
-  static const String priceLifetime = '\$49.99 once'; // REPLACE with store price
-  static const String annualSavingsLabel = 'Save 44% · most popular'; // REPLACE if pricing changes
+  static const String priceMonthly =
+      '\$2.99 / month'; // REPLACE with store price
+  static const String priceAnnual =
+      '\$19.99 / year'; // REPLACE with store price
+  static const String priceLifetime =
+      '\$49.99 once'; // REPLACE with store price
+  static const String annualSavingsLabel =
+      'Save 44% · most popular'; // REPLACE if pricing changes
 
   // ───────────────────────────────────────────────────────────────────
   //  FIREBASE · analytics, crashlytics, FCM (re-engagement)
@@ -107,7 +123,11 @@ class MonetizationConfig {
   static const String firebaseSenderId = '0123456789'; // REPLACE
 
   // FCM topics the app subscribes to once the user opts in to notifications.
-  static const List<String> fcmTopics = ['daily_tip', 'rate_alerts', 'reengagement'];
+  static const List<String> fcmTopics = [
+    'daily_tip',
+    'rate_alerts',
+    'reengagement'
+  ];
 
   // ───────────────────────────────────────────────────────────────────
   //  AFFILIATE PARTNERS
@@ -121,8 +141,10 @@ class MonetizationConfig {
 
   // Optional: meal-delivery / wellness affiliate URLs. Replace with real
   // tracking URLs from your partner dashboards.
-  static const String mealKitAffiliateUrl = ''; // REPLACE: set real meal-kit affiliate URL
-  static const String wellnessSubscriptionUrl = ''; // REPLACE: set real wellness affiliate URL
+  static const String mealKitAffiliateUrl =
+      ''; // REPLACE: set real meal-kit affiliate URL
+  static const String wellnessSubscriptionUrl =
+      ''; // REPLACE: set real wellness affiliate URL
 
   // Per-slot Amazon search URLs — used by `AffiliateService.urlFor()`.
   // The `?tag=...` query param is appended automatically based on region.
@@ -130,7 +152,8 @@ class MonetizationConfig {
   static const Map<String, String> affiliateSlots = {
     'volume_buy_measuring_set': 'https://www.amazon.com/s?k=measuring+cup+set',
     'bmi_smart_scale': 'https://www.amazon.com/s?k=smart+scale',
-    'compound_savings_account': 'https://www.amazon.com/s?k=high+yield+savings+book',
+    'compound_savings_account':
+        'https://www.amazon.com/s?k=high+yield+savings+book',
     'tax_book': 'https://www.amazon.com/s?k=tax+guide',
     'cooking_scale': 'https://www.amazon.com/s?k=kitchen+scale',
     '_fallback': 'https://www.amazon.com/',
@@ -149,8 +172,7 @@ class MonetizationConfig {
   static const String termsOfServiceUrl =
       'https://americangroupllc.github.io/policy/calcmaster/terms.html';
   static const String supportEmail = 'contact@safecodeg.com';
-  static const String marketingWebsite =
-      'https://americangroupllc.github.io/';
+  static const String marketingWebsite = 'https://americangroupllc.github.io/';
   static const String appStoreUrl =
       'https://apps.apple.com/app/calcmaster/id0000000000'; // REPLACE after listing
   static const String playStoreUrl =
@@ -199,19 +221,18 @@ class MonetizationConfig {
   /// Requires the master switch, real app IDs, AND real unit IDs.
   static bool get adsReady =>
       adsEnabled &&
-          admobAppIdIos.isNotEmpty &&
-          admobAppIdAndroid.isNotEmpty &&
-          adUnitsAreReal;
+      admobAppIdIos.isNotEmpty &&
+      admobAppIdAndroid.isNotEmpty &&
+      adUnitsAreReal;
 
   /// True only when subscriptions are enabled AND a real RevenueCat key is in
   /// place (i.e. the dummy `_DUMMY_` marker has been removed).
   static bool get subscriptionsReady =>
       subscriptionsEnabled &&
-          !revenueCatIosKey.contains('DUMMY') &&
-          !revenueCatAndroidKey.contains('DUMMY');
+      !revenueCatIosKey.contains('DUMMY') &&
+      !revenueCatAndroidKey.contains('DUMMY');
 
   /// True when at least one affiliate tag has been replaced from the dummy.
   static bool get affiliatesReady =>
-      affiliatesEnabled &&
-          !amazonAssociatesTagUS.contains('DUMMY');
+      affiliatesEnabled && !amazonAssociatesTagUS.contains('DUMMY');
 }

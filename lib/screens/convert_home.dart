@@ -18,7 +18,8 @@ class ConvertHome extends StatelessWidget {
       backgroundColor: Colors.transparent,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(Spacing.lg, Spacing.sm, Spacing.lg, Spacing.xxl),
+          padding: const EdgeInsets.fromLTRB(
+              Spacing.lg, Spacing.sm, Spacing.lg, Spacing.xxl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -29,11 +30,13 @@ class ConvertHome extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(loc.appTitle, style: Theme.of(context).textTheme.displayLarge),
+                        Text(loc.appTitle,
+                            style: Theme.of(context).textTheme.displayLarge),
                         const SizedBox(height: 2),
                         Text(
                           loc.appTagline,
-                          style: const TextStyle(color: AppColors.textMuted, fontSize: 16),
+                          style: const TextStyle(
+                              color: AppColors.textMuted, fontSize: 16),
                         ),
                       ],
                     ),
@@ -50,20 +53,28 @@ class ConvertHome extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    icon: const Icon(Icons.settings_outlined, color: AppColors.text),
+                    icon: const Icon(Icons.settings_outlined,
+                        color: AppColors.text),
                     tooltip: loc.settingsTitle,
                     onPressed: () => context.push('/settings'),
                   ),
                 ],
               ),
               const SizedBox(height: Spacing.xl),
-              PillBadge(label: loc.pillUnitConversion, color: AppColors.accentPrimary),
+              PillBadge(
+                  label: loc.pillUnitConversion,
+                  color: AppColors.accentPrimary),
               const SizedBox(height: Spacing.md),
               Text(loc.convertHubHeading,
-                  style: const TextStyle(color: AppColors.text, fontSize: 32, fontWeight: FontWeight.w700, letterSpacing: -0.5)),
+                  style: const TextStyle(
+                      color: AppColors.text,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.5)),
               const SizedBox(height: 4),
               Text(loc.convertHubSubheading,
-                  style: const TextStyle(color: AppColors.textMuted, fontSize: 16)),
+                  style: const TextStyle(
+                      color: AppColors.textMuted, fontSize: 16)),
               const SizedBox(height: Spacing.lg),
               GridView.builder(
                 shrinkWrap: true,

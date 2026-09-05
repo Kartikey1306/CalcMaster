@@ -59,7 +59,8 @@ class _StandardCalcState extends KeypadCalcState<StandardCalc> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: Spacing.xl, bottom: Spacing.xl),
+                padding:
+                    const EdgeInsets.only(top: Spacing.xl, bottom: Spacing.xl),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(minHeight: 110),
                   child: Align(
@@ -170,7 +171,8 @@ class _ScientificCalcState extends KeypadCalcState<ScientificCalc> {
   Widget build(BuildContext context) {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.calcScientific,
-      subtitle: 'Trig, logs, powers, memory · ${angle == AngleUnit.deg ? 'Deg' : 'Rad'}'
+      subtitle:
+          'Trig, logs, powers, memory · ${angle == AngleUnit.deg ? 'Deg' : 'Rad'}'
           '${memory != 0 ? ' · M' : ''}',
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -228,7 +230,8 @@ class _ScientificCalcState extends KeypadCalcState<ScientificCalc> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: Spacing.md, bottom: Spacing.lg),
+                padding:
+                    const EdgeInsets.only(top: Spacing.md, bottom: Spacing.lg),
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: CalcDisplay(
@@ -279,7 +282,8 @@ class _ScientificCalcState extends KeypadCalcState<ScientificCalc> {
                     ins('EE', '*10^'),
                   ],
                   [
-                    sci('Rand', () => input(_rand.nextDouble().toStringAsFixed(6)),
+                    sci('Rand',
+                        () => input(_rand.nextDouble().toStringAsFixed(6)),
                         fontScale: 0.58),
                     ins(second ? 'sinh⁻¹' : 'sinh', second ? 'asinh(' : 'sinh(',
                         fontScale: second ? 0.5 : 0.62),
@@ -329,7 +333,8 @@ class _ScientificCalcState extends KeypadCalcState<ScientificCalc> {
                         active: isPendingOperator('+')),
                   ],
                   [
-                    main('0', CalcKeyKind.digit, () => input('0'), widthFactor: 2),
+                    main('0', CalcKeyKind.digit, () => input('0'),
+                        widthFactor: 2),
                     main('.', CalcKeyKind.digit, () => input('.')),
                     main('=', CalcKeyKind.operator, equals),
                   ],
@@ -385,17 +390,38 @@ class _PercentageCalcState extends State<PercentageCalc> {
           Expanded(child: NumberInput(label: 'Y', controller: bC)),
         ]),
         const SizedBox(height: Spacing.lg),
-        Text(AppLocalizations.of(context)!.labelXofY, style: const TextStyle(color: AppColors.textMuted, fontSize: 13, fontWeight: FontWeight.w500)),
+        Text(AppLocalizations.of(context)!.labelXofY,
+            style: const TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 13,
+                fontWeight: FontWeight.w500)),
         const SizedBox(height: 4),
-        ResultRow(label: '${aC.text.isEmpty ? '0' : aC.text}% of ${bC.text.isEmpty ? '0' : bC.text}', value: formatNumber(pctOf)),
+        ResultRow(
+            label:
+                '${aC.text.isEmpty ? '0' : aC.text}% of ${bC.text.isEmpty ? '0' : bC.text}',
+            value: formatNumber(pctOf)),
         const SizedBox(height: Spacing.lg),
-        Text(AppLocalizations.of(context)!.labelXisWhatPctOfY, style: const TextStyle(color: AppColors.textMuted, fontSize: 13, fontWeight: FontWeight.w500)),
+        Text(AppLocalizations.of(context)!.labelXisWhatPctOfY,
+            style: const TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 13,
+                fontWeight: FontWeight.w500)),
         const SizedBox(height: 4),
-        ResultRow(label: '${aC.text.isEmpty ? '0' : aC.text} of ${bC.text.isEmpty ? '0' : bC.text}', value: isPct.isFinite ? formatPercent(isPct) : '—'),
+        ResultRow(
+            label:
+                '${aC.text.isEmpty ? '0' : aC.text} of ${bC.text.isEmpty ? '0' : bC.text}',
+            value: isPct.isFinite ? formatPercent(isPct) : '—'),
         const SizedBox(height: Spacing.lg),
-        Text(AppLocalizations.of(context)!.labelPctChangeXtoY, style: const TextStyle(color: AppColors.textMuted, fontSize: 13, fontWeight: FontWeight.w500)),
+        Text(AppLocalizations.of(context)!.labelPctChangeXtoY,
+            style: const TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 13,
+                fontWeight: FontWeight.w500)),
         const SizedBox(height: 4),
-        ResultRow(label: 'Change', value: change.isFinite ? formatPercent(change) : '—', highlight: change.isFinite),
+        ResultRow(
+            label: 'Change',
+            value: change.isFinite ? formatPercent(change) : '—',
+            highlight: change.isFinite),
       ]),
     );
   }
@@ -443,18 +469,30 @@ class _BaseCalcState extends State<BaseCalc> {
       title: AppLocalizations.of(context)!.calcBase,
       subtitle: 'Bin · Oct · Dec · Hex',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(AppLocalizations.of(context)!.labelInputBase, style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+        Text(AppLocalizations.of(context)!.labelInputBase,
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
         const SizedBox(height: Spacing.sm),
         ChipPicker<String>(
-          options: const [(id: 'bin', label: 'BIN'), (id: 'oct', label: 'OCT'), (id: 'dec', label: 'DEC'), (id: 'hex', label: 'HEX')],
+          options: const [
+            (id: 'bin', label: 'BIN'),
+            (id: 'oct', label: 'OCT'),
+            (id: 'dec', label: 'DEC'),
+            (id: 'hex', label: 'HEX')
+          ],
           value: base,
           onChange: (v) => setState(() => base = v),
         ),
-        NumberInput(controller: controller, keyboardType: const TextInputType.numberWithOptions()),
+        NumberInput(
+            controller: controller,
+            keyboardType: const TextInputType.numberWithOptions()),
         const SizedBox(height: Spacing.md),
         ResultRow(label: 'Binary', caption: 'base 2', value: _rep('bin')),
         ResultRow(label: 'Octal', caption: 'base 8', value: _rep('oct')),
-        ResultRow(label: 'Decimal', caption: 'base 10', value: _rep('dec'), highlight: true),
+        ResultRow(
+            label: 'Decimal',
+            caption: 'base 10',
+            value: _rep('dec'),
+            highlight: true),
         ResultRow(label: 'Hex', caption: 'base 16', value: _rep('hex')),
       ]),
     );
@@ -545,15 +583,24 @@ class _FractionCalcState extends State<FractionCalc> {
           ),
         ]),
         const SizedBox(height: Spacing.md),
-        Text(AppLocalizations.of(context)!.labelOperator, style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+        Text(AppLocalizations.of(context)!.labelOperator,
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
         const SizedBox(height: Spacing.sm),
         ChipPicker<String>(
-          options: const [(id: '+', label: '+'), (id: '-', label: '−'), (id: '×', label: '×'), (id: '÷', label: '÷')],
+          options: const [
+            (id: '+', label: '+'),
+            (id: '-', label: '−'),
+            (id: '×', label: '×'),
+            (id: '÷', label: '÷')
+          ],
           value: op,
           onChange: (v) => setState(() => op = v),
         ),
         const SizedBox(height: Spacing.lg),
-        ResultRow(label: 'Simplified', value: r.d == 0 ? '—' : '${r.n}/${r.d}', highlight: true),
+        ResultRow(
+            label: 'Simplified',
+            value: r.d == 0 ? '—' : '${r.n}/${r.d}',
+            highlight: true),
         ResultRow(label: 'Mixed number', value: _toMixed(r.n, r.d)),
         ResultRow(label: 'Decimal', value: dec.isFinite ? dec.toString() : '—'),
       ]),

@@ -51,7 +51,8 @@ double _fn(String name, double a, AngleUnit angle) {
   // Only the trig family cares about the angle unit: inputs come in as
   // degrees, results of the inverse functions go back out as degrees.
   final inRad = angle == AngleUnit.deg ? a / _degPerRad : a;
-  double outAngle(double rad) => angle == AngleUnit.deg ? rad * _degPerRad : rad;
+  double outAngle(double rad) =>
+      angle == AngleUnit.deg ? rad * _degPerRad : rad;
 
   switch (name) {
     case 'sin':
@@ -80,7 +81,9 @@ double _fn(String name, double a, AngleUnit angle) {
     case 'atanh':
       return 0.5 * math.log((1 + a) / (1 - a));
     case 'cbrt':
-      return a < 0 ? -math.pow(-a, 1 / 3).toDouble() : math.pow(a, 1 / 3).toDouble();
+      return a < 0
+          ? -math.pow(-a, 1 / 3).toDouble()
+          : math.pow(a, 1 / 3).toDouble();
     case 'log':
       return math.log(a) / math.ln10;
     case 'ln':
@@ -112,7 +115,10 @@ double _factorial(double n) {
 }
 
 List<_Tok> _tokenize(String input) {
-  final src = input.replaceAll('π', 'pi').replaceAll('√', 'sqrt').replaceAll(RegExp(r'\s+'), '');
+  final src = input
+      .replaceAll('π', 'pi')
+      .replaceAll('√', 'sqrt')
+      .replaceAll(RegExp(r'\s+'), '');
   final tokens = <_Tok>[];
   int i = 0;
   while (i < src.length) {
@@ -160,7 +166,8 @@ List<_Tok> _tokenize(String input) {
     if (_ops.containsKey(c)) {
       final last = tokens.isEmpty ? null : tokens.last;
       // Unary minus -> insert (-1)*
-      if (c == '-' && (last == null || (last.type != 'num' && last.type != 'rparen'))) {
+      if (c == '-' &&
+          (last == null || (last.type != 'num' && last.type != 'rparen'))) {
         tokens.add(_Tok('num', -1.0));
         tokens.add(_Tok('op', '*'));
         i++;
@@ -204,7 +211,8 @@ double evaluate(String input, {AngleUnit angle = AngleUnit.rad}) {
           final opTop = _ops[top.value];
           final opCur = _ops[tok.value];
           if (opTop == null || opCur == null) break;
-          if ((!opCur.right && opCur.prec <= opTop.prec) || (opCur.right && opCur.prec < opTop.prec)) {
+          if ((!opCur.right && opCur.prec <= opTop.prec) ||
+              (opCur.right && opCur.prec < opTop.prec)) {
             out.add(ops.removeLast());
             continue;
           }
@@ -265,6 +273,7 @@ double evaluate(String input, {AngleUnit angle = AngleUnit.rad}) {
     }
     return a == 0 ? 1 : a;
   }
+
   final g = gcd(num, den);
   return (n: sign * (num.abs() ~/ g), d: den.abs() ~/ g);
 }

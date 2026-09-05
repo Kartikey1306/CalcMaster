@@ -58,7 +58,8 @@ class AdService {
     if (!enabled) return null;
     try {
       if (Platform.isIOS) return MonetizationConfig.admobIosInterstitial;
-      if (Platform.isAndroid) return MonetizationConfig.admobAndroidInterstitial;
+      if (Platform.isAndroid)
+        return MonetizationConfig.admobAndroidInterstitial;
     } catch (_) {}
     return null;
   }
@@ -74,7 +75,9 @@ class AdService {
 
   /// Builds a fresh BannerAd. Caller is responsible for calling `ad.load()`
   /// and disposing on widget dispose.
-  BannerAd? createBannerAd({required void Function(Ad) onAdLoaded, required void Function() onAdFailed}) {
+  BannerAd? createBannerAd(
+      {required void Function(Ad) onAdLoaded,
+      required void Function() onAdFailed}) {
     final unitId = bannerUnitId();
     if (unitId == null || _isInTest()) return null;
     return BannerAd(

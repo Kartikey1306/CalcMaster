@@ -28,7 +28,8 @@ class AnalyticsService {
   // schema stays consistent and reviewable.
   void logTabOpen(String tabName) => logEvent('tab_open', {'name': tabName});
 
-  void logConvertUsed(String category) => logEvent('convert_used', {'category': category});
+  void logConvertUsed(String category) =>
+      logEvent('convert_used', {'category': category});
 
   void logCalcUsed(String tool) => logEvent('calc_used', {'tool': tool});
 
@@ -37,12 +38,14 @@ class AnalyticsService {
   void logToolUsed(String tool) => logEvent('tool_used', {'tool': tool});
 
   void logAffiliateClick(String partner, String slot, String region) =>
-      logEvent('affiliate_click', {'partner': partner, 'slot': slot, 'region': region});
+      logEvent('affiliate_click',
+          {'partner': partner, 'slot': slot, 'region': region});
 
   void logAdImpression(String slot, String format) =>
       logEvent('ad_impression', {'slot': slot, 'format': format});
 
-  void logPaywallShown(String trigger) => logEvent('paywall_shown', {'trigger': trigger});
+  void logPaywallShown(String trigger) =>
+      logEvent('paywall_shown', {'trigger': trigger});
 
   void logPurchaseStarted(String productId) =>
       logEvent('purchase_started', {'product_id': productId});

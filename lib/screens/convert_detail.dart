@@ -42,8 +42,12 @@ class _ConvertDetailState extends KeypadCalcState<ConvertDetail> {
     final abs = v.abs();
     if (abs == 0) return '0';
     if (abs < 0.001 || abs >= 1e7) return v.toStringAsExponential(6);
-    if (abs >= 100) return v.toStringAsFixed(math.max(0, 6 - v.toInt().toString().length));
-    return v.toStringAsPrecision(8).replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '');
+    if (abs >= 100)
+      return v.toStringAsFixed(math.max(0, 6 - v.toInt().toString().length));
+    return v
+        .toStringAsPrecision(8)
+        .replaceAll(RegExp(r'0+$'), '')
+        .replaceAll(RegExp(r'\.$'), '');
   }
 
   void _swap() => setState(() {
@@ -103,7 +107,8 @@ class _ConvertDetailState extends KeypadCalcState<ConvertDetail> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             const gap = 12.0;
-            final keyArea = math.min(constraints.maxWidth - Spacing.lg * 2, 420.0);
+            final keyArea =
+                math.min(constraints.maxWidth - Spacing.lg * 2, 420.0);
             final size = ((keyArea - gap * 3) / 4).clamp(52.0, 80.0);
             final keypadWidth = size * 4 + gap * 3;
 
@@ -126,7 +131,9 @@ class _ConvertDetailState extends KeypadCalcState<ConvertDetail> {
                   active: active,
                   fontScale: fontScale,
                   onTap: onTap,
-                  haptic: label == '=' ? HapticFeedbackKind.medium : HapticFeedbackKind.selection,
+                  haptic: label == '='
+                      ? HapticFeedbackKind.medium
+                      : HapticFeedbackKind.selection,
                 );
 
             return Column(
@@ -138,10 +145,12 @@ class _ConvertDetailState extends KeypadCalcState<ConvertDetail> {
                     children: [
                       IconButton(
                         tooltip: 'Go back',
-                        icon: const Icon(Icons.chevron_left, size: 26, color: AppColors.text),
+                        icon: const Icon(Icons.chevron_left,
+                            size: 26, color: AppColors.text),
                         onPressed: () => context.pop(),
                         // Keep the 44pt minimum touch target from Apple's HIG.
-                        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                        constraints:
+                            const BoxConstraints(minWidth: 48, minHeight: 48),
                       ),
                       Expanded(
                         child: Column(
@@ -157,7 +166,8 @@ class _ConvertDetailState extends KeypadCalcState<ConvertDetail> {
                             ),
                             Text(
                               loc.labelUnitsAvailable(_cat.units.length),
-                              style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+                              style: const TextStyle(
+                                  color: AppColors.textMuted, fontSize: 12),
                             ),
                           ],
                         ),
@@ -200,17 +210,23 @@ class _ConvertDetailState extends KeypadCalcState<ConvertDetail> {
                             const SizedBox(height: Spacing.md),
                             Row(
                               children: [
-                                const Expanded(child: Divider(color: AppColors.borderStrong)),
+                                const Expanded(
+                                    child:
+                                        Divider(color: AppColors.borderStrong)),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: Spacing.md),
                                   child: PressableScale(
                                     onTap: _swap,
                                     haptic: HapticFeedbackKind.light,
                                     child: const Icon(Icons.swap_vert,
-                                        size: 26, color: AppColors.accentPrimary),
+                                        size: 26,
+                                        color: AppColors.accentPrimary),
                                   ),
                                 ),
-                                const Expanded(child: Divider(color: AppColors.borderStrong)),
+                                const Expanded(
+                                    child:
+                                        Divider(color: AppColors.borderStrong)),
                               ],
                             ),
                             const SizedBox(height: Spacing.md),
@@ -231,7 +247,9 @@ class _ConvertDetailState extends KeypadCalcState<ConvertDetail> {
                                   fontSize: 44,
                                   fontWeight: FontWeight.w300,
                                   height: 1.1,
-                                  fontFeatures: const [FontFeature.tabularFigures()],
+                                  fontFeatures: const [
+                                    FontFeature.tabularFigures()
+                                  ],
                                 ),
                               ),
                             ),
@@ -244,7 +262,8 @@ class _ConvertDetailState extends KeypadCalcState<ConvertDetail> {
 
                 // ---- Keypad ----
                 Padding(
-                  padding: const EdgeInsets.only(bottom: Spacing.md, top: Spacing.sm),
+                  padding: const EdgeInsets.only(
+                      bottom: Spacing.md, top: Spacing.sm),
                   child: CalcKeypad(
                     gap: gap,
                     rows: [
@@ -280,7 +299,8 @@ class _ConvertDetailState extends KeypadCalcState<ConvertDetail> {
                             active: isPendingOperator('+')),
                       ],
                       [
-                        k('0', CalcKeyKind.digit, () => input('0'), widthFactor: 2),
+                        k('0', CalcKeyKind.digit, () => input('0'),
+                            widthFactor: 2),
                         k('.', CalcKeyKind.digit, () => input('.')),
                         k('=', CalcKeyKind.operator, equals),
                       ],
@@ -301,7 +321,8 @@ class _UnitLabel extends StatelessWidget {
   final Unit unit;
   final Color accent;
   final VoidCallback onTap;
-  const _UnitLabel({required this.unit, required this.accent, required this.onTap});
+  const _UnitLabel(
+      {required this.unit, required this.accent, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -371,7 +392,8 @@ class _UnitPickerSheetState extends State<UnitPickerSheet> {
       builder: (context, scrollController) => Material(
         color: AppColors.surface,
         clipBehavior: Clip.antiAlias,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(Radii.sheet)),
+        borderRadius:
+            const BorderRadius.vertical(top: Radius.circular(Radii.sheet)),
         child: Column(
           children: [
             // Grab handle
@@ -418,18 +440,24 @@ class _UnitPickerSheetState extends State<UnitPickerSheet> {
                       alignment: Alignment.center,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
-                        color: active ? AppColors.accentSoft : Colors.transparent,
+                        color:
+                            active ? AppColors.accentSoft : Colors.transparent,
                         borderRadius: BorderRadius.circular(Radii.pill),
                         border: Border.all(
-                          color: active ? AppColors.accentPrimary : AppColors.border,
+                          color: active
+                              ? AppColors.accentPrimary
+                              : AppColors.border,
                         ),
                       ),
                       child: Text(
                         localizedCategoryLabel(context, c.id),
                         style: TextStyle(
-                          color: active ? AppColors.accentPrimary : AppColors.textMuted,
+                          color: active
+                              ? AppColors.accentPrimary
+                              : AppColors.textMuted,
                           fontSize: 13,
-                          fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                          fontWeight:
+                              active ? FontWeight.w700 : FontWeight.w500,
                         ),
                       ),
                     ),
@@ -451,7 +479,8 @@ class _UnitPickerSheetState extends State<UnitPickerSheet> {
                 itemBuilder: (context, i) {
                   final u = _cat.units[i];
                   // Only the originating category can report a selection.
-                  final active = _cat.id == widget.category.id && u.id == widget.selected;
+                  final active =
+                      _cat.id == widget.category.id && u.id == widget.selected;
                   return ListTile(
                     onTap: _cat.id == widget.category.id
                         ? () => Navigator.of(context).pop(u.id)
@@ -460,13 +489,15 @@ class _UnitPickerSheetState extends State<UnitPickerSheet> {
                     title: Text(
                       '${u.label} (${u.symbol})',
                       style: TextStyle(
-                        color: active ? AppColors.accentPrimary : AppColors.text,
+                        color:
+                            active ? AppColors.accentPrimary : AppColors.text,
                         fontSize: 15,
                         fontWeight: active ? FontWeight.w600 : FontWeight.w400,
                       ),
                     ),
                     trailing: active
-                        ? const Icon(Icons.check, size: 18, color: AppColors.accentPrimary)
+                        ? const Icon(Icons.check,
+                            size: 18, color: AppColors.accentPrimary)
                         : null,
                   );
                 },
@@ -474,7 +505,8 @@ class _UnitPickerSheetState extends State<UnitPickerSheet> {
             ),
             if (_cat.id != widget.category.id)
               Padding(
-                padding: const EdgeInsets.fromLTRB(Spacing.lg, 0, Spacing.lg, Spacing.lg),
+                padding: const EdgeInsets.fromLTRB(
+                    Spacing.lg, 0, Spacing.lg, Spacing.lg),
                 child: SizedBox(
                   width: double.infinity,
                   child: FilledButton(
@@ -486,7 +518,8 @@ class _UnitPickerSheetState extends State<UnitPickerSheet> {
                       Navigator.of(context).pop();
                       context.pushReplacement('/convert/${_cat.id}');
                     },
-                    child: Text('Open ${localizedCategoryLabel(context, _cat.id)}'),
+                    child: Text(
+                        'Open ${localizedCategoryLabel(context, _cat.id)}'),
                   ),
                 ),
               ),
@@ -527,7 +560,8 @@ class _AllConversionsSheet extends StatelessWidget {
       builder: (context, scrollController) => Material(
         color: AppColors.surface,
         clipBehavior: Clip.antiAlias,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(Radii.sheet)),
+        borderRadius:
+            const BorderRadius.vertical(top: Radius.circular(Radii.sheet)),
         child: Column(
           children: [
             Container(
@@ -570,16 +604,19 @@ class _AllConversionsSheet extends StatelessWidget {
                   final active = u.id == toUnit;
                   return Container(
                     color: active ? AppColors.surfaceAlt : Colors.transparent,
-                    padding: const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.lg, vertical: 14),
                     child: Row(
                       children: [
                         Expanded(
                           child: Text(
                             u.label,
                             style: TextStyle(
-                              color: active ? AppColors.text : AppColors.textMuted,
+                              color:
+                                  active ? AppColors.text : AppColors.textMuted,
                               fontSize: 15,
-                              fontWeight: active ? FontWeight.w600 : FontWeight.w400,
+                              fontWeight:
+                                  active ? FontWeight.w600 : FontWeight.w400,
                             ),
                           ),
                         ),
@@ -588,7 +625,8 @@ class _AllConversionsSheet extends StatelessWidget {
                           style: TextStyle(
                             color: active ? accent : AppColors.text,
                             fontSize: 15,
-                            fontWeight: active ? FontWeight.w600 : FontWeight.w400,
+                            fontWeight:
+                                active ? FontWeight.w600 : FontWeight.w400,
                             fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),

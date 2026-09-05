@@ -12,7 +12,13 @@ class TabScaffold extends StatelessWidget {
   final StatefulNavigationShell shell;
   const TabScaffold({super.key, required this.shell});
 
-  static const _tabNames = ['convert', 'calculate', 'finance', 'tools', 'notes'];
+  static const _tabNames = [
+    'convert',
+    'calculate',
+    'finance',
+    'tools',
+    'notes'
+  ];
 
   /// Below this width we use the mobile bottom-nav layout; at or above it we
   /// switch to a desktop web layout with a side navigation rail and a bounded,
@@ -72,7 +78,8 @@ class TabScaffold extends StatelessWidget {
                     Expanded(
                       child: Center(
                         child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: _contentMaxWidth),
+                          constraints:
+                              const BoxConstraints(maxWidth: _contentMaxWidth),
                           child: content,
                         ),
                       ),
@@ -85,11 +92,13 @@ class TabScaffold extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: isDesktop ? null : _BottomNav(
-        destinations: _destinations(loc),
-        currentIndex: shell.currentIndex,
-        onSelect: _onSelect,
-      ),
+      bottomNavigationBar: isDesktop
+          ? null
+          : _BottomNav(
+              destinations: _destinations(loc),
+              currentIndex: shell.currentIndex,
+              onSelect: _onSelect,
+            ),
     );
   }
 }
@@ -243,7 +252,8 @@ class _SideRail extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Icon(Icons.calculate_outlined, color: Colors.black, size: 22),
+            child: const Icon(Icons.calculate_outlined,
+                color: Colors.black, size: 22),
           ),
         ),
         destinations: [

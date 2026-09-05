@@ -65,16 +65,21 @@ void main() {
   group('computeIncomeTax — no standard deduction', () {
     test('applyStandardDeduction=false uses full gross', () {
       final rWith = computeIncomeTax(50000, RegionId.US, FilingStatus.single);
-      final rWithout = computeIncomeTax(50000, RegionId.US, FilingStatus.single, applyStandardDeduction: false);
+      final rWithout = computeIncomeTax(50000, RegionId.US, FilingStatus.single,
+          applyStandardDeduction: false);
       expect(rWithout.taxableIncome, 50000.0);
       expect(rWithout.taxOwed, greaterThan(rWith.taxOwed));
     });
   });
 
   group('salesTaxRate', () {
-    test('US sales tax is 8.5%', () => expect(salesTaxRate[RegionId.US], closeTo(0.085, 1e-6)));
-    test('UK VAT is 20%', () => expect(salesTaxRate[RegionId.UK], closeTo(0.20, 1e-6)));
-    test('AU GST is 10%', () => expect(salesTaxRate[RegionId.AU], closeTo(0.10, 1e-6)));
-    test('AE VAT is 5%', () => expect(salesTaxRate[RegionId.AE], closeTo(0.05, 1e-6)));
+    test('US sales tax is 8.5%',
+        () => expect(salesTaxRate[RegionId.US], closeTo(0.085, 1e-6)));
+    test('UK VAT is 20%',
+        () => expect(salesTaxRate[RegionId.UK], closeTo(0.20, 1e-6)));
+    test('AU GST is 10%',
+        () => expect(salesTaxRate[RegionId.AU], closeTo(0.10, 1e-6)));
+    test('AE VAT is 5%',
+        () => expect(salesTaxRate[RegionId.AE], closeTo(0.05, 1e-6)));
   });
 }

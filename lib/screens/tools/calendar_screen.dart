@@ -30,7 +30,8 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
   }
 
   void _shiftMonth(int delta) => setState(() {
-        _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month + delta);
+        _visibleMonth =
+            DateTime(_visibleMonth.year, _visibleMonth.month + delta);
       });
 
   void _goToday() => setState(() {
@@ -59,17 +60,24 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
         const SizedBox(height: Spacing.xl),
         Text('Selected day',
             style: const TextStyle(
-                color: AppColors.textMuted, fontSize: 13, fontWeight: FontWeight.w600)),
+                color: AppColors.textMuted,
+                fontSize: 13,
+                fontWeight: FontWeight.w600)),
         const SizedBox(height: Spacing.sm),
         ResultRow(
           label: 'Date',
           value: DateFormat.yMMMMEEEEd(locale).format(_selected),
           highlight: true,
         ),
-        ResultRow(label: 'Day of year', value: '${_dayOfYear(_selected)} / ${_daysInYear(_selected.year)}'),
+        ResultRow(
+            label: 'Day of year',
+            value: '${_dayOfYear(_selected)} / ${_daysInYear(_selected.year)}'),
         ResultRow(label: 'ISO week', value: '${_isoWeek(_selected)}'),
-        ResultRow(label: 'Quarter', value: 'Q${((_selected.month - 1) ~/ 3) + 1}'),
-        ResultRow(label: 'Days in month', value: '${_daysInMonth(_selected.year, _selected.month)}'),
+        ResultRow(
+            label: 'Quarter', value: 'Q${((_selected.month - 1) ~/ 3) + 1}'),
+        ResultRow(
+            label: 'Days in month',
+            value: '${_daysInMonth(_selected.year, _selected.month)}'),
       ]),
     );
   }
@@ -83,7 +91,10 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
         child: Center(
           child: Text(
             DateFormat.yMMMM(locale).format(_visibleMonth),
-            style: const TextStyle(color: AppColors.text, fontSize: 18, fontWeight: FontWeight.w700),
+            style: const TextStyle(
+                color: AppColors.text,
+                fontSize: 18,
+                fontWeight: FontWeight.w700),
           ),
         ),
       ),
@@ -115,7 +126,10 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
             child: Center(
               child: Text(
                 DateFormat.E(locale).format(sunday.add(Duration(days: i))),
-                style: const TextStyle(color: AppColors.textDim, fontSize: 12, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                    color: AppColors.textDim,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -157,7 +171,8 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
   }
 
   Widget _dayCell(DateTime? day, DateTime today) {
-    if (day == null) return const AspectRatio(aspectRatio: 1, child: SizedBox());
+    if (day == null)
+      return const AspectRatio(aspectRatio: 1, child: SizedBox());
 
     final isSelected = _sameDay(day, _selected);
     final isToday = _sameDay(day, today);
@@ -176,7 +191,8 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(Radii.button),
                 border: isToday && !isSelected
-                    ? Border.all(color: _accent.withValues(alpha: 0.8), width: 1.5)
+                    ? Border.all(
+                        color: _accent.withValues(alpha: 0.8), width: 1.5)
                     : null,
               ),
               alignment: Alignment.center,
@@ -185,7 +201,8 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
                 style: TextStyle(
                   color: isSelected ? AppColors.bg : AppColors.text,
                   fontSize: 15,
-                  fontWeight: isSelected || isToday ? FontWeight.w700 : FontWeight.w500,
+                  fontWeight:
+                      isSelected || isToday ? FontWeight.w700 : FontWeight.w500,
                 ),
               ),
             ),

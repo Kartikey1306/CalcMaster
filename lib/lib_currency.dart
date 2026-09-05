@@ -22,17 +22,83 @@ class Region {
 }
 
 const List<Region> regions = [
-  Region(id: RegionId.US, label: 'US', flag: '🇺🇸', currency: 'USD', symbol: '\$', locale: 'en_US'),
-  Region(id: RegionId.UK, label: 'UK', flag: '🇬🇧', currency: 'GBP', symbol: '£', locale: 'en_GB'),
-  Region(id: RegionId.EU, label: 'EU', flag: '🇪🇺', currency: 'EUR', symbol: '€', locale: 'de_DE'),
-  Region(id: RegionId.CA, label: 'CA', flag: '🇨🇦', currency: 'CAD', symbol: 'C\$', locale: 'en_CA'),
-  Region(id: RegionId.AU, label: 'AU', flag: '🇦🇺', currency: 'AUD', symbol: 'A\$', locale: 'en_AU'),
-  Region(id: RegionId.IN, label: 'IN', flag: '🇮🇳', currency: 'INR', symbol: '₹', locale: 'en_IN'),
-  Region(id: RegionId.JP, label: 'JP', flag: '🇯🇵', currency: 'JPY', symbol: '¥', locale: 'ja_JP'),
-  Region(id: RegionId.BR, label: 'BR', flag: '🇧🇷', currency: 'BRL', symbol: 'R\$', locale: 'pt_BR'),
-  Region(id: RegionId.MX, label: 'MX', flag: '🇲🇽', currency: 'MXN', symbol: 'Mex\$', locale: 'es_MX'),
-  Region(id: RegionId.KR, label: 'KR', flag: '🇰🇷', currency: 'KRW', symbol: '₩', locale: 'ko_KR'),
-  Region(id: RegionId.AE, label: 'AE', flag: '🇦🇪', currency: 'AED', symbol: 'د.إ', locale: 'en_AE'),
+  Region(
+      id: RegionId.US,
+      label: 'US',
+      flag: '🇺🇸',
+      currency: 'USD',
+      symbol: '\$',
+      locale: 'en_US'),
+  Region(
+      id: RegionId.UK,
+      label: 'UK',
+      flag: '🇬🇧',
+      currency: 'GBP',
+      symbol: '£',
+      locale: 'en_GB'),
+  Region(
+      id: RegionId.EU,
+      label: 'EU',
+      flag: '🇪🇺',
+      currency: 'EUR',
+      symbol: '€',
+      locale: 'de_DE'),
+  Region(
+      id: RegionId.CA,
+      label: 'CA',
+      flag: '🇨🇦',
+      currency: 'CAD',
+      symbol: 'C\$',
+      locale: 'en_CA'),
+  Region(
+      id: RegionId.AU,
+      label: 'AU',
+      flag: '🇦🇺',
+      currency: 'AUD',
+      symbol: 'A\$',
+      locale: 'en_AU'),
+  Region(
+      id: RegionId.IN,
+      label: 'IN',
+      flag: '🇮🇳',
+      currency: 'INR',
+      symbol: '₹',
+      locale: 'en_IN'),
+  Region(
+      id: RegionId.JP,
+      label: 'JP',
+      flag: '🇯🇵',
+      currency: 'JPY',
+      symbol: '¥',
+      locale: 'ja_JP'),
+  Region(
+      id: RegionId.BR,
+      label: 'BR',
+      flag: '🇧🇷',
+      currency: 'BRL',
+      symbol: 'R\$',
+      locale: 'pt_BR'),
+  Region(
+      id: RegionId.MX,
+      label: 'MX',
+      flag: '🇲🇽',
+      currency: 'MXN',
+      symbol: 'Mex\$',
+      locale: 'es_MX'),
+  Region(
+      id: RegionId.KR,
+      label: 'KR',
+      flag: '🇰🇷',
+      currency: 'KRW',
+      symbol: '₩',
+      locale: 'ko_KR'),
+  Region(
+      id: RegionId.AE,
+      label: 'AE',
+      flag: '🇦🇪',
+      currency: 'AED',
+      symbol: 'د.إ',
+      locale: 'en_AE'),
 ];
 
 Region regionById(RegionId id) =>
@@ -64,7 +130,8 @@ class RatesResult {
   final Map<String, double> rates;
   final int fetchedAt;
   final bool live;
-  const RatesResult({required this.rates, required this.fetchedAt, required this.live});
+  const RatesResult(
+      {required this.rates, required this.fetchedAt, required this.live});
 }
 
 // Frankfurter moved to api.frankfurter.dev/v1; the old api.frankfurter.app host
@@ -84,7 +151,10 @@ Future<RatesResult> fetchLatestRates() async {
     raw.forEach((k, v) {
       if (v is num) rates[k] = v.toDouble();
     });
-    return RatesResult(rates: rates, fetchedAt: DateTime.now().millisecondsSinceEpoch, live: true);
+    return RatesResult(
+        rates: rates,
+        fetchedAt: DateTime.now().millisecondsSinceEpoch,
+        live: true);
   } catch (_) {
     return RatesResult(
       rates: Map<String, double>.from(staticRates),
@@ -94,7 +164,8 @@ Future<RatesResult> fetchLatestRates() async {
   }
 }
 
-double convertCurrency(double amount, String from, String to, Map<String, double> rates) {
+double convertCurrency(
+    double amount, String from, String to, Map<String, double> rates) {
   if (!amount.isFinite) return double.nan;
   final fromR = rates[from] ?? staticRates[from];
   final toR = rates[to] ?? staticRates[to];

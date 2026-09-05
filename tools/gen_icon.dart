@@ -43,12 +43,16 @@ void main() {
   Directory('assets/splash').createSync(recursive: true);
 
   File('assets/icon/app_icon.png').writeAsBytesSync(img.encodePng(iconWithBg));
-  File('assets/icon/app_icon_foreground.png').writeAsBytesSync(img.encodePng(iconForeground));
+  File('assets/icon/app_icon_foreground.png')
+      .writeAsBytesSync(img.encodePng(iconForeground));
   File('assets/splash/splash_logo.png').writeAsBytesSync(img.encodePng(splash));
 
-  stdout.writeln('✓ assets/icon/app_icon.png            (${iconWithBg.width}×${iconWithBg.height})');
-  stdout.writeln('✓ assets/icon/app_icon_foreground.png (${iconForeground.width}×${iconForeground.height})');
-  stdout.writeln('✓ assets/splash/splash_logo.png       (${splash.width}×${splash.height})');
+  stdout.writeln(
+      '✓ assets/icon/app_icon.png            (${iconWithBg.width}×${iconWithBg.height})');
+  stdout.writeln(
+      '✓ assets/icon/app_icon_foreground.png (${iconForeground.width}×${iconForeground.height})');
+  stdout.writeln(
+      '✓ assets/splash/splash_logo.png       (${splash.width}×${splash.height})');
   stdout.writeln('');
   stdout.writeln('Now run:');
   stdout.writeln('  dart run flutter_launcher_icons');
@@ -76,7 +80,8 @@ img.Image _renderIcon({required bool withBackground}) {
 img.Image _renderSplash() {
   // Splash logo is the foreground glyph on transparent — flutter_native_splash
   // composites it onto a solid color bg from pubspec.
-  final image = img.Image(width: kSplashSize, height: kSplashSize, numChannels: 4);
+  final image =
+      img.Image(width: kSplashSize, height: kSplashSize, numChannels: 4);
   img.fill(image, color: img.ColorRgba8(0, 0, 0, 0));
   _drawCalculator(image, scale: 0.78);
   return image;
@@ -90,7 +95,8 @@ void _fillRoundedGradient(
 ) {
   final w = image.width;
   final h = image.height;
-  final radius = (w * 0.22).round(); // ~22% radius like iOS app icons (cosmetic — iOS auto-rounds)
+  final radius = (w * 0.22)
+      .round(); // ~22% radius like iOS app icons (cosmetic — iOS auto-rounds)
   for (var y = 0; y < h; y++) {
     final t = y / (h - 1);
     final r = (top.red + (bottom.red - top.red) * t).round();
@@ -157,7 +163,8 @@ void _drawCalculator(img.Image image, {double scale = 1.0}) {
   final bodyH = (w * 0.66 * scale).round();
   final bl = cx - bodyW ~/ 2;
   final bt = cy - bodyH ~/ 2;
-  _fillRoundRect(image, bl, bt, bl + bodyW, bt + bodyH, (bodyW * 0.15).round(), body);
+  _fillRoundRect(
+      image, bl, bt, bl + bodyW, bt + bodyH, (bodyW * 0.15).round(), body);
 
   final pad = (bodyW * 0.11).round();
   final ix = bl + pad;
@@ -171,7 +178,8 @@ void _drawCalculator(img.Image image, {double scale = 1.0}) {
   final numW = (iw * 0.30).round();
   final numH = (sh * 0.34).round();
   final numY = st + (sh - numH) ~/ 2;
-  _fillRoundRect(image, ix + iw - numW, numY, ix + iw, numY + numH, (numH * 0.3).round(), accentSoft);
+  _fillRoundRect(image, ix + iw - numW, numY, ix + iw, numY + numH,
+      (numH * 0.3).round(), accentSoft);
 
   // ---- Keypad: 3 × 3 ----
   const cols = 3;

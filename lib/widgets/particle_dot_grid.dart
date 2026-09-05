@@ -19,9 +19,12 @@ class _ParticleDotGridState extends State<ParticleDotGrid>
   @override
   void initState() {
     super.initState();
-    _ctl = AnimationController(vsync: this, duration: const Duration(seconds: 12));
+    _ctl =
+        AnimationController(vsync: this, duration: const Duration(seconds: 12));
     // Don't start the infinite repeat in widget tests.
-    final isTest = WidgetsBinding.instance.runtimeType.toString().contains('AutomatedTestWidgetsFlutterBinding');
+    final isTest = WidgetsBinding.instance.runtimeType
+        .toString()
+        .contains('AutomatedTestWidgetsFlutterBinding');
     if (!isTest) _ctl.repeat();
   }
 

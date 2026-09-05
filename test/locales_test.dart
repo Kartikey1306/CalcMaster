@@ -55,8 +55,24 @@ void main() {
   }
 
   testWidgets('All 12 locales registered as supported', (tester) async {
-    final codes = AppLocalizations.supportedLocales.map((l) => l.languageCode).toSet();
-    expect(codes, containsAll(['en', 'es', 'zh', 'hi', 'fr', 'ar', 'de', 'ja', 'pt', 'ko', 'ru', 'it']));
+    final codes =
+        AppLocalizations.supportedLocales.map((l) => l.languageCode).toSet();
+    expect(
+        codes,
+        containsAll([
+          'en',
+          'es',
+          'zh',
+          'hi',
+          'fr',
+          'ar',
+          'de',
+          'ja',
+          'pt',
+          'ko',
+          'ru',
+          'it'
+        ]));
     expect(AppLocalizations.supportedLocales.length, equals(12));
   });
 
@@ -78,7 +94,8 @@ void main() {
     for (final code in headings.keys) {
       await tester.pumpWidget(wrap(Locale(code)));
       await tester.pumpAndSettle();
-      final loc = AppLocalizations.of(tester.element(find.byType(ConvertHome)))!;
+      final loc =
+          AppLocalizations.of(tester.element(find.byType(ConvertHome)))!;
       expect(loc.aiChatTitle, isNotEmpty,
           reason: 'aiChatTitle should be non-empty for locale $code');
       expect(loc.aiChatHint, isNotEmpty,

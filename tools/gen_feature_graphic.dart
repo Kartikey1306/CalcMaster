@@ -79,7 +79,8 @@ void _fillVerticalGradient(
 void _drawSubtleDotGrid(img.Image image) {
   final dotR = 1;
   final spacing = 24;
-  final color = img.ColorRgba8(_accentSoft.red, _accentSoft.green, _accentSoft.blue, 12);
+  final color =
+      img.ColorRgba8(_accentSoft.red, _accentSoft.green, _accentSoft.blue, 12);
   for (var y = 12; y < image.height; y += spacing) {
     for (var x = 12; x < image.width; x += spacing) {
       img.fillCircle(image, x: x, y: y, radius: dotR, color: color);
@@ -107,7 +108,8 @@ void _drawAccentRays(img.Image image) {
 // "CalcMaster" wordmark — stylised C+M block letters with a mint dot accent.
 // Same construction as the app icon, scaled for banner.
 // ---------------------------------------------------------------------
-void _drawWordmark(img.Image image, {required int leftX, required int baselineY}) {
+void _drawWordmark(img.Image image,
+    {required int leftX, required int baselineY}) {
   // The wordmark we render is the brand bug "CM·" + the word painted below.
   // For the banner we keep it simple: two stylised glyphs side by side, big.
   final stroke = 18;
@@ -120,27 +122,50 @@ void _drawWordmark(img.Image image, {required int leftX, required int baselineY}
   // C
   final cLeft = leftX;
   final cTop = baselineY - letterH;
-  img.fillRect(image, x1: cLeft, y1: cTop, x2: cLeft + letterW, y2: cTop + stroke, color: accent);
-  img.fillRect(image, x1: cLeft, y1: baselineY - stroke, x2: cLeft + letterW, y2: baselineY, color: accent);
-  img.fillRect(image, x1: cLeft, y1: cTop, x2: cLeft + stroke, y2: baselineY, color: accent);
+  img.fillRect(image,
+      x1: cLeft,
+      y1: cTop,
+      x2: cLeft + letterW,
+      y2: cTop + stroke,
+      color: accent);
+  img.fillRect(image,
+      x1: cLeft,
+      y1: baselineY - stroke,
+      x2: cLeft + letterW,
+      y2: baselineY,
+      color: accent);
+  img.fillRect(image,
+      x1: cLeft, y1: cTop, x2: cLeft + stroke, y2: baselineY, color: accent);
 
   // M
   final mLeft = cLeft + letterW + gap;
   final mTop = cTop;
-  img.fillRect(image, x1: mLeft, y1: mTop, x2: mLeft + stroke, y2: baselineY, color: accent);
-  img.fillRect(image, x1: mLeft + letterW - stroke, y1: mTop, x2: mLeft + letterW, y2: baselineY, color: accent);
+  img.fillRect(image,
+      x1: mLeft, y1: mTop, x2: mLeft + stroke, y2: baselineY, color: accent);
+  img.fillRect(image,
+      x1: mLeft + letterW - stroke,
+      y1: mTop,
+      x2: mLeft + letterW,
+      y2: baselineY,
+      color: accent);
   // V valley
   final innerLeft = (x: mLeft + stroke, y: mTop);
   final innerRight = (x: mLeft + letterW - stroke, y: mTop);
   final valley = (x: mLeft + letterW ~/ 2, y: mTop + (letterH * 0.55).round());
   _drawAngledStroke(image,
-      x1: innerLeft.x, y1: innerLeft.y,
-      x2: valley.x, y2: valley.y,
-      thickness: stroke, color: accent);
+      x1: innerLeft.x,
+      y1: innerLeft.y,
+      x2: valley.x,
+      y2: valley.y,
+      thickness: stroke,
+      color: accent);
   _drawAngledStroke(image,
-      x1: valley.x, y1: valley.y,
-      x2: innerRight.x, y2: innerRight.y,
-      thickness: stroke, color: accent);
+      x1: valley.x,
+      y1: valley.y,
+      x2: innerRight.x,
+      y2: innerRight.y,
+      thickness: stroke,
+      color: accent);
 
   // Mint accent dot
   img.fillCircle(image,
@@ -160,12 +185,14 @@ void _drawWordmark(img.Image image, {required int leftX, required int baselineY}
 // ---------------------------------------------------------------------
 // Tagline & feature chips
 // ---------------------------------------------------------------------
-void _drawTagline(img.Image image, {required int leftX, required int baselineY}) {
+void _drawTagline(img.Image image,
+    {required int leftX, required int baselineY}) {
   img.drawString(image, 'World calculator & converter',
       font: img.arial24, x: leftX, y: baselineY - 20, color: rgb(_textMuted));
 }
 
-void _drawFeatureChips(img.Image image, {required int leftX, required int topY}) {
+void _drawFeatureChips(img.Image image,
+    {required int leftX, required int topY}) {
   final chips = [
     'CONVERT',
     'CALCULATE',
@@ -179,14 +206,25 @@ void _drawFeatureChips(img.Image image, {required int leftX, required int topY})
     final chipH = 32;
     // Pill outline
     final color = img.ColorRgba8(_accent.red, _accent.green, _accent.blue, 36);
-    img.fillRect(image, x1: cursorX, y1: topY, x2: cursorX + chipW, y2: topY + chipH, color: color);
+    img.fillRect(image,
+        x1: cursorX,
+        y1: topY,
+        x2: cursorX + chipW,
+        y2: topY + chipH,
+        color: color);
     img.drawRect(image,
-        x1: cursorX, y1: topY, x2: cursorX + chipW, y2: topY + chipH,
+        x1: cursorX,
+        y1: topY,
+        x2: cursorX + chipW,
+        y2: topY + chipH,
         color: img.ColorRgba8(_accent.red, _accent.green, _accent.blue, 120),
         thickness: 2);
     // Text
     img.drawString(image, label,
-        font: img.arial14, x: cursorX + 14, y: topY + 8, color: rgb(_accentSoft));
+        font: img.arial14,
+        x: cursorX + 14,
+        y: topY + 8,
+        color: rgb(_accentSoft));
     cursorX += chipW + 10;
   }
 }
@@ -194,14 +232,19 @@ void _drawFeatureChips(img.Image image, {required int leftX, required int topY})
 // ---------------------------------------------------------------------
 // Right-side monogram badge — large CM in a circular plate with accent ring
 // ---------------------------------------------------------------------
-void _drawMonogramBadge(img.Image image, {required int centerX, required int centerY}) {
+void _drawMonogramBadge(img.Image image,
+    {required int centerX, required int centerY}) {
   // Outer ring — drawn as filled annulus (ring) for guaranteed thickness
-  final ringColor = img.ColorRgba8(_accent.red, _accent.green, _accent.blue, 200);
+  final ringColor =
+      img.ColorRgba8(_accent.red, _accent.green, _accent.blue, 200);
   for (var rr = 167; rr <= 173; rr++) {
     img.drawCircle(image, x: centerX, y: centerY, radius: rr, color: ringColor);
   }
   // Soft inner plate
-  img.fillCircle(image, x: centerX, y: centerY, radius: 156,
+  img.fillCircle(image,
+      x: centerX,
+      y: centerY,
+      radius: 156,
       color: img.ColorRgba8(_bgTop.red, _bgTop.green, _bgTop.blue, 230));
   // CM monogram inside
   final stroke = 24;
@@ -213,25 +256,56 @@ void _drawMonogramBadge(img.Image image, {required int centerX, required int cen
 
   final cLeft = centerX - letterW - gap ~/ 2;
   final cTop = centerY - letterH ~/ 2;
-  img.fillRect(image, x1: cLeft, y1: cTop, x2: cLeft + letterW, y2: cTop + stroke, color: accent);
-  img.fillRect(image, x1: cLeft, y1: cTop + letterH - stroke, x2: cLeft + letterW, y2: cTop + letterH, color: accent);
-  img.fillRect(image, x1: cLeft, y1: cTop, x2: cLeft + stroke, y2: cTop + letterH, color: accent);
+  img.fillRect(image,
+      x1: cLeft,
+      y1: cTop,
+      x2: cLeft + letterW,
+      y2: cTop + stroke,
+      color: accent);
+  img.fillRect(image,
+      x1: cLeft,
+      y1: cTop + letterH - stroke,
+      x2: cLeft + letterW,
+      y2: cTop + letterH,
+      color: accent);
+  img.fillRect(image,
+      x1: cLeft,
+      y1: cTop,
+      x2: cLeft + stroke,
+      y2: cTop + letterH,
+      color: accent);
 
   final mLeft = centerX + gap ~/ 2;
   final mTop = cTop;
-  img.fillRect(image, x1: mLeft, y1: mTop, x2: mLeft + stroke, y2: mTop + letterH, color: accent);
-  img.fillRect(image, x1: mLeft + letterW - stroke, y1: mTop, x2: mLeft + letterW, y2: mTop + letterH, color: accent);
+  img.fillRect(image,
+      x1: mLeft,
+      y1: mTop,
+      x2: mLeft + stroke,
+      y2: mTop + letterH,
+      color: accent);
+  img.fillRect(image,
+      x1: mLeft + letterW - stroke,
+      y1: mTop,
+      x2: mLeft + letterW,
+      y2: mTop + letterH,
+      color: accent);
   final iLeft = (x: mLeft + stroke, y: mTop);
   final iRight = (x: mLeft + letterW - stroke, y: mTop);
   final valley = (x: mLeft + letterW ~/ 2, y: mTop + (letterH * 0.55).round());
   _drawAngledStroke(image,
-      x1: iLeft.x, y1: iLeft.y,
-      x2: valley.x, y2: valley.y,
-      thickness: stroke, color: accent);
+      x1: iLeft.x,
+      y1: iLeft.y,
+      x2: valley.x,
+      y2: valley.y,
+      thickness: stroke,
+      color: accent);
   _drawAngledStroke(image,
-      x1: valley.x, y1: valley.y,
-      x2: iRight.x, y2: iRight.y,
-      thickness: stroke, color: accent);
+      x1: valley.x,
+      y1: valley.y,
+      x2: iRight.x,
+      y2: iRight.y,
+      thickness: stroke,
+      color: accent);
 
   img.fillCircle(image,
       x: cLeft + letterW - stroke ~/ 2,
