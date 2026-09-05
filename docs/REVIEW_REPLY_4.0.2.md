@@ -70,8 +70,9 @@ Record in this order — it must start at launch and cover every item Apple list
 7. **Settings → Subscribe to Pro** → paywall → tap a product → **show the
    StoreKit sandbox purchase sheet** → complete or cancel → tap *Restore
    purchases* → tap the **Terms of Use** and **Privacy Policy** links.
-8. **Settings → Sign in** with `qa@safecodeg.com` / `QATest@2024!` → sign out
-   (proves the account is optional).
+8. **Settings → Sign in** with the QA demo account (email and password are in
+   the untracked `env/secrets.json`; never paste them into this file) → sign
+   out (proves the account is optional).
 
 Under ~5 minutes, no cuts, no voiceover needed.
 
@@ -110,7 +111,7 @@ Under ~5 minutes, no cuts, no voiceover needed.
 >    calculator. Features are reached from the bottom tab bar (Convert,
 >    Calculate, Finance, Tools, Notes); the paywall is at Settings → Subscribe
 >    to Pro; location is requested only at Tools → GPS Coordinates → Use my
->    location. Optional sign-in test account: qa@safecodeg.com / QATest@2024!
+>    location. Optional sign-in test account: supplied separately in the App Review sign-in fields
 > 5. External services: Frankfurter (api.frankfurter.dev) for European Central
 >    Bank exchange rates; Supabase for the optional sign-in; Apple StoreKit via
 >    the in_app_purchase plugin for subscriptions and the lifetime purchase; the

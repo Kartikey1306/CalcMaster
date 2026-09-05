@@ -18,6 +18,19 @@ KEY = File.expand_path('../AuthKey_UV8NYF9767.p8', __dir__)
 APP = '6781554668'
 PK  = OpenSSL::PKey::EC.new(File.read(KEY))
 
+# The optional-sign-in demo account quoted in section 4. Never inline these:
+# this file is tracked, and a password committed here stays recoverable from
+# git history after it is removed. Export them from env/secrets.json, which is
+# gitignored:
+#
+#   export REVIEW_DEMO_EMAIL=... REVIEW_DEMO_PASSWORD=...
+DEMO_EMAIL = ENV.fetch('REVIEW_DEMO_EMAIL') do
+  abort('REVIEW_DEMO_EMAIL is not set — export it from env/secrets.json')
+end
+DEMO_PASSWORD = ENV.fetch('REVIEW_DEMO_PASSWORD') do
+  abort('REVIEW_DEMO_PASSWORD is not set — export it from env/secrets.json')
+end
+
 def token
   now = Time.now.to_i
   JWT.encode({ iss: 'ec93cc91-97c2-4b03-860b-697d7ec5d1fb', iat: now,
@@ -62,7 +75,7 @@ NOTES = <<~TXT
   c) Finance > Currency: European Central Bank rates via api.frankfurter.dev, with bundled offline fallback rates.
   d) Tools > GPS Coordinates > "Use my location": the only place location is requested. Coordinates are shown on-device and never uploaded.
   e) Settings (gear, top right) > "Subscribe to Pro" opens the paywall: Pro Monthly (USD 2.99), Annual (USD 19.99), Lifetime (USD 49.99, non-consumable). Purchases use StoreKit and work with a sandbox Apple ID; "Restore purchases" is on the same screen.
-  f) Optional sign-in, if you wish to exercise it: Settings > Sign in. Test account qa@safecodeg.com / QATest@2024!. No feature requires an account; a signed-in user can sign out from Settings.
+  f) Optional sign-in, if you wish to exercise it: Settings > Sign in. Test account #{DEMO_EMAIL} / #{DEMO_PASSWORD}. No feature requires an account; a signed-in user can sign out from Settings.
 
   5. EXTERNAL SERVICES USED
   - Frankfurter (api.frankfurter.dev): ECB reference exchange rates for the currency converter. No personal data is sent.

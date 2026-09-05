@@ -22,3 +22,10 @@ upload_certificate.pem
 
 # Real secrets for internal builds — never commit
 env/secrets.json
+
+# Android signing material — the upload key and its plaintext passwords.
+# Tracked by mistake until now; the key they protect still needs a Play
+# Console upload-key reset because it is recoverable from git history.
+android/key.properties
+android/*.jks
+android/*.keystore

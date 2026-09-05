@@ -16,9 +16,13 @@ import 'state/notes_provider.dart';
 import 'state/region_provider.dart';
 import 'theme/app_theme.dart';
 import 'theme/tokens.dart';
+import 'services/error_reporter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Capture framework and uncaught async errors. No-op sink by
+  // default - see services/error_reporter.dart to attach a crash service.
+  ErrorReporter.install();
   // Fail loudly in dev if this binary was built without (or with the
   // wrong) --dart-define-from-file=env/<env>.json. Release only reports.
   AppEnv.validate(urls: const {'SUPABASE_URL': SupabaseConfig.url});

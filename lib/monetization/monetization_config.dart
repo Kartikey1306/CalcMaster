@@ -145,12 +145,12 @@ class MonetizationConfig {
   // /terms links resolved 200 with the wrong content — an automatic App Store
   // rejection under Guideline 5.1.1.
   static const String privacyPolicyUrl =
-      'https://americangroupllc.github.io/CalcMaster/privacy.html';
+      'https://americangroupllc.github.io/policy/calcmaster/';
   static const String termsOfServiceUrl =
-      'https://americangroupllc.github.io/CalcMaster/terms.html';
+      'https://americangroupllc.github.io/policy/calcmaster/terms.html';
   static const String supportEmail = 'contact@safecodeg.com';
   static const String marketingWebsite =
-      'https://americangroupllc.github.io/CalcMaster/';
+      'https://americangroupllc.github.io/';
   static const String appStoreUrl =
       'https://apps.apple.com/app/calcmaster/id0000000000'; // REPLACE after listing
   static const String playStoreUrl =
