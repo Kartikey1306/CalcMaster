@@ -9,7 +9,8 @@ plugins {
 }
 
 // Load android/key.properties (gitignored). When absent — e.g. in CI without
-// secrets — fall back to debug signing so non-release builds still succeed.
+// secrets, or a fresh clone — the release build still succeeds but is left
+// UNSIGNED. It is never debug-signed; see the release block below.
 val keystorePropertiesFile = rootProject.file("key.properties")
 val keystoreProperties = Properties()
 if (keystorePropertiesFile.exists()) {
@@ -81,10 +82,14 @@ android {
 
     buildTypes {
         release {
-            signingConfig = if (hasReleaseKey) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
+            // Deliberately does NOT fall back to signingConfigs.debug. Play
+            // rejects debug-signed uploads, and a silent fallback produces an
+            // artifact that looks releasable but is not. With no
+            // android/key.properties the build still succeeds and the artifact
+            // is left unsigned, so the missing key is obvious rather than
+            // hidden. Mirrors Kinnav/android/app/build.gradle.kts:83-92.
+            if (hasReleaseKey) {
+                signingConfig = signingConfigs.getByName("release")
             }
             isMinifyEnabled = true
             isShrinkResources = true
