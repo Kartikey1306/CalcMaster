@@ -1,0 +1,6 @@
+# Copy to key.properties and fill in real values. NEVER commit key.properties.
+# The upload keystore itself must also stay out of git.
+storePassword=<upload keystore password>
+keyPassword=<key password>
+keyAlias=<key alias>
+storeFile=<absolute or relative path to upload keystore .jks>
