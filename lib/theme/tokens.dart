@@ -10,7 +10,10 @@ class AppColors {
   static const surfaceElevated = Color(0xFF2C2C2E);
   static const text = Color(0xFFFFFFFF);
   static const textMuted = Color(0x9EFFFFFF); // 62%
-  static const textDim = Color(0x6BFFFFFF); // 42%
+  // 50%, not 42%: at 42% this composites to a 4.11 contrast ratio on the
+  // black background, under the 4.5 WCAG AA minimum for the 11px labels
+  // in the tab bar. 50% measures 5.3 on black and 5.3 on `surface`.
+  static const textDim = Color(0x80FFFFFF); // 50%
   static const border = Color(0x14FFFFFF); // 8%
   static const borderStrong = Color(0x24FFFFFF); // 14%
   static const accentPrimary = Color(0xFFFF9F0A); // amber — operators & CTAs

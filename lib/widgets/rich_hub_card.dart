@@ -49,14 +49,19 @@ class RichHubCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: Spacing.sm),
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-                color: AppColors.text,
-                fontSize: 15,
-                fontWeight: FontWeight.w700),
+          // Flexible like the subtitle: at 2.0x text scale a fixed-height
+          // title plus a flexible subtitle overflowed the card by 2.9px,
+          // because only one of the two could give way.
+          Flexible(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  color: AppColors.text,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700),
+            ),
           ),
           const SizedBox(height: 2),
           Flexible(

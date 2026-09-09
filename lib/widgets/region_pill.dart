@@ -18,6 +18,11 @@ class RegionPill extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        // 48dp minimum: the pill measured 41dp tall, below both the Android
+        // and iOS tap-target guidelines. Constrain rather than pad, so the
+        // height holds at larger text scales too.
+        constraints: const BoxConstraints(minHeight: 48),
+        alignment: Alignment.center,
         padding:
             const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: 8),
         decoration: BoxDecoration(
