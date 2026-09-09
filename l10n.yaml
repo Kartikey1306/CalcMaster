@@ -3,3 +3,16 @@ template-arb-file: app_en.arb
 output-localization-file: app_localizations.dart
 output-class: AppLocalizations
 output-dir: lib/l10n/generated
+preferred-supported-locales:
+  - en
+  - es
+  - zh
+  - hi
+  - fr
+  - ar
+  - de
+  - ja
+  - pt
+  - ko
+  - ru
+  - it
