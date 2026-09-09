@@ -1,3 +1,4 @@
+import 'package:agl_i18n/agl_i18n.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -170,6 +171,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
               value: _notificationsEnabled,
               activeTrackColor: AppColors.accentPrimary,
               onChanged: _loaded ? _toggleNotifications : null,
+            ),
+          ),
+          _Tile(
+            icon: Icons.language,
+            iconColor: AppColors.accentPrimary,
+            title: AglL10n.of(context)!.miscLanguage,
+            // The language's own name, so someone who cannot read the
+            // current UI language can still tell which one is active.
+            subtitle: AglLocales.nativeName(
+                Localizations.localeOf(context).languageCode),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => AglLanguageScreen(
+                    controller: context.read<AglLocaleController>()),
+              ),
             ),
           ),
           const SizedBox(height: Spacing.lg),

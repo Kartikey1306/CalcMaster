@@ -1,3 +1,4 @@
+import 'package:agl_i18n/agl_i18n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -46,11 +47,17 @@ Future<void> main() async {
   // credentials are missing, so this never blocks startup.
   AnalyticsService.instance.bootstrap();
   AdService.instance.bootstrap();
-  runApp(const CalcMasterApp());
+  // Loaded before the first frame so a returning user never sees a flash of
+  // the wrong language.
+  final locale = AglLocaleController();
+  await locale.load();
+  runApp(CalcMasterApp(localeController: locale));
 }
 
 class CalcMasterApp extends StatelessWidget {
-  const CalcMasterApp({super.key});
+  final AglLocaleController localeController;
+  CalcMasterApp({super.key, AglLocaleController? localeController})
+      : localeController = localeController ?? AglLocaleController();
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +70,8 @@ class CalcMasterApp extends StatelessWidget {
     );
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<AglLocaleController>.value(
+            value: localeController),
         ChangeNotifierProvider(create: (_) => RegionProvider()),
         ChangeNotifierProvider(create: (_) => NotesProvider()),
         ChangeNotifierProvider(create: (_) => PremiumProvider()),
@@ -72,23 +81,21 @@ class CalcMasterApp extends StatelessWidget {
           return auth;
         }),
       ],
-      child: MaterialApp.router(
-        title: 'CalcMaster',
-        theme: theme,
-        debugShowCheckedModeBanner: false,
-        routerConfig: appRouter,
-        // Internationalization: 12 locales supported. MaterialApp auto-flips
-        // direction for RTL locales (Arabic). When the device locale isn't in
-        // the list, fall back to English.
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        localeResolutionCallback: (deviceLocale, supported) {
-          if (deviceLocale == null) return const Locale('en');
-          for (final s in supported) {
-            if (s.languageCode == deviceLocale.languageCode) return s;
-          }
-          return const Locale('en');
-        },
+      child: ListenableBuilder(
+        listenable: localeController,
+        builder: (context, _) => MaterialApp.router(
+          onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+          theme: theme,
+          debugShowCheckedModeBanner: false,
+          routerConfig: appRouter,
+          // Locale, picker and shared vocabulary come from agl_i18n. A null
+          // locale means "follow the device", which Flutter resolves against
+          // supportedLocales; an explicit choice overrides it and persists.
+          locale: localeController.locale,
+          supportedLocales: localeController.supportedLocales,
+          localizationsDelegates:
+              aglLocalizationsDelegates(AppLocalizations.delegate),
+        ),
       ),
     );
   }

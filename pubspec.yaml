@@ -9,6 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Shared portfolio localization: the locale set, the picker, and the
+  # vocabulary every AGL app has in common.
+  agl_i18n:
+    git:
+      url: https://github.com/AmericanGroupLLC/AmericanGroupLLC-Backend.git
+      path: packages/agl_i18n
+      ref: dev
   flutter_localizations:
     sdk: flutter
   cupertino_icons: ^1.0.8
