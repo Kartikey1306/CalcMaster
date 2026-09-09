@@ -10,7 +10,6 @@ checklist. Regenerate after significant changes.
 ## High
 
 - [ ] Crashlytics not wired — a crash in the wild is invisible.
-- [ ] **2 branches** (`local-wip`, `main`). One branch per repo is the target so a release can be tagged unambiguously; `local-wip` still carry unique commits.
 
 ## Needs someone with console access
 
