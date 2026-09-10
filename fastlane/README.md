@@ -63,10 +63,34 @@ Upload an Xcode-signed IPA + metadata and submit for review (Apple ID auth)
 
 Build + upload binary, metadata, screenshots, and submit for App Store review
 
+### ios upload_dsyms
+
+```sh
+[bundle exec] fastlane ios upload_dsyms
+```
+
+Upload iOS dSYMs to Crashlytics so release crashes are readable
+
+### ios production
+
+```sh
+[bundle exec] fastlane ios production
+```
+
+Alias for `release` — the name the release runbook uses
+
 ----
 
 
 ## Android
+
+### android test
+
+```sh
+[bundle exec] fastlane android test
+```
+
+Run the Flutter test suite
 
 ### android beta
 
@@ -91,6 +115,14 @@ Build + upload the AAB + listing straight to production
 ```
 
 Promote the current internal build to production (no new binary)
+
+### android production
+
+```sh
+[bundle exec] fastlane android production
+```
+
+Alias for `release` — the name the release runbook uses
 
 ----
 

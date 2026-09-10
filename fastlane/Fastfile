@@ -250,11 +250,21 @@ platform :ios do
       binary_path: Dir[File.expand_path("../ios/Pods/FirebaseCrashlytics/upload-symbols", __dir__)].first
     )
   end
+
+  desc "Alias for `release` — the name the release runbook uses"
+  lane :production do
+    release
+  end
 end
 
 # --- Android ---------------------------------------------------------------
 
 platform :android do
+  desc "Run the Flutter test suite"
+  lane :test do
+    flutter_sh("test")
+  end
+
   desc "Build + upload the AAB + listing to the Play internal track"
   lane :beta do
     flutter_sh("build appbundle --release")
@@ -294,5 +304,10 @@ platform :android do
       skip_upload_images: true,
       skip_upload_screenshots: true
     )
+  end
+
+  desc "Alias for `release` — the name the release runbook uses"
+  lane :production do
+    release
   end
 end
