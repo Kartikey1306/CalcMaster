@@ -10,3 +10,5 @@
 tags:
   design:
     skip: "Render-only; run with --run-skipped --update-goldens --tags design"
+  sanity:
+    description: Fast release-configuration checks. Run with --tags sanity.
