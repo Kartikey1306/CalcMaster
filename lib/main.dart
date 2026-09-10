@@ -1,3 +1,4 @@
+import 'package:agl_observability/agl_observability.dart';
 import 'package:agl_i18n/agl_i18n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +22,11 @@ import 'services/error_reporter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Crash reporting, before anything that could fail. Inactive and
+  // harmless until the Firebase config files are added.
+  await AglCrash.init(appName: 'CalcMaster');
+  ErrorReporter.sink = (error, stack, {context}) =>
+      AglCrash.recordError(error, stack, reason: context);
   // Capture framework and uncaught async errors. No-op sink by
   // default - see services/error_reporter.dart to attach a crash service.
   ErrorReporter.install();

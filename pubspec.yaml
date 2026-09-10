@@ -9,6 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  agl_observability:
+    git:
+      url: https://github.com/AmericanGroupLLC/AmericanGroupLLC-Backend.git
+      path: packages/agl_observability
+      ref: dev
   # Shared portfolio localization: the locale set, the picker, and the
   # vocabulary every AGL app has in common.
   agl_i18n:
