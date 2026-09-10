@@ -1,3 +1,4 @@
+import 'package:agl_ads/agl_ads.dart';
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
@@ -37,7 +38,16 @@ class AdService {
     if (kIsWeb || _initialized) return;
     if (_isInTest()) return;
     try {
+      // AdMob policy: in the EEA, the UK and Switzerland an ad may not be
+      // *requested* until the user has been asked — a non-personalised ad is
+      // not a substitute. UMP decides whether a form is required from the
+      // user's own location, so there is no geo-check here; everywhere else
+      // it reports "not required" and this costs one no-op call.
+      await AglConsent.gather();
       await MobileAds.instance.initialize();
+      // Caches the answer for AglConsent.adsAllowed, which is what the
+      // synchronous ad call sites below read.
+      await AglConsent.refresh();
       _initialized = true;
     } catch (e) {
       // Initialization can fail on emulators without Google Play Services etc.
@@ -65,6 +75,8 @@ class AdService {
   }
 
   String? nativeUnitId() {
+    // No ad may be requested until UMP says consent allows it.
+    if (!AglConsent.adsAllowed) return null;
     if (!enabled) return null;
     try {
       if (Platform.isIOS) return MonetizationConfig.admobIosNative;
@@ -98,6 +110,8 @@ class AdService {
   /// Preload the next interstitial in the background so `showInterstitial`
   /// can fire immediately on its next eligible trigger.
   Future<void> preloadInterstitial() async {
+    // No ad may be requested until UMP says consent allows it.
+    if (!await AglConsent.canRequestAds()) return;
     if (kIsWeb || _isInTest()) return;
     if (_cachedInterstitial != null || _loadingInterstitial) return;
     final unitId = interstitialUnitId();
