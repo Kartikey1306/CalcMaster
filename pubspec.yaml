@@ -9,23 +9,23 @@ environment:
 dependencies:
   agl_ads:
     git:
-      url: https://github.com/AmericanGroupLLC/AmericanGroupLLC-Backend.git
+      url: https://github.com/AmericanGroupLLC/agl-manifest.git
       path: packages/agl_ads
-      ref: dev
+      ref: master
   flutter:
     sdk: flutter
   agl_observability:
     git:
-      url: https://github.com/AmericanGroupLLC/AmericanGroupLLC-Backend.git
+      url: https://github.com/AmericanGroupLLC/agl-manifest.git
       path: packages/agl_observability
-      ref: dev
+      ref: master
   # Shared portfolio localization: the locale set, the picker, and the
   # vocabulary every AGL app has in common.
   agl_i18n:
     git:
-      url: https://github.com/AmericanGroupLLC/AmericanGroupLLC-Backend.git
+      url: https://github.com/AmericanGroupLLC/agl-manifest.git
       path: packages/agl_i18n
-      ref: dev
+      ref: master
   flutter_localizations:
     sdk: flutter
   cupertino_icons: ^1.0.8
