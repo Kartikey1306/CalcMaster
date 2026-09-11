@@ -68,8 +68,9 @@ class AdService {
     if (!enabled) return null;
     try {
       if (Platform.isIOS) return MonetizationConfig.admobIosInterstitial;
-      if (Platform.isAndroid)
+      if (Platform.isAndroid) {
         return MonetizationConfig.admobAndroidInterstitial;
+      }
     } catch (_) {}
     return null;
   }

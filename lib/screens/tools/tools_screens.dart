@@ -60,19 +60,21 @@ class _GpsCalcState extends State<GpsCalc> {
       }
       if (perm == LocationPermission.deniedForever ||
           perm == LocationPermission.denied) {
-        if (mounted)
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content:
                   Text(AppLocalizations.of(context)!.actionPermissionDenied)));
+        }
         return;
       }
       final pos = await Geolocator.getCurrentPosition();
       lat.text = pos.latitude.toStringAsFixed(6);
       lng.text = pos.longitude.toStringAsFixed(6);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     } finally {
       if (mounted) setState(() => loading = false);
     }
@@ -235,10 +237,12 @@ class _BmiCalcState extends State<BmiCalc> {
   }
 
   ({String label, Color color}) _category(double bmi) {
-    if (!bmi.isFinite || bmi <= 0)
+    if (!bmi.isFinite || bmi <= 0) {
       return (label: '—', color: AppColors.textMuted);
-    if (bmi < 18.5)
+    }
+    if (bmi < 18.5) {
       return (label: 'Underweight', color: const Color(0xFF7CC8FF));
+    }
     if (bmi < 25) return (label: 'Healthy weight', color: AppColors.success);
     if (bmi < 30) return (label: 'Overweight', color: AppColors.warning);
     return (label: 'Obese', color: AppColors.danger);

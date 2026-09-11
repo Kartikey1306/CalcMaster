@@ -171,8 +171,9 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
   }
 
   Widget _dayCell(DateTime? day, DateTime today) {
-    if (day == null)
+    if (day == null) {
       return const AspectRatio(aspectRatio: 1, child: SizedBox());
+    }
 
     final isSelected = _sameDay(day, _selected);
     final isToday = _sameDay(day, today);

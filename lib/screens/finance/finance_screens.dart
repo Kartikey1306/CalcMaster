@@ -540,8 +540,9 @@ class _UnitPriceCalcState extends State<UnitPriceCalc> {
         ? safeNumber(pb.text) / safeNumber(qb.text)
         : double.nan;
     String? cheaper;
-    if (upA.isFinite && upB.isFinite)
+    if (upA.isFinite && upB.isFinite) {
       cheaper = upA < upB ? 'A' : (upB < upA ? 'B' : null);
+    }
     Widget card(String name, TextEditingController p, TextEditingController q,
         double up, bool win) {
       return Expanded(

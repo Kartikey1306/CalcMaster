@@ -42,8 +42,9 @@ class _ConvertDetailState extends KeypadCalcState<ConvertDetail> {
     final abs = v.abs();
     if (abs == 0) return '0';
     if (abs < 0.001 || abs >= 1e7) return v.toStringAsExponential(6);
-    if (abs >= 100)
+    if (abs >= 100) {
       return v.toStringAsFixed(math.max(0, 6 - v.toInt().toString().length));
+    }
     return v
         .toStringAsPrecision(8)
         .replaceAll(RegExp(r'0+$'), '')
