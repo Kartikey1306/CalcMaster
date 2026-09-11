@@ -247,6 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           _field(_passCtrl, 'Password', Icons.lock_outline,
                               obscure: _obscure,
                               suffix: IconButton(
+                                tooltip: 'Hide',
                                 icon: Icon(
                                   _obscure
                                       ? Icons.visibility_off
