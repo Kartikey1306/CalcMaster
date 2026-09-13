@@ -1,6 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+/// Supported regions, named by their ISO 3166-1 alpha-2 country code (`EU` for
+/// the shared eurozone region).
+///
+/// The names are deliberately upper-case: `RegionId.name` is the value
+/// persisted under the `region` key in SharedPreferences and matched back in
+/// `RegionProvider`, so lower-camel-casing them would silently reset every
+/// existing user's saved region. `IN` also cannot be lower-cased — `in` is a
+/// reserved word in Dart.
+// ignore: constant_identifier_names
 enum RegionId { US, UK, EU, CA, AU, IN, JP, BR, MX, KR, AE }
 
 class Region {

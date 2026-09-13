@@ -1,5 +1,6 @@
 {
   "APP_ENV": "dev",
+  "RECEIPT_VERIFICATION_URL": "",
   "API_BASE_URL": "https://api.safecodeg.com/api/v1",
   "GOOGLE_IOS_CLIENT_ID": "",
   "GOOGLE_SERVER_CLIENT_ID": "146431650883-blpfddrf32ureu4ucqlp3oku9jo07luq.apps.googleusercontent.com",

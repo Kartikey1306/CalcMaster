@@ -20,6 +20,16 @@ class HubTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Semantics(
+      container: true,
+      button: true,
+      label: '$title, $description',
+      excludeSemantics: true,
+      child: _build(context),
+    );
+  }
+
+  Widget _build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Material(

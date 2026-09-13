@@ -40,18 +40,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _toggleNotifications(bool value) async {
-    if (value) {
-      final granted = await NotificationService.instance.requestPermission();
-      if (!granted) {
-        await NotificationService.instance.setEnabled(enabled: true);
-      } else {
-        await NotificationService.instance.setEnabled(enabled: true);
-      }
-    } else {
+    if (!value) {
+      await NotificationService.instance.setEnabled(enabled: false);
+      if (!mounted) return;
+      setState(() => _notificationsEnabled = false);
+      return;
+    }
+
+    // Turning the switch on is a request, not a grant. Honour whatever the OS
+    // said: with no push transport attached `requestPermission()` reports the
+    // stored opt-in, so persist the opt-in first and then reconcile.
+    await NotificationService.instance.setEnabled(enabled: true);
+    final granted = await NotificationService.instance.requestPermission();
+    if (!granted) {
       await NotificationService.instance.setEnabled(enabled: false);
     }
     if (!mounted) return;
-    setState(() => _notificationsEnabled = value);
+    setState(() => _notificationsEnabled = granted);
+    if (!granted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Notifications are turned off in system settings.'),
+        ),
+      );
+    }
   }
 
   Future<void> _sendFeedback() async {

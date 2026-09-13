@@ -17,8 +17,26 @@ class ResultRow extends StatelessWidget {
     this.highlight = false,
   });
 
+  /// What a screen reader announces for the row. The visible layout splits the
+  /// label and the value into two columns, which read as two disconnected
+  /// fragments; merging them into one node keeps "Future value, $1,234"
+  /// together.
+  String get semanticsLabel =>
+      caption == null ? '$label, $value' : '$label, $caption, $value';
+
   @override
   Widget build(BuildContext context) {
+    return Semantics(
+      container: true,
+      button: true,
+      label: semanticsLabel,
+      hint: 'Copy to clipboard',
+      excludeSemantics: true,
+      child: _build(context),
+    );
+  }
+
+  Widget _build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Material(

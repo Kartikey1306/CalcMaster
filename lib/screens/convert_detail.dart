@@ -135,6 +135,9 @@ class _ConvertDetailState extends KeypadCalcState<ConvertDetail> {
                   haptic: label == '='
                       ? HapticFeedbackKind.medium
                       : HapticFeedbackKind.selection,
+                  // Icon-only keys (backspace) drop `label`, so hand the glyph
+                  // to the semantics layer separately.
+                  semanticLabel: label,
                 );
 
             return Column(

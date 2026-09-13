@@ -23,6 +23,16 @@ class RichHubCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Semantics(
+      container: true,
+      button: true,
+      label: '$title, $subtitle',
+      excludeSemantics: true,
+      child: _build(context),
+    );
+  }
+
+  Widget _build(BuildContext context) {
     return GlassCard(
       accent: accent,
       onTap: onTap,

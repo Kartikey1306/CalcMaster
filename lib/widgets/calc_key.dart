@@ -39,6 +39,10 @@ class CalcKey extends StatelessWidget {
   final VoidCallback onTap;
   final HapticFeedbackKind haptic;
 
+  /// Overrides what a screen reader announces. Required for icon-only keys
+  /// (backspace), which have no [label] to fall back on.
+  final String? semanticLabel;
+
   const CalcKey({
     super.key,
     this.label,
@@ -51,7 +55,43 @@ class CalcKey extends StatelessWidget {
     this.active = false,
     this.fontScale = 1,
     this.haptic = HapticFeedbackKind.selection,
+    this.semanticLabel,
   }) : assert(label != null || icon != null, 'a key needs a label or an icon');
+
+  /// Spoken names for the glyphs on the keypad. VoiceOver and TalkBack read
+  /// bare symbols like `÷`, `⌫` or `+/−` as nothing at all or as punctuation,
+  /// so every non-alphanumeric key gets a word.
+  static const _spoken = <String, String>{
+    'AC': 'All clear',
+    'C': 'Clear',
+    '⌫': 'Backspace',
+    '+/−': 'Toggle sign',
+    '%': 'Percent',
+    '÷': 'Divide',
+    '×': 'Multiply',
+    '−': 'Minus',
+    '-': 'Minus',
+    '+': 'Plus',
+    '=': 'Equals',
+    '.': 'Decimal point',
+    '(': 'Open bracket',
+    ')': 'Close bracket',
+    '√': 'Square root',
+    'x²': 'Square',
+    'xʸ': 'Power',
+    '1/x': 'Reciprocal',
+    'π': 'Pi',
+    'n!': 'Factorial',
+    '±': 'Toggle sign',
+  };
+
+  /// The announced name: an explicit [semanticLabel] wins, otherwise the
+  /// glyph's spoken form, otherwise the glyph itself.
+  static String spokenName(String? label, String? semanticLabel) {
+    final source = semanticLabel ?? label;
+    if (source == null || source.isEmpty) return '';
+    return _spoken[source] ?? source;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,41 +120,49 @@ class CalcKey extends StatelessWidget {
     final width = size * widthFactor + gap * (widthFactor - 1);
     final wide = widthFactor > 1;
 
-    return PressableScale(
-      onTap: onTap,
-      haptic: haptic,
-      child: Container(
-        width: width,
-        height: size,
-        // Wide keys keep their glyph over the first column, like iOS's `0`.
-        alignment: wide ? Alignment.centerLeft : Alignment.center,
-        padding: wide ? EdgeInsets.only(left: size * 0.36) : EdgeInsets.zero,
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(size / 2),
-          boxShadow: kind == CalcKeyKind.operator && !active
-              ? [
-                  BoxShadow(
-                    color: KeyColors.operator.withValues(alpha: 0.35),
-                    blurRadius: 14,
-                    spreadRadius: -5,
-                    offset: const Offset(0, 4),
+    return Semantics(
+      container: true,
+      button: true,
+      enabled: true,
+      selected: active,
+      label: spokenName(label, semanticLabel),
+      excludeSemantics: true,
+      child: PressableScale(
+        onTap: onTap,
+        haptic: haptic,
+        child: Container(
+          width: width,
+          height: size,
+          // Wide keys keep their glyph over the first column, like iOS's `0`.
+          alignment: wide ? Alignment.centerLeft : Alignment.center,
+          padding: wide ? EdgeInsets.only(left: size * 0.36) : EdgeInsets.zero,
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(size / 2),
+            boxShadow: kind == CalcKeyKind.operator && !active
+                ? [
+                    BoxShadow(
+                      color: KeyColors.operator.withValues(alpha: 0.35),
+                      blurRadius: 14,
+                      spreadRadius: -5,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
+          ),
+          child: icon != null
+              ? Icon(icon, color: fg, size: size * 0.36)
+              : Text(
+                  label!,
+                  maxLines: 1,
+                  style: TextStyle(
+                    color: fg,
+                    fontSize: size * 0.4 * fontScale,
+                    fontWeight: FontWeight.w500,
+                    height: 1,
                   ),
-                ]
-              : null,
-        ),
-        child: icon != null
-            ? Icon(icon, color: fg, size: size * 0.36)
-            : Text(
-                label!,
-                maxLines: 1,
-                style: TextStyle(
-                  color: fg,
-                  fontSize: size * 0.4 * fontScale,
-                  fontWeight: FontWeight.w500,
-                  height: 1,
                 ),
-              ),
+        ),
       ),
     );
   }
@@ -181,6 +229,19 @@ class CalcDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Semantics(
+      container: true,
+      // The readout changes on every keypress; a live region makes the screen
+      // reader announce the new result instead of leaving it silent.
+      liveRegion: true,
+      label: expression.isEmpty ? 'Result' : 'Result for $expression',
+      value: value,
+      excludeSemantics: true,
+      child: _build(context),
+    );
+  }
+
+  Widget _build(BuildContext context) {
     return GestureDetector(
       onHorizontalDragEnd: onSwipe == null ? null : (_) => onSwipe!(),
       behavior: HitTestBehavior.opaque,

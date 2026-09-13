@@ -15,6 +15,19 @@ class RegionPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final region = context.watch<RegionProvider>().region;
+    // The pill reads as "🇺🇸 United States · $" without help — a flag emoji and
+    // a bare currency symbol. Name it explicitly instead.
+    return Semantics(
+      container: true,
+      button: true,
+      label: 'Region: ${region.label}, currency ${region.currency}',
+      hint: 'Change region and currency',
+      excludeSemantics: true,
+      child: _build(context, region),
+    );
+  }
+
+  Widget _build(BuildContext context, Region region) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

@@ -100,6 +100,21 @@ class MonetizationConfig {
   static const String productLifetime =
       'calcmaster_pro_lifetime'; // REPLACE if different
 
+  // REPLACE: the HTTPS endpoint of the backend that validates a store receipt
+  // with Apple / Google and answers `{"entitled": true|false}`.
+  // While this is empty, `PremiumProvider` trusts the store callback directly,
+  // which a jailbroken/rooted device can forge. Set it (or pass `--dart-define
+  // RECEIPT_VERIFICATION_URL=...` at build time) before taking real money.
+  static const String receiptVerificationUrl = String.fromEnvironment(
+    'RECEIPT_VERIFICATION_URL',
+    defaultValue: '',
+  );
+
+  /// True when store receipts are checked by a trusted backend before Pro is
+  /// granted. Surfaced in the diagnostics screen / release checks.
+  static bool get receiptVerificationReady =>
+      receiptVerificationUrl.startsWith('https://');
+
   // Display prices shown on the paywall. These are *cosmetic only* — the real
   // price is fetched from the store at purchase time. Keep these in sync with
   // App Store Connect / Play Console base pricing for honest UX.

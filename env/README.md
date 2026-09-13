@@ -30,6 +30,7 @@ staging install can never overwrite production.
 | `API_BASE_URL` | configuration |
 | `GOOGLE_IOS_CLIENT_ID` | configuration |
 | `GOOGLE_SERVER_CLIENT_ID` | configuration |
+| `RECEIPT_VERIFICATION_URL` | HTTPS endpoint that validates a store receipt with Apple/Google and answers `{"entitled": true\|false}`. Empty means no backend check, so `PremiumProvider` trusts the store callback — set it before taking real money. |
 | `SUPABASE_ANON_KEY` | configuration |
 | `SUPABASE_URL` | configuration |
 

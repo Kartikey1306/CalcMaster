@@ -163,6 +163,18 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = selected ? AppColors.accentPrimary : AppColors.textDim;
+    return Semantics(
+      container: true,
+      button: true,
+      selected: selected,
+      inMutuallyExclusiveGroup: true,
+      label: label,
+      excludeSemantics: true,
+      child: _build(color),
+    );
+  }
+
+  Widget _build(Color color) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(Radii.button),

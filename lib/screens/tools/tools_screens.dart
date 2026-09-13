@@ -932,20 +932,20 @@ class _AspectRatioCalcState extends State<AspectRatioCalc> {
 
   @override
   Widget build(BuildContext context) {
-    final W1 = safeNumber(w1.text);
-    final H1 = safeNumber(h1.text);
-    final W2 = w2.text.isEmpty ? double.nan : safeNumber(w2.text);
-    final H2 = h2.text.isEmpty ? double.nan : safeNumber(h2.text);
-    final ratio = (W1 > 0 && H1 > 0) ? W1 / H1 : double.nan;
+    final width1 = safeNumber(w1.text);
+    final height1 = safeNumber(h1.text);
+    final width2 = w2.text.isEmpty ? double.nan : safeNumber(w2.text);
+    final height2 = h2.text.isEmpty ? double.nan : safeNumber(h2.text);
+    final ratio = (width1 > 0 && height1 > 0) ? width1 / height1 : double.nan;
     String? computedLabel;
     String? computedValue;
     if (ratio.isFinite) {
-      if (W2.isFinite && !H2.isFinite) {
+      if (width2.isFinite && !height2.isFinite) {
         computedLabel = 'Solved height';
-        computedValue = '${formatNumber(W2 / ratio, maxDigits: 2)} px';
-      } else if (H2.isFinite && !W2.isFinite) {
+        computedValue = '${formatNumber(width2 / ratio, maxDigits: 2)} px';
+      } else if (height2.isFinite && !width2.isFinite) {
         computedLabel = 'Solved width';
-        computedValue = '${formatNumber(H2 * ratio, maxDigits: 2)} px';
+        computedValue = '${formatNumber(height2 * ratio, maxDigits: 2)} px';
       }
     }
     return InnerScaffold(
@@ -970,7 +970,9 @@ class _AspectRatioCalcState extends State<AspectRatioCalc> {
             label: 'Ratio (decimal)',
             value: ratio.isFinite ? formatNumber(ratio, maxDigits: 4) : '—'),
         ResultRow(
-            label: 'Ratio (a:b)', value: _reduce(W1, H1), highlight: true),
+            label: 'Ratio (a:b)',
+            value: _reduce(width1, height1),
+            highlight: true),
         if (computedLabel != null)
           ResultRow(
               label: computedLabel, value: computedValue!, highlight: true),

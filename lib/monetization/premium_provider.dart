@@ -1,11 +1,63 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'analytics_service.dart';
 import 'monetization_config.dart';
+
+/// Decides whether a store transaction really entitles this user to Pro.
+///
+/// The store callback alone is not proof: on a jailbroken / rooted device the
+/// payload can be forged. An implementation is expected to hand
+/// `PurchaseDetails.verificationData.serverVerificationData` to a trusted
+/// backend that validates it against Apple's / Google's API.
+abstract class ReceiptVerifier {
+  /// `true` only when a trusted party confirmed the entitlement.
+  Future<bool> verify(PurchaseDetails purchase);
+}
+
+/// Posts the store receipt to a backend and grants only on an explicit
+/// `{"entitled": true}` answer. Anything else — a non-200, a malformed body, a
+/// timeout — is treated as "not entitled", because failing open here is the
+/// whole vulnerability this class exists to close.
+class HttpReceiptVerifier implements ReceiptVerifier {
+  final String endpoint;
+  final http.Client _client;
+  final Duration timeout;
+
+  HttpReceiptVerifier(
+    this.endpoint, {
+    http.Client? client,
+    this.timeout = const Duration(seconds: 15),
+  }) : _client = client ?? http.Client();
+
+  @override
+  Future<bool> verify(PurchaseDetails purchase) async {
+    try {
+      final resp = await _client
+          .post(
+            Uri.parse(endpoint),
+            headers: const {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'productId': purchase.productID,
+              'source': purchase.verificationData.source,
+              'receipt': purchase.verificationData.serverVerificationData,
+              'transactionId': purchase.purchaseID,
+            }),
+          )
+          .timeout(timeout);
+      if (resp.statusCode != 200) return false;
+      final body = jsonDecode(resp.body);
+      return body is Map && body['entitled'] == true;
+    } catch (_) {
+      return false;
+    }
+  }
+}
 
 enum SubscriptionTier { monthly, annual, lifetime }
 
@@ -33,16 +85,20 @@ extension SubscriptionTierProductId on SubscriptionTier {
 /// no StoreKit products) the store either reports unavailable or returns no
 /// products, and both methods honestly return `false`.
 ///
-/// TODO(monetization): SERVER-SIDE RECEIPT VERIFICATION IS REQUIRED BEFORE
-/// RELEASE. The entitlement below is granted client-side directly from the
-/// store callback, which is spoofable. Before shipping, forward
+/// Receipt verification: a client-side grant straight off the store callback
+/// is spoofable, so every grant goes through a [ReceiptVerifier] first. Attach
+/// one with [attachVerifier] (see [HttpReceiptVerifier], which posts
 /// `PurchaseDetails.verificationData.serverVerificationData` to a trusted
-/// backend that validates the receipt with Apple / Google and returns the
-/// authoritative entitlement; grant Pro only on that server response.
+/// backend and grants only on its authoritative answer). With no verifier
+/// attached the provider falls back to the store's own word — acceptable only
+/// while `MonetizationConfig.receiptVerificationUrl` is empty.
 class PremiumProvider extends ChangeNotifier {
   static const _kIsPro = '@calcmaster/is_pro';
 
   final InAppPurchase _iap = InAppPurchase.instance;
+  ReceiptVerifier? _verifier = MonetizationConfig.receiptVerificationUrl.isEmpty
+      ? null
+      : HttpReceiptVerifier(MonetizationConfig.receiptVerificationUrl);
   StreamSubscription<List<PurchaseDetails>>? _purchaseSub;
   final Map<String, ProductDetails> _products = {};
 
@@ -217,17 +273,12 @@ class PremiumProvider extends ChangeNotifier {
         case PurchaseStatus.pending:
           break;
         case PurchaseStatus.purchased:
-          // TODO(monetization): verify purchase.verificationData server-side
-          // BEFORE granting (see class doc). Client grant is a pre-release stub.
-          _grantPro();
-          AnalyticsService.instance.logPurchaseCompleted(purchase.productID);
-          _completePurchase(true);
+          // Fire-and-forget: the awaited future in purchase() is resolved from
+          // inside _verifyThenGrant once the verifier has answered.
+          unawaited(_verifyThenGrant(purchase, restored: false));
           break;
         case PurchaseStatus.restored:
-          // TODO(monetization): verify server-side before granting (see above).
-          _grantPro();
-          AnalyticsService.instance.logPurchaseCompleted(purchase.productID);
-          _completeRestore(true);
+          unawaited(_verifyThenGrant(purchase, restored: true));
           break;
         case PurchaseStatus.error:
           _lastError = purchase.error?.message ?? 'The purchase failed.';
@@ -244,6 +295,43 @@ class PremiumProvider extends ChangeNotifier {
       if (purchase.pendingCompletePurchase) {
         _iap.completePurchase(purchase);
       }
+    }
+  }
+
+  /// Verifies a store transaction and only then flips the entitlement.
+  ///
+  /// With no verifier attached (`receiptVerificationUrl` unset) the store's own
+  /// word is used, which is the documented pre-backend behaviour.
+  Future<void> _verifyThenGrant(
+    PurchaseDetails purchase, {
+    required bool restored,
+  }) async {
+    final verifier = _verifier;
+    if (verifier != null) {
+      bool ok;
+      try {
+        ok = await verifier.verify(purchase);
+      } catch (_) {
+        ok = false;
+      }
+      if (!ok) {
+        _lastError = 'We could not verify that purchase.';
+        if (restored) {
+          _completeRestore(false);
+        } else {
+          _completePurchase(false);
+        }
+        notifyListeners();
+        return;
+      }
+    }
+
+    await _grantPro();
+    AnalyticsService.instance.logPurchaseCompleted(purchase.productID);
+    if (restored) {
+      _completeRestore(true);
+    } else {
+      _completePurchase(true);
     }
   }
 
@@ -267,6 +355,18 @@ class PremiumProvider extends ChangeNotifier {
     await sp.setBool(_kIsPro, true);
     notifyListeners();
   }
+
+  /// Replace the receipt verifier. Attaching `null` restores the pre-backend
+  /// behaviour of trusting the store callback.
+  void attachVerifier(ReceiptVerifier? verifier) => _verifier = verifier;
+
+  /// Drives the verify-then-grant path without a real store transaction.
+  @visibleForTesting
+  Future<void> handlePurchaseForTest(
+    PurchaseDetails purchase, {
+    bool restored = false,
+  }) =>
+      _verifyThenGrant(purchase, restored: restored);
 
   /// Used by tests to flip the entitlement without hitting a real store.
   @visibleForTesting

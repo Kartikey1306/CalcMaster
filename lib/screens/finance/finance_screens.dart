@@ -305,14 +305,16 @@ class _CompoundCalcState extends State<CompoundCalc> {
     final r = safeNumber(ratePct.text) / 100;
     final t = safeNumber(years.text);
     final n = double.parse(freq);
-    final PMT = safeNumber(pmt.text);
+    final payment = safeNumber(pmt.text);
     double future = P;
     if (n > 0 && t > 0 && r >= 0) {
       final factor = math.pow(1 + r / n, n * t).toDouble();
       future = P * factor +
-          (PMT > 0 && r > 0 ? PMT * ((factor - 1) / (r / n)) : PMT * n * t);
+          (payment > 0 && r > 0
+              ? payment * ((factor - 1) / (r / n))
+              : payment * n * t);
     }
-    final contributed = P + PMT * n * t;
+    final contributed = P + payment * n * t;
     final interest = future - contributed;
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeCompound,

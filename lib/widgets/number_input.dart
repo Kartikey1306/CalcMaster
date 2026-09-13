@@ -59,32 +59,43 @@ class NumberInput extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: controller,
-                    keyboardType: keyboardType,
-                    autofocus: autofocus,
+                  // The caption above the box is a plain Text in a sibling
+                  // node, so the field itself would otherwise be announced as
+                  // an unnamed text field. Name it, and append the unit so the
+                  // value has units when read back.
+                  child: Semantics(
+                    label: [
+                      if (label != null) label!,
+                      if (unitSymbol != null) 'in $unitSymbol',
+                    ].join(' '),
+                    textField: true,
+                    child: TextField(
+                      controller: controller,
+                      keyboardType: keyboardType,
+                      autofocus: autofocus,
 
-                    // NEW
-                    readOnly: readOnly,
-                    onTap: onTap,
+                      // NEW
+                      readOnly: readOnly,
+                      onTap: onTap,
 
-                    style: const TextStyle(
-                      color: AppColors.text,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    cursorColor: AppColors.accentPrimary,
-                    decoration: const InputDecoration(
-                      isCollapsed: true,
-                      border: InputBorder.none,
-                      hintText: '0',
-                      hintStyle: TextStyle(
-                        color: AppColors.textDim,
+                      style: const TextStyle(
+                        color: AppColors.text,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
                       ),
+                      cursorColor: AppColors.accentPrimary,
+                      decoration: const InputDecoration(
+                        isCollapsed: true,
+                        border: InputBorder.none,
+                        hintText: '0',
+                        hintStyle: TextStyle(
+                          color: AppColors.textDim,
+                        ),
+                      ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.\-]')),
+                      ],
                     ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.\-]')),
-                    ],
                   ),
                 ),
                 if (unitSymbol != null) ...[
