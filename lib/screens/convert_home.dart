@@ -8,6 +8,12 @@ import '../widgets/convert_card.dart';
 import '../widgets/pill_badge.dart';
 import '../widgets/region_pill.dart';
 
+/// How much taller a text-bearing grid tile has to be at the current text
+/// scale. Clamped so a very large scale cannot turn the grid into a column of
+/// near-empty slabs.
+double _tileHeightFactor(BuildContext context) =>
+    (MediaQuery.textScalerOf(context).scale(16) / 16).clamp(1.0, 2.0);
+
 class ConvertHome extends StatelessWidget {
   const ConvertHome({super.key});
 
@@ -80,9 +86,13 @@ class ConvertHome extends StatelessWidget {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: categories.length,
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 240,
-                  childAspectRatio: 1.4,
+                  // The tile height is derived from its width, but the three
+                  // stacked lines inside grow with the user's text scale. On a
+                  // folded 320dp window at 1.6x the card clipped its subtitle,
+                  // so make the tile taller in step with the scale instead.
+                  childAspectRatio: 1.4 / _tileHeightFactor(context),
                   crossAxisSpacing: Spacing.md,
                   mainAxisSpacing: Spacing.md,
                 ),

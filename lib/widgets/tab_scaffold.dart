@@ -25,6 +25,9 @@ class TabScaffold extends StatelessWidget {
   /// centered content column.
   static const double _desktopBreakpoint = 840;
 
+  /// Above this width the rail has room to show its labels next to the icons.
+  static const double _extendedRailBreakpoint = 1180;
+
   /// Content never grows wider than this on desktop — keeps line lengths and
   /// tap targets comfortable instead of stretching edge-to-edge.
   static const double _contentMaxWidth = 1120;
@@ -46,8 +49,18 @@ class TabScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Measure the space this shell was actually handed rather than the window,
+    // and measure it on every layout pass. A folding phone changes the app's
+    // width while it is running, and it can hand the app a fraction of the
+    // screen; a width read once, or read from the window, gets both wrong.
+    return LayoutBuilder(
+      builder: (context, constraints) => _build(context, constraints.maxWidth),
+    );
+  }
+
+  Widget _build(BuildContext context, double width) {
     final loc = AppLocalizations.of(context)!;
-    final isDesktop = MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
+    final isDesktop = width >= _desktopBreakpoint;
 
     final content = Column(
       children: [
@@ -73,7 +86,7 @@ class TabScaffold extends StatelessWidget {
                       destinations: _destinations(loc),
                       currentIndex: shell.currentIndex,
                       onSelect: _onSelect,
-                      extended: MediaQuery.sizeOf(context).width >= 1180,
+                      extended: width >= _extendedRailBreakpoint,
                     ),
                     Expanded(
                       child: Center(

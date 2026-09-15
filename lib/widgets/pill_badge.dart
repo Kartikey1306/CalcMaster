@@ -28,13 +28,20 @@ class PillBadge extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text(
-            label.toUpperCase(),
-            style: TextStyle(
-              color: color,
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.0,
+          // The pill is as wide as its label, so on a folded/narrow window at
+          // a large text scale the label is what runs past the edge. Let it
+          // shrink instead.
+          Flexible(
+            child: Text(
+              label.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.0,
+              ),
             ),
           ),
         ],

@@ -228,8 +228,13 @@ class _Benefit extends StatelessWidget {
         children: [
           const Icon(Icons.check_circle, size: 18, color: AppColors.success),
           const SizedBox(width: 8),
-          Text(label,
-              style: const TextStyle(color: AppColors.text, fontSize: 14)),
+          // Benefit copy is translated and the window can be 320dp wide (or
+          // a folded cover display), so the line has to wrap rather than run
+          // off the right edge.
+          Expanded(
+            child: Text(label,
+                style: const TextStyle(color: AppColors.text, fontSize: 14)),
+          ),
         ],
       ),
     );
@@ -282,31 +287,53 @@ class _TierCard extends StatelessWidget {
                   color: selected ? AppColors.warning : AppColors.textDim,
                 ),
                 const SizedBox(width: Spacing.md),
+                // The price used to size itself first and left the title
+                // column whatever was over — 17dp on a 320dp window, which
+                // pushed the "BEST VALUE" badge off the card. Split the row
+                // proportionally instead so both sides shrink together.
                 Expanded(
+                  flex: 3,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(children: [
-                        Text(title,
-                            style: const TextStyle(
-                                color: AppColors.text,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700)),
+                        // The price sits in the same row as this column, so on
+                        // a narrow window the title gets very little room. Let
+                        // it give way instead of overflowing.
+                        Flexible(
+                          child: Text(title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  color: AppColors.text,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w700)),
+                        ),
                         if (badge != null) ...[
                           const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: AppColors.warning.withValues(alpha: 0.18),
-                              borderRadius: BorderRadius.circular(6),
+                          // Last thing on the line and the widest fixed piece
+                          // of it: on a folded window it has to scale down
+                          // rather than push itself off the card.
+                          Flexible(
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerRight,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color:
+                                      AppColors.warning.withValues(alpha: 0.18),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(badge!,
+                                    style: const TextStyle(
+                                        color: AppColors.warning,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 1.0)),
+                              ),
                             ),
-                            child: Text(badge!,
-                                style: const TextStyle(
-                                    color: AppColors.warning,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 1.0)),
                           ),
                         ],
                       ]),
@@ -317,11 +344,15 @@ class _TierCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Text(priceLine,
-                    style: const TextStyle(
-                        color: AppColors.text,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700)),
+                Flexible(
+                  flex: 2,
+                  child: Text(priceLine,
+                      textAlign: TextAlign.end,
+                      style: const TextStyle(
+                          color: AppColors.text,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700)),
+                ),
               ],
             ),
           ),
