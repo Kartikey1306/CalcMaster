@@ -7,7 +7,7 @@ so a shipped binary contains exactly the values it was built with.
 | | dev | staging | prod |
 |---|---|---|---|
 | `APP_ENV` | `dev` | `staging` | `prod` |
-| applicationId | `com.americangroup.calcmaster.dev` | `com.americangroup.calcmaster.staging` | `com.americangroup.calcmaster` |
+| applicationId | `com.americangroupllc.calcmaster.dev` | `com.americangroupllc.calcmaster.staging` | `com.americangroupllc.calcmaster` |
 | Launcher name | CalcMaster Dev | CalcMaster Staging | CalcMaster |
 | versionName suffix | `-dev` | `-staging` | *(none)* |
 

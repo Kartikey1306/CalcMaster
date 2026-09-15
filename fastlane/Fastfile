@@ -1,4 +1,4 @@
-# Fastlane — CalcMaster (com.americangroup.calcmaster)
+# Fastlane — CalcMaster (com.americangroupllc.calcmaster)
 #
 # Auth is entirely env-driven so the same lanes run locally and in CI with no
 # secrets in the repo. See fastlane/README.md + docs/GO_LIVE.md.
@@ -13,7 +13,7 @@ require "tmpdir"
 
 default_platform(:ios)
 
-APP_ID = "com.americangroup.calcmaster".freeze
+APP_ID = "com.americangroupllc.calcmaster".freeze
 APP_NAME = "CalcMaster: World Calc".freeze
 # Anchored to fastlane/ via __dir__ for the same CWD reason noted on
 # update_code_signing_settings below — upload_to_play_store is a Ruby action.

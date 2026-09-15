@@ -5,7 +5,7 @@ human setup** and the **exact values I need from your Apple + Google accounts**.
 Once these are in place, `git tag v4.0.1 && git push --tags` builds and uploads to
 both stores automatically (TestFlight + Play internal track).
 
-App identity (already set, don't change): `CalcMaster` · `com.americangroup.calcmaster` · `4.0.0 (1)`
+App identity (already set, don't change): `CalcMaster` · `com.americangroupllc.calcmaster` · `4.0.0 (1)`
 
 ---
 

@@ -14,7 +14,7 @@ Privacy / Terms / Support fields read placeholder URLs from `lib/monetization/mo
 | App name | **CalcMaster** | Both |
 | Tagline | **World calculator & converter** | Both |
 | Brand colors | #0B1020 (bg), #7C5CFF (accent), #5CE0A8 (mint), #FFC85C (warning) | Both |
-| Bundle / package ID | `com.americangroup.calcmaster` | Both |
+| Bundle / package ID | `com.americangroupllc.calcmaster` | Both |
 | Category — primary | **Utilities** (App Store) / **Tools** (Play) | Both |
 | Category — secondary | **Productivity** | Both |
 | Age rating | **4+** (no objectionable content) / **Everyone** (Play) | Both |

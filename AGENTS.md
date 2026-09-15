@@ -76,7 +76,7 @@ Provider / ChangeNotifier via `MultiProvider` in `main.dart`: `RegionProvider`, 
 - **Monetization flags default `false`**; services no-op and defaults are Google TEST ad IDs / dummy keys — safe to ship, replace before production (see README "TEMPORARY VALUES").
 - **RegionId enum values are UPPERCASE** (`US`, `UK`…) and persisted by `.name` in SharedPreferences — do NOT rename (the `constant_identifier_names` lint here is intentional/ignore).
 - **`flutter analyze` reports ~info-level lints** (enum names, curly braces) that are pre-existing and intentional; only the previously-unreferenced `_white` warning was cleaned up.
-- **Bundle/app id** is `com.americangroup.calcmaster` (Supabase OAuth redirect scheme depends on it) — leave it.
+- **Bundle/app id** is `com.americangroupllc.calcmaster` (Supabase OAuth redirect scheme depends on it) — leave it.
 - **Web** uses a desktop layout above 840px width (side rail, max content 1120px) in `tab_scaffold.dart`.
 - Generated l10n (`lib/l10n/generated/`) is committed but regenerable — edit ARB, not the generated files.
 

@@ -28,10 +28,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.americangroup.calcmaster</string>
+			<string>com.americangroupllc.calcmaster</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.americangroup.calcmaster</string>
+				<string>com.americangroupllc.calcmaster</string>
 			</array>
 		</dict>
 	</array>

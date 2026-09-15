@@ -24,7 +24,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 FLUTTER="${FLUTTER:-/Users/spatchava/agl/.flutter-sdk/bin/flutter}"
-BUNDLE_ID="com.americangroup.calcmaster"
+BUNDLE_ID="com.americangroupllc.calcmaster"
 APP="$ROOT/build/ios/iphonesimulator/Runner.app"
 IOS_SHOTS="$ROOT/fastlane/screenshots/en-US"
 PLAY_SHOTS="$ROOT/fastlane/metadata/android/en-US/images/phoneScreenshots"
