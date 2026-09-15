@@ -68,7 +68,7 @@ reproduce, then copy and paste the text back.
 ```bash
 # Android — everything, or just this app
 adb logcat
-adb logcat --pid=$(adb shell pidof -s com.americangroupllc.calcmaster)
+adb logcat --pid=$(adb shell pidof -s com.americangroup.calcmaster)
 
 # Only Flutter's own output
 adb logcat -s flutter
@@ -163,7 +163,7 @@ CrashReporter.instance.sink = CrashlyticsSink();
 Steps to enable Crashlytics:
 
 1. Create the Firebase project; add both apps using bundle id
-   `com.americangroupllc.calcmaster`.
+   `com.americangroup.calcmaster`.
 2. Add `google-services.json` → `android/app/`, `GoogleService-Info.plist` →
    `ios/Runner/` (and to the Xcode target).
 3. Add `firebase_core` + `firebase_crashlytics` to `pubspec.yaml`, and the

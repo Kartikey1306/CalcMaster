@@ -13,7 +13,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.americangroupllc.calcmaster",
+      "bundleIdentifier": "com.americangroup.calcmaster",
       "buildNumber": "1"
     },
     "android": {
@@ -21,7 +21,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.americangroupllc.calcmaster",
+      "package": "com.americangroup.calcmaster",
       "versionCode": 1,
       "permissions": [
         "INTERNET",

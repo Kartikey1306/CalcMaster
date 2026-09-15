@@ -191,7 +191,7 @@ class MonetizationConfig {
   static const String appStoreUrl =
       'https://apps.apple.com/app/calcmaster/id0000000000'; // REPLACE after listing
   static const String playStoreUrl =
-      'https://play.google.com/store/apps/details?id=com.americangroupllc.calcmaster'; // REPLACE
+      'https://play.google.com/store/apps/details?id=com.americangroup.calcmaster'; // REPLACE
 
   // ───────────────────────────────────────────────────────────────────
   //  TUNING — safe to leave at defaults

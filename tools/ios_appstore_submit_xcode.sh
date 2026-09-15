@@ -33,7 +33,7 @@ cd "$ROOT"
 
 FLUTTER="${FLUTTER:-/Users/spatchava/agl/.flutter-sdk/bin/flutter}"
 TEAM_ID="TLH7Z3G27A"
-BUNDLE_ID="com.americangroupllc.calcmaster"
+BUNDLE_ID="com.americangroup.calcmaster"
 ARCHIVE="$ROOT/build/ios/archive/Runner.xcarchive"
 IPA_DIR="$ROOT/build/ios/ipa"
 EXPORT_PLIST="$ROOT/build/ios/ExportOptions.plist"

@@ -7,7 +7,7 @@ uploads; this directory is the source those files are written from.
 
 | | |
 | --- | --- |
-| Bundle ID / applicationId | `com.americangroupllc.calcmaster` |
+| Bundle ID / applicationId | `com.americangroup.calcmaster` |
 | Apple Team | `TLH7Z3G27A` |
 | AdMob publisher | `pub-8528784688453695` |
 

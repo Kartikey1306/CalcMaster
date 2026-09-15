@@ -84,7 +84,7 @@ Dark, "futuristic AI" aesthetic defined by tokens in `lib/theme/tokens.dart`:
 ## Platform
 - **iOS:** `ios/Runner.xcworkspace`, CocoaPods (SPM disabled to avoid an ads/plugin collision),
   app icons in `AppIcon.appiconset` (opaque, no alpha). Display name **CalcMaster**.
-- **Android:** Gradle project, `applicationId com.americangroupllc.calcmaster`, launcher icons
+- **Android:** Gradle project, `applicationId com.americangroup.calcmaster`, launcher icons
   in `mipmap-*`, label **CalcMaster**; permissions: INTERNET, NETWORK_STATE, FINE/COARSE
   LOCATION (GPS tool), POST_NOTIFICATIONS.
 - **Web:** Flutter web shell in `web/`, desktop layout via the tab scaffold breakpoint.

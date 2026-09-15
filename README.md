@@ -156,7 +156,7 @@ Flip each to `true` per-pillar **only after you've replaced the relevant credent
 
 | What | Value |
 |---|---|
-| Bundle ID / package name (iOS + Android) | `com.americangroupllc.calcmaster` |
+| Bundle ID / package name (iOS + Android) | `com.americangroup.calcmaster` |
 | App Store display name | `CalcMaster: World Calc` |
 | App Store Connect app ID | `6781554668` |
 | Apple team | American Group LLC — `TLH7Z3G27A` |
@@ -206,7 +206,7 @@ development cert on a Release archive.
 
 `marketing/site/index.html` currently links to:
 - `https://apps.apple.com/app/calcmaster` (replace with real App Store URL after listing)
-- `https://play.google.com/store/apps/details?id=com.americangroupllc.calcmaster` (replace after Play listing)
+- `https://play.google.com/store/apps/details?id=com.americangroup.calcmaster` (replace after Play listing)
 
 `marketing/site/privacy.html` and `terms.html` name the publisher as "American Group LLC" (corrected 2026-08-28; the pages previously said "CalcMaster Inc.").
 

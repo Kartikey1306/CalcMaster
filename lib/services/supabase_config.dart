@@ -25,7 +25,7 @@ class SupabaseConfig {
   /// Redirect URLs) AND declared as a URL scheme in iOS Info.plist / Android
   /// manifest. Scheme = app bundle id to guarantee uniqueness.
   static const String oauthRedirect =
-      'com.americangroupllc.calcmaster://login-callback/';
+      'com.americangroup.calcmaster://login-callback/';
 
   /// Alias kept for cross-app consistency (some code refers to `anonKey`).
   static const String anonKey = publishableKey;

@@ -30,7 +30,7 @@ if (keystorePropertiesFile.exists()) {
 val hasReleaseKey = keystoreProperties.getProperty("storeFile") != null
 
 android {
-    namespace = "com.americangroupllc.calcmaster"
+    namespace = "com.americangroup.calcmaster"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -44,7 +44,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.americangroupllc.calcmaster"
+        applicationId = "com.americangroup.calcmaster"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

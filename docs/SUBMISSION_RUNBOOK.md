@@ -7,7 +7,7 @@
 A field-by-field map of everything the App Store and Play Store ask for, where each
 value comes from in this repo, and what is genuinely blocked on external accounts.
 
-Last reconciled: 2026-06-14 (against pubspec `4.0.0+1`, bundle `com.americangroupllc.calcmaster`).
+Last reconciled: 2026-06-14 (against pubspec `4.0.0+1`, bundle `com.americangroup.calcmaster`).
 
 ---
 
@@ -17,7 +17,7 @@ Last reconciled: 2026-06-14 (against pubspec `4.0.0+1`, bundle `com.americangrou
 |---|---|---|
 | On-device name | `CalcMaster` | `ios/Runner/Info.plist` (CFBundleDisplayName/Name), `android/app/src/main/AndroidManifest.xml` (`android:label`), `lib/main.dart` (`MaterialApp.title`) |
 | Store listing title | `CalcMaster` (App Store) / `CalcMaster — World Calculator` (Play) | `marketing/listing-copy.md` (paste into dashboards) |
-| Bundle / package ID | `com.americangroupllc.calcmaster` | `ios/Runner.xcodeproj/project.pbxproj` (`PRODUCT_BUNDLE_IDENTIFIER`), `android/app/build.gradle.kts` (`applicationId`) |
+| Bundle / package ID | `com.americangroup.calcmaster` | `ios/Runner.xcodeproj/project.pbxproj` (`PRODUCT_BUNDLE_IDENTIFIER`), `android/app/build.gradle.kts` (`applicationId`) |
 | Version name | `4.0.0` | `pubspec.yaml` `version:` → feeds `FLUTTER_BUILD_NAME` (iOS) + `flutter.versionName` (Android) |
 | Build number | `1` | `pubspec.yaml` `+1` → feeds `FLUTTER_BUILD_NUMBER` / `flutter.versionCode` |
 
@@ -75,7 +75,7 @@ Last reconciled: 2026-06-14 (against pubspec `4.0.0+1`, bundle `com.americangrou
 These require you to hold external accounts / secrets:
 
 1. **Apple Developer Program** — $99/yr enrollment, then create a Distribution
-   certificate + App Store provisioning profile for `com.americangroupllc.calcmaster`.
+   certificate + App Store provisioning profile for `com.americangroup.calcmaster`.
    Only then does `flutter build ipa` produce an uploadable `.ipa`.
    Full command sequence: `docs/RELEASE.md` → "iOS release".
 
