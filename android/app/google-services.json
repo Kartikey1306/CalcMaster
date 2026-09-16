@@ -1,0 +1,226 @@
+{
+  "project_info": {
+    "project_number": "9057515422",
+    "project_id": "americangroupllc-5bdfc",
+    "storage_bucket": "americangroupllc-5bdfc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9057515422:android:d5e7401e8ec7038230c88f",
+        "android_client_info": {
+          "package_name": "com.americangroupllc.aeroswift"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9057515422-393vom4c072tr1pu65tf33gnclqfv7t9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaVz0rPlznKhvOCKmIMMVYeE1s8OdzSDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9057515422-393vom4c072tr1pu65tf33gnclqfv7t9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "9057515422-3839nadbvn0bk637kbglqbkuvqt1h332.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.americangroupllc.calcmaster"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9057515422:android:1a646eb7f8a7b2e430c88f",
+        "android_client_info": {
+          "package_name": "com.americangroupllc.agcleaner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9057515422-393vom4c072tr1pu65tf33gnclqfv7t9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaVz0rPlznKhvOCKmIMMVYeE1s8OdzSDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9057515422-393vom4c072tr1pu65tf33gnclqfv7t9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "9057515422-3839nadbvn0bk637kbglqbkuvqt1h332.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.americangroupllc.calcmaster"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9057515422:android:826218c2a394f37d30c88f",
+        "android_client_info": {
+          "package_name": "com.americangroupllc.agrammarly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9057515422-393vom4c072tr1pu65tf33gnclqfv7t9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaVz0rPlznKhvOCKmIMMVYeE1s8OdzSDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9057515422-393vom4c072tr1pu65tf33gnclqfv7t9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "9057515422-3839nadbvn0bk637kbglqbkuvqt1h332.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.americangroupllc.calcmaster"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9057515422:android:1a6afb16de8f84da30c88f",
+        "android_client_info": {
+          "package_name": "com.americangroupllc.agrecorder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9057515422-393vom4c072tr1pu65tf33gnclqfv7t9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaVz0rPlznKhvOCKmIMMVYeE1s8OdzSDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9057515422-393vom4c072tr1pu65tf33gnclqfv7t9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "9057515422-3839nadbvn0bk637kbglqbkuvqt1h332.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.americangroupllc.calcmaster"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9057515422:android:7603bb52aa80a1f530c88f",
+        "android_client_info": {
+          "package_name": "com.americangroupllc.agstudio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9057515422-393vom4c072tr1pu65tf33gnclqfv7t9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaVz0rPlznKhvOCKmIMMVYeE1s8OdzSDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9057515422-393vom4c072tr1pu65tf33gnclqfv7t9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "9057515422-3839nadbvn0bk637kbglqbkuvqt1h332.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.americangroupllc.calcmaster"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9057515422:android:cb70da7211387d3f30c88f",
+        "android_client_info": {
+          "package_name": "com.americangroupllc.calcmaster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9057515422-393vom4c072tr1pu65tf33gnclqfv7t9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaVz0rPlznKhvOCKmIMMVYeE1s8OdzSDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9057515422-393vom4c072tr1pu65tf33gnclqfv7t9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "9057515422-3839nadbvn0bk637kbglqbkuvqt1h332.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.americangroupllc.calcmaster"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
