@@ -48,7 +48,7 @@ export default () => ({
   cors: {
     origins: (
       process.env.CORS_ORIGINS ||
-      'https://safecodeg.com,https://www.safecodeg.com'
+      'https://www.safecodeg.com,https://www.safecodeg.com'
     ).split(','),
   },
 });

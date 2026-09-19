@@ -135,19 +135,19 @@ We'd love to hear from you. Tap Settings → Send feedback to reach the team.
 ### Support URL
 
 ```
-https://safecodeg.com/support
+https://www.safecodeg.com/support
 ```
 
 ### Marketing URL (optional)
 
 ```
-https://safecodeg.com
+https://www.safecodeg.com
 ```
 
 ### Privacy Policy URL (REQUIRED)
 
 ```
-https://safecodeg.com/privacy-policy
+https://www.safecodeg.com/privacy-policy
 ```
 
 > **Action required**: publish a real privacy policy at that URL before submitting. Use Iubenda, Termly, or a static page on GitHub Pages. The Settings → Privacy screen in the app already links to it.
@@ -211,13 +211,13 @@ contact@safecodeg.com
 ### Website
 
 ```
-https://safecodeg.com
+https://www.safecodeg.com
 ```
 
 ### Privacy Policy URL (REQUIRED)
 
 ```
-https://safecodeg.com/privacy-policy
+https://www.safecodeg.com/privacy-policy
 ```
 
 ### Content rating questionnaire (recommended answers — confirms PEGI 3 / Everyone / 4+)
@@ -292,7 +292,7 @@ When you're ready to submit, copy each field above into the relevant store dashb
 - [ ] Full description — (above)
 - [ ] What's new — (above)
 - [ ] Email — *contact@safecodeg.com*
-- [ ] Website — *https://safecodeg.com*
+- [ ] Website — *https://www.safecodeg.com*
 - [ ] Privacy Policy URL — REQUIRED, must be live
 - [ ] Category — Tools (primary)
 - [ ] Tags — calculator, unit converter, finance, utility, productivity

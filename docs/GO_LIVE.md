@@ -93,9 +93,9 @@ Add as GitHub repo secrets:
 ## 🌐 PART C — Publish the legal pages (URLs already wired)
 Domain + support email are set everywhere: **`safecodeg.com`** / **`contact@safecodeg.com`**.
 The app + store metadata now point at:
-- Privacy: `https://safecodeg.com/privacy-policy`
-- Terms:   `https://safecodeg.com/terms`
-- Support: `https://safecodeg.com/support`
+- Privacy: `https://www.safecodeg.com/privacy-policy`
+- Terms:   `https://www.safecodeg.com/terms`
+- Support: `https://www.safecodeg.com/support`
 
 **You just need those pages to be LIVE at those exact paths.** Upload the contents of
 `marketing/site/` to a `/calcmaster/` folder on `safecodeg.com` (the pages already
