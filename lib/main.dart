@@ -25,6 +25,10 @@ Future<void> main() async {
   // Crash reporting, before anything that could fail. Inactive and
   // harmless until the Firebase config files are added.
   await AglCrash.init(appName: 'CalcMaster');
+  // The free Firebase products — Analytics, Performance Monitoring and
+  // Remote Config. Same guarantee as the line above: inactive and
+  // harmless when Firebase did not initialise.
+  await AglInsights.init(appName: 'CalcMaster');
   ErrorReporter.sink = (error, stack, {context}) =>
       AglCrash.recordError(error, stack, reason: context);
   // Capture framework and uncaught async errors. No-op sink by
