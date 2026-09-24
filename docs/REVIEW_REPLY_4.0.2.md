@@ -132,7 +132,7 @@ Under ~5 minutes, no cuts, no voiceover needed.
 
 ## 4. Still open
 
-- **App Review contact is a placeholder** — "App Reviewer", +1 415 555 0142.
+- **App Review contact is a placeholder** — "App Reviewer", +1 669 388 1960.
   Replace with a name and phone Apple can actually reach.
 - **Ads vs. App Privacy.** `adsEnabled` is true but the ad units are still
   Google's test IDs, so `adsReady` is false and nothing serves. If the App
