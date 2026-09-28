@@ -52,7 +52,7 @@ dependencies:
   # Real store in-app purchases (buy + restore). On devices without configured
   # StoreKit/Play products (e.g. the simulator) this reports "unavailable"
   # rather than granting anything.
-  in_app_purchase: ^3.2.0
+  in_app_purchase: ^3.3.1
 
 dev_dependencies:
   flutter_test:
