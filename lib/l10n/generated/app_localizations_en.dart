@@ -140,6 +140,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get financeTax => 'Tax';
 
   @override
+  String get financePaycheck => 'Paycheck';
+
+  @override
   String get financeTip => 'Tip & Split';
 
   @override

@@ -139,6 +139,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get financeTax => 'ضريبة';
 
   @override
+  String get financePaycheck => 'صافي الراتب';
+
+  @override
   String get financeTip => 'بقشيش وتقسيم';
 
   @override

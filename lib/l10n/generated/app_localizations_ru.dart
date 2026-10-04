@@ -141,6 +141,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get financeTax => 'Налог';
 
   @override
+  String get financePaycheck => 'Зарплата';
+
+  @override
   String get financeTip => 'Чаевые и счёт';
 
   @override

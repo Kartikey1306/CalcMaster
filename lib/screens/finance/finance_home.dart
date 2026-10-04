@@ -46,6 +46,12 @@ class FinanceHome extends StatelessWidget {
                       accent: accent,
                       onTap: () => context.push('/finance/tax')),
                   RichHubCard(
+                      title: loc.financePaycheck,
+                      subtitle: 'Take-home pay by location',
+                      svgPath: 'assets/icons/paycheck.svg',
+                      accent: accent,
+                      onTap: () => context.push('/finance/paycheck')),
+                  RichHubCard(
                       title: loc.financeTip,
                       subtitle: 'Restaurant bill splitter',
                       svgPath: 'assets/icons/tip.svg',

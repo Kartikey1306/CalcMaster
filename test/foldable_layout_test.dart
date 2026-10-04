@@ -71,6 +71,7 @@ const _detailRoutes = <String>[
   '/calculate/base',
   '/calculate/fraction',
   '/finance/tax',
+  '/finance/paycheck',
   '/finance/tip',
   '/finance/discount',
   '/finance/compound',

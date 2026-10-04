@@ -138,6 +138,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get financeTax => '税款';
 
   @override
+  String get financePaycheck => '工资计算';
+
+  @override
   String get financeTip => '小费与分摊';
 
   @override

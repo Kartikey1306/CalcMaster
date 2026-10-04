@@ -141,6 +141,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get financeTax => 'Impôt';
 
   @override
+  String get financePaycheck => 'Salaire net';
+
+  @override
   String get financeTip => 'Pourboire & partage';
 
   @override

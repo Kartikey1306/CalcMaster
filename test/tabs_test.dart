@@ -72,7 +72,7 @@ void main() {
       expect(find.text('Fraction'), findsOneWidget);
     });
 
-    testWidgets('Finance tab loads with 7 finance cards', (tester) async {
+    testWidgets('Finance tab loads with 8 finance cards', (tester) async {
       await tester.pumpWidget(buildApp());
       await tester.pumpAndSettle();
       await tapTab(tester, 'Finance');
@@ -80,6 +80,7 @@ void main() {
       expect(find.text('Finance'), findsWidgets);
       expect(find.text('FINANCE TOOLS'), findsOneWidget);
       expect(find.text('Tax'), findsOneWidget);
+      expect(find.text('Paycheck'), findsOneWidget);
       expect(find.text('Tip & Split'), findsOneWidget);
       expect(find.text('Discount'), findsOneWidget);
       expect(find.text('Compound Interest'), findsOneWidget);

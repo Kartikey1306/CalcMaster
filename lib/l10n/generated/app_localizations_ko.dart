@@ -138,6 +138,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get financeTax => '세금';
 
   @override
+  String get financePaycheck => '실수령액';
+
+  @override
   String get financeTip => '팁 & 분할';
 
   @override

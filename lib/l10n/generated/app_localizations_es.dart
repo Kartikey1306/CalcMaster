@@ -141,6 +141,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get financeTax => 'Impuestos';
 
   @override
+  String get financePaycheck => 'Nómina';
+
+  @override
   String get financeTip => 'Propina y dividir';
 
   @override

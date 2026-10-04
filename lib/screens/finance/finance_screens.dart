@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../lib_currency.dart';
 import '../../lib_format.dart';
+import '../../lib_payroll.dart';
 import '../../lib_tax.dart';
 import '../../state/region_provider.dart';
 import '../../theme/tokens.dart';
@@ -157,6 +158,189 @@ class _ModePill extends StatelessWidget {
                   fontWeight: FontWeight.w600)),
         ),
       ),
+    );
+  }
+}
+
+// =================== PAYCHECK ===================
+
+class PaycheckCalc extends StatefulWidget {
+  const PaycheckCalc({super.key});
+  @override
+  State<PaycheckCalc> createState() => _PaycheckCalcState();
+}
+
+class _PaycheckCalcState extends State<PaycheckCalc> {
+  String mode = 'salary';
+  final salary = TextEditingController();
+  final hourly = TextEditingController();
+  final hours = TextEditingController(text: '40');
+  final preTax = TextEditingController(text: '0');
+  final localRate = TextEditingController();
+  FilingStatus filing = FilingStatus.single;
+  late RegionId regionId;
+  late PayFrequency frequency;
+  String? subCode;
+
+  @override
+  void initState() {
+    super.initState();
+    _applyRegion(context.read<RegionProvider>().region.id);
+    for (final c in [salary, hourly, hours, preTax, localRate]) {
+      c.addListener(() => setState(() {}));
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in [salary, hourly, hours, preTax, localRate]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  /// Resets the location-dependent defaults when the region changes.
+  void _applyRegion(RegionId id) {
+    regionId = id;
+    frequency = defaultPayFrequency(id);
+    subCode = null;
+    localRate.text = _pctText(defaultLocalRate(id));
+  }
+
+  static String _pctText(double rate) =>
+      (rate * 100).toStringAsFixed(2).replaceFirst(RegExp(r'\.?0+$'), '');
+
+  @override
+  Widget build(BuildContext context) {
+    final region = context.watch<RegionProvider>().region;
+    if (region.id != regionId) {
+      // The region picker sits over this screen; pick up its change after the
+      // frame so the controller update doesn't setState mid-build.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && region.id != regionId) {
+          setState(() => _applyRegion(region.id));
+        }
+      });
+    }
+    String cur(double n) => formatCurrency(n, region.locale, region.currency);
+
+    final subs = subRegions[region.id];
+    final subLabel = region.id == RegionId.CA ? 'Province' : 'State';
+    final localLabel = switch (region.id) {
+      RegionId.US => 'State tax',
+      RegionId.CA => 'Provincial tax',
+      RegionId.JP => 'Resident tax',
+      _ => 'Local tax',
+    };
+    final gross = mode == 'salary'
+        ? safeNumber(salary.text)
+        : safeNumber(hourly.text) * safeNumber(hours.text) * 52;
+    final result = computePaycheck(
+      gross,
+      region.id,
+      filing,
+      frequency,
+      preTaxRate: safeNumber(preTax.text) / 100,
+      localRate: (safeNumber(localRate.text) / 100).clamp(0, 0.20),
+    );
+    ResultRow line(String label, double annual, {bool highlight = false}) =>
+        ResultRow(
+          label: label,
+          value: cur(result.perPeriod(annual)),
+          caption: '${cur(annual)} / year',
+          highlight: highlight,
+        );
+
+    return InnerScaffold(
+      title: AppLocalizations.of(context)!.financePaycheck,
+      subtitle: '${region.flag} ${region.label} · ${region.currency}',
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Expanded(
+              child: _ModePill(
+                  label: 'Salary',
+                  active: mode == 'salary',
+                  onTap: () => setState(() => mode = 'salary'))),
+          const SizedBox(width: Spacing.sm),
+          Expanded(
+              child: _ModePill(
+                  label: 'Hourly',
+                  active: mode == 'hourly',
+                  onTap: () => setState(() => mode = 'hourly'))),
+        ]),
+        if (mode == 'salary')
+          NumberInput(
+              label: 'Annual salary (${region.currency})', controller: salary)
+        else ...[
+          NumberInput(
+              label: 'Hourly rate (${region.currency})', controller: hourly),
+          NumberInput(label: 'Hours per week', controller: hours),
+        ],
+        const SizedBox(height: Spacing.md),
+        const Text('Pay frequency',
+            style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
+        const SizedBox(height: Spacing.sm),
+        ChipPicker<PayFrequency>(
+          options: [
+            for (final f in PayFrequency.values) (id: f, label: f.label)
+          ],
+          value: frequency,
+          onChange: (v) => setState(() => frequency = v),
+        ),
+        const SizedBox(height: Spacing.md),
+        Text(AppLocalizations.of(context)!.labelFilingStatus,
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+        const SizedBox(height: Spacing.sm),
+        ChipPicker<FilingStatus>(
+          options: const [
+            (id: FilingStatus.single, label: 'Single'),
+            (id: FilingStatus.joint, label: 'Joint'),
+            (id: FilingStatus.head, label: 'Head'),
+          ],
+          value: filing,
+          onChange: (v) => setState(() => filing = v),
+        ),
+        if (subs != null) ...[
+          const SizedBox(height: Spacing.md),
+          Text(subLabel,
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+          const SizedBox(height: Spacing.sm),
+          ChipPicker<String?>(
+            options: [
+              for (final s in subs) (id: s.code, label: s.name),
+            ],
+            value: subCode,
+            onChange: (v) => setState(() {
+              subCode = v;
+              localRate.text =
+                  _pctText(subs.firstWhere((s) => s.code == v).rate);
+            }),
+          ),
+        ],
+        NumberInput(label: '$localLabel rate (%)', controller: localRate),
+        NumberInput(
+            label: 'Pre-tax retirement (% of gross)', controller: preTax),
+        const SizedBox(height: Spacing.lg),
+        Text('Per paycheck · ${frequency.label}',
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+        line('Gross pay', result.grossAnnual),
+        if (result.preTaxAnnual > 0)
+          line('Pre-tax retirement', result.preTaxAnnual),
+        line(subs != null ? 'Federal income tax' : 'Income tax',
+            result.incomeTaxAnnual),
+        if (result.localTaxAnnual > 0 || subs != null)
+          line(localLabel, result.localTaxAnnual),
+        for (final d in result.social) line(d.label, d.annual),
+        line('Take-home pay', result.netAnnual, highlight: true),
+        ResultRow(
+            label: 'Total deductions',
+            value: formatPercent(result.deductionRate)),
+        const SizedBox(height: Spacing.md),
+        Text(
+            'Estimates using simplified 2025 rates. $localLabel rates are '
+            'approximate and editable; your payslip may differ.',
+            style: const TextStyle(color: AppColors.textDim, fontSize: 12)),
+      ]),
     );
   }
 }

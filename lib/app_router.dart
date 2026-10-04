@@ -79,6 +79,8 @@ final appRouter = GoRouter(
               builder: (_, __) => const FinanceHome(),
               routes: [
                 GoRoute(path: 'tax', builder: (_, __) => const TaxCalc()),
+                GoRoute(
+                    path: 'paycheck', builder: (_, __) => const PaycheckCalc()),
                 GoRoute(path: 'tip', builder: (_, __) => const TipCalc()),
                 GoRoute(
                     path: 'discount', builder: (_, __) => const DiscountCalc()),

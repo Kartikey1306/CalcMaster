@@ -138,6 +138,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get financeTax => '税';
 
   @override
+  String get financePaycheck => '手取り給与';
+
+  @override
   String get financeTip => 'チップと割り勘';
 
   @override

@@ -370,6 +370,12 @@ abstract class AppLocalizations {
   /// **'Tax'**
   String get financeTax;
 
+  /// No description provided for @financePaycheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Paycheck'**
+  String get financePaycheck;
+
   /// No description provided for @financeTip.
   ///
   /// In en, this message translates to:
