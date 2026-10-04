@@ -42,6 +42,7 @@
   "calcBase": "Системы",
   "calcFraction": "Дробь",
   "financeTax": "Налог",
+  "financePaycheck": "Зарплата",
   "financeTip": "Чаевые и счёт",
   "financeDiscount": "Скидка",
   "financeCompound": "Сложный процент",

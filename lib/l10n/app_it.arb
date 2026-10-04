@@ -42,6 +42,7 @@
   "calcBase": "Base",
   "calcFraction": "Frazione",
   "financeTax": "Tasse",
+  "financePaycheck": "Busta paga",
   "financeTip": "Mancia e divisione",
   "financeDiscount": "Sconto",
   "financeCompound": "Interesse composto",

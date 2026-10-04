@@ -52,6 +52,7 @@
   "calcBase": "Base",
   "calcFraction": "Fraction",
   "financeTax": "Tax",
+  "financePaycheck": "Paycheck",
   "financeTip": "Tip & Split",
   "financeDiscount": "Discount",
   "financeCompound": "Compound Interest",

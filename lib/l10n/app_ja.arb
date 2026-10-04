@@ -42,6 +42,7 @@
   "calcBase": "基数",
   "calcFraction": "分数",
   "financeTax": "税",
+  "financePaycheck": "手取り給与",
   "financeTip": "チップと割り勘",
   "financeDiscount": "割引",
   "financeCompound": "複利",
