@@ -516,10 +516,10 @@ class _CompoundCalcState extends State<CompoundCalc> {
             style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
         const SizedBox(height: Spacing.sm),
         ChipPicker<String>(
-          options: const [
+          options: [
             (id: '1', label: 'Annually'),
             (id: '4', label: 'Quarterly'),
-            (id: '12', label: 'Monthly'),
+            (id: '12', label: (AppLocalizations.of(context)?.paywallTierMonthly ?? 'Monthly')),
             (id: '365', label: 'Daily')
           ],
           value: freq,

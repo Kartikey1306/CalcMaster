@@ -750,7 +750,7 @@ class _AdcDacCalcState extends State<AdcDacCalc> {
 //         NumberInput(label: 'Date of birth', controller: dob, keyboardType: TextInputType.text),
 //         NumberInput(label: 'Reference date', controller: ref, keyboardType: TextInputType.text),
 //         const SizedBox(height: Spacing.lg),
-//         ResultRow(label: 'Age', value: age, highlight: true),
+//         ResultRow(label: (AppLocalizations.of(context)?.toolAge ?? 'Age'), value: age, highlight: true),
 //         ResultRow(label: 'Total days lived', value: total),
 //         ResultRow(label: 'Next birthday', value: next),
 //       ]),
@@ -867,7 +867,7 @@ class _AgeCalcState extends State<AgeCalc> {
           ),
           const SizedBox(height: Spacing.lg),
           ResultRow(
-            label: 'Age',
+            label: (AppLocalizations.of(context)?.toolAge ?? 'Age'),
             value: age,
             highlight: true,
           ),
