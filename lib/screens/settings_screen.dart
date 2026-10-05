@@ -188,7 +188,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _Tile(
             icon: Icons.language,
             iconColor: AppColors.accentPrimary,
-            title: AglL10n.of(context)!.miscLanguage,
+            title: (AglL10n.of(context)?.miscLanguage ?? 'Language'),
             // The language's own name, so someone who cannot read the
             // current UI language can still tell which one is active.
             subtitle: AglLocales.nativeName(
