@@ -9,6 +9,7 @@ import '../../widgets/glass_card.dart';
 import '../../widgets/glow_text.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../services/supabase_config.dart';
+import 'package:agl_i18n/agl_i18n.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -378,7 +379,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 icon: const Icon(Icons.g_mobiledata,
                                     color: AppColors.text, size: 28),
-                                label: const Text('Continue with Google',
+                                label: Text((AglL10n.of(context)?.authContinueWithGoogle ?? 'Continue with Google'),
                                     style: TextStyle(
                                         color: AppColors.text,
                                         fontSize: 15,
@@ -404,7 +405,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               icon: const Icon(Icons.apple,
                                   color: AppColors.text, size: 24),
-                              label: const Text('Continue with Apple',
+                              label: Text((AglL10n.of(context)?.authContinueWithApple ?? 'Continue with Apple'),
                                   style: TextStyle(
                                       color: AppColors.text,
                                       fontSize: 15,

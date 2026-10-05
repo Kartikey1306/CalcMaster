@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../theme/tokens.dart';
+import 'package:agl_i18n/agl_i18n.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -16,7 +17,7 @@ class AboutScreen extends StatelessWidget {
         backgroundColor: AppColors.bg,
         elevation: 0,
         leading: IconButton(
-          tooltip: 'Close',
+          tooltip: (AglL10n.of(context)?.actionClose ?? 'Close'),
           icon: const Icon(Icons.close, color: AppColors.text),
           onPressed: () => context.pop(),
         ),

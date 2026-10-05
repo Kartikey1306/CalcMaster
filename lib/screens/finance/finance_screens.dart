@@ -14,6 +14,7 @@ import '../../widgets/chip_picker.dart';
 import '../../widgets/inner_scaffold.dart';
 import '../../widgets/number_input.dart';
 import '../../widgets/result_row.dart';
+import 'package:agl_i18n/agl_i18n.dart';
 
 // =================== TAX ===================
 
@@ -394,7 +395,7 @@ class _TipCalcState extends State<TipCalc> {
             keyboardType: TextInputType.number),
         const SizedBox(height: Spacing.lg),
         ResultRow(label: 'Tip', value: cur(tip)),
-        ResultRow(label: 'Total', value: cur(total), highlight: true),
+        ResultRow(label: (AglL10n.of(context)?.miscTotal ?? 'Total'), value: cur(total), highlight: true),
         ResultRow(label: 'Per person', value: cur(total / p), highlight: true),
         ResultRow(label: 'Tip per person', value: cur(tip / p)),
       ]),

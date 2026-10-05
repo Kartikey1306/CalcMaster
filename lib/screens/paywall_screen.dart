@@ -7,6 +7,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../monetization/monetization_config.dart';
 import '../monetization/premium_provider.dart';
 import '../theme/tokens.dart';
+import 'package:agl_i18n/agl_i18n.dart';
 
 class PaywallScreen extends StatefulWidget {
   const PaywallScreen({super.key});
@@ -50,7 +51,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
         backgroundColor: AppColors.bg,
         elevation: 0,
         leading: IconButton(
-          tooltip: 'Close',
+          tooltip: (AglL10n.of(context)?.actionClose ?? 'Close'),
           icon: const Icon(Icons.close, color: AppColors.text),
           onPressed: () => context.pop(),
         ),

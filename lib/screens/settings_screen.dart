@@ -91,7 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: AppColors.bg,
         elevation: 0,
         leading: IconButton(
-          tooltip: 'Close',
+          tooltip: (AglL10n.of(context)?.actionClose ?? 'Close'),
           icon: const Icon(Icons.close, color: AppColors.text),
           onPressed: () => context.pop(),
         ),
@@ -103,7 +103,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding:
             const EdgeInsets.fromLTRB(Spacing.lg, 0, Spacing.lg, Spacing.xxl),
         children: [
-          const _SectionHeader(label: 'Account'),
+          _SectionHeader(label: (AglL10n.of(context)?.navAccount ?? 'Account')),
           if (auth.isLoggedIn)
             _Tile(
               icon: Icons.person_outline,
@@ -121,7 +121,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SnackBar(content: Text('Signed out.')),
                   );
                 },
-                child: const Text('Sign out',
+                child: Text((AglL10n.of(context)?.authSignOut ?? 'Sign out'),
                     style: TextStyle(color: AppColors.accentPrimary)),
               ),
             )
@@ -129,7 +129,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _Tile(
               icon: Icons.login,
               iconColor: AppColors.accentPrimary,
-              title: 'Sign in',
+              title: (AglL10n.of(context)?.authSignIn ?? 'Sign in'),
               subtitle: 'Sign in or create an account',
               onTap: () => context.push('/login'),
             ),

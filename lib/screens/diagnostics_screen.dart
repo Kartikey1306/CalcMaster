@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../services/crash_reporter.dart';
 import '../theme/tokens.dart';
 import '../widgets/inner_scaffold.dart';
+import 'package:agl_i18n/agl_i18n.dart';
 
 /// In-app diagnostics: the captured error log, copyable as text.
 ///
@@ -75,7 +76,7 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                 child: OutlinedButton.icon(
                   onPressed: _records.isEmpty ? null : _clear,
                   icon: const Icon(Icons.delete_outline, size: 18),
-                  label: const Text('Clear'),
+                  label: Text((AglL10n.of(context)?.actionClear ?? 'Clear')),
                 ),
               ),
             ],
