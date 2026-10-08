@@ -1,6 +1,6 @@
 # AGENTS.md — CalcMaster
 
-**What:** Flutter world calculator + converter (10 unit categories, 5 calculators, 7 finance tools, 9 utility tools, notes, AI chat) — 12 locales, 11 regions, offline-first.
+**What:** Flutter world calculator + converter (10 unit categories, 5 calculators, 8 finance tools, 9 utility tools, notes, AI chat) — 12 locales, 11 regions, offline-first.
 
 ## Run commands
 ```bash
@@ -27,6 +27,7 @@ Single Flutter client (iOS/Android/Web). Provider (ChangeNotifier) state + go_ro
 | `lib/lib_units.dart` | `Unit`/`Category` models + 10 conversion categories (to/from base fns) |
 | `lib/lib_currency.dart` | `RegionId` enum, 11 `Region`s, `staticRates`, Frankfurter fetcher |
 | `lib/lib_tax.dart` | 2025-26 income-tax brackets per region |
+| `lib/lib_payroll.dart` | Paycheck model: pay frequencies, US state / CA province rates, per-region social contributions, `computePaycheck` |
 | `lib/lib_calc.dart` | Shunting-yard expression parser/evaluator |
 | `lib/lib_format.dart` | Locale-aware number/currency/percent formatting (intl) |
 | `lib/i18n_helpers.dart` | category id → localized label mapping |
@@ -51,7 +52,7 @@ Single Flutter client (iOS/Android/Web). Provider (ChangeNotifier) state + go_ro
 | `docs/DESIGN.md` | Full architecture/design doc |
 
 ## Flow
-`main()` → `/splash` (2s animated) → `TabScaffold` (bottom nav / desktop rail) with 5 branches: **Convert** (`/convert` → `/convert/:id`) · **Calculate** (`/calculate/{standard,scientific,percentage,base,fraction}`) · **Finance** (`/finance/{tax,tip,discount,compound,emi,currency,unit-price}`) · **Tools** (`/tools/{gps,ohm,bmi,date-diff,time-zones,adc-dac,age,aspect-ratio,calendar}`) · **Notes**. Modal routes over the shell: `/settings /paywall /privacy /about /login /ai-chat`.
+`main()` → `/splash` (2s animated) → `TabScaffold` (bottom nav / desktop rail) with 5 branches: **Convert** (`/convert` → `/convert/:id`) · **Calculate** (`/calculate/{standard,scientific,percentage,base,fraction}`) · **Finance** (`/finance/{tax,paycheck,tip,discount,compound,emi,currency,unit-price}`) · **Tools** (`/tools/{gps,ohm,bmi,date-diff,time-zones,adc-dac,age,aspect-ratio,calendar}`) · **Notes**. Modal routes over the shell: `/settings /paywall /privacy /about /login /ai-chat`.
 
 ## State management
 Provider / ChangeNotifier via `MultiProvider` in `main.dart`: `RegionProvider`, `NotesProvider`, `PremiumProvider`, `AuthProvider`. Persistence = SharedPreferences (region, notes) + Supabase (session). No backend DB owned by this repo.

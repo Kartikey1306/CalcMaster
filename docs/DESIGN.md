@@ -27,7 +27,7 @@ Services (services/, monetization/*Service)  Supabase, HTTP FX, AdMob, RevenueCa
 | --- | --- | --- |
 | Convert | 10 unit categories (distance, volume, weight, temperature, speed, area, data, fuel, pressure, energy) with per-unit to/from-base functions | `lib/lib_units.dart` |
 | Calculate | Standard, scientific, percentage, base-N, fraction calculators | `lib/screens/calculate/`, `lib/lib_calc.dart` |
-| Finance | Tax, tip, discount, compound interest, EMI, currency, unit-price | `lib/screens/finance/`, `lib/lib_tax.dart` |
+| Finance | Tax, paycheck, tip, discount, compound interest, EMI, currency, unit-price | `lib/screens/finance/`, `lib/lib_tax.dart`, `lib/lib_payroll.dart` |
 | Tools | GPS, Ohm's law, BMI, date-diff, time zones, ADC/DAC, age, aspect ratio, calendar | `lib/screens/tools/` |
 | Notes | Local notes CRUD | `lib/screens/notes_screen.dart`, `lib/state/notes_provider.dart` |
 | AI chat | Optional assistant over the API gateway | `lib/screens/ai/`, `lib/state/ai_chat_provider.dart` |
