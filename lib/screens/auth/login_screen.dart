@@ -162,20 +162,6 @@ class _LoginScreenState extends State<LoginScreen> {
     if (mounted) router.go('/calculate');
   }
 
-  Future<void> _useTestAccount() async {
-    if (_loading) return;
-    setState(() {
-      _validationError = null;
-      _loading = true;
-    });
-    // One-tap sign-in with the bundled offline test account. Persists across
-    // launches and lands on the calculator home.
-    final ok = await context.read<AuthProvider>().loginWithTestAccount();
-    if (!mounted) return;
-    setState(() => _loading = false);
-    if (ok) context.go('/calculate');
-  }
-
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
@@ -436,36 +422,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                       fontWeight: FontWeight.w600)),
                             ),
                           ),
-                          // One-tap QA sign-in. Present only in a
-                          // non-release build that was given
-                          // --dart-define=QA_EMAIL/QA_PASSWORD.
-                          if (SupabaseConfig.testAccountEnabled) ...[
-                            const SizedBox(height: Spacing.md),
-                            SizedBox(
-                              height: 50,
-                              child: OutlinedButton.icon(
-                                onPressed: _loading ? null : _useTestAccount,
-                                style: OutlinedButton.styleFrom(
-                                  backgroundColor:
-                                      AppColors.success.withValues(alpha: 0.10),
-                                  side: BorderSide(
-                                      color: AppColors.success
-                                          .withValues(alpha: 0.5)),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(Radii.button),
-                                  ),
-                                ),
-                                icon: const Icon(Icons.verified_user_outlined,
-                                    color: AppColors.success, size: 20),
-                                label: const Text('Use test account',
-                                    style: TextStyle(
-                                        color: AppColors.success,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600)),
-                              ),
-                            ),
-                          ],
                         ],
                       ),
                     ),

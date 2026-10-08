@@ -3,17 +3,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Local, offline session + guest-mode persistence.
 ///
 /// CalcMaster does NOT require an account — it opens straight to the calculator
-/// as a guest. This service persists two independent bits across launches via
-/// [SharedPreferences], with no network required:
-///   * the guest choice, so the app never re-prompts for sign-in, and
-///   * an offline "demo" session for a bundled test account, used only as a
-///     no-network fallback when Supabase is unreachable (see [AuthProvider]).
+/// as a guest. This service persists the guest choice across launches via
+/// [SharedPreferences], so the app never re-prompts for sign-in. Accounts
+/// themselves are Supabase sessions (see [AuthProvider]).
 class AuthService {
   AuthService._();
   static final AuthService instance = AuthService._();
 
   /// Human-friendly name shown for the offline demo session.
-  static const String testDisplayName = 'Test User';
 
   static const String _kEmailKey = 'local_auth_email';
   static const String _kGuestKey = 'guest_mode';
@@ -29,11 +26,17 @@ class AuthService {
   /// True when an offline demo session is active.
   bool get isAuthenticated => _email != null;
 
-  /// Restores any persisted local session/guest flag. Safe to call once at
-  /// startup.
+  /// Restores the persisted guest flag. Safe to call once at startup.
+  ///
+  /// A leftover offline test-account session is discarded rather than
+  /// restored. Nothing writes one any more — the device no longer accepts
+  /// test credentials locally — but an install that saved one before would
+  /// otherwise open signed in as "Test User" and block a real Supabase session
+  /// from taking over.
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
-    _email = prefs.getString(_kEmailKey);
+    if (prefs.containsKey(_kEmailKey)) await prefs.remove(_kEmailKey);
+    _email = null;
     _guest = prefs.getBool(_kGuestKey) ?? false;
   }
 
@@ -42,14 +45,6 @@ class AuthService {
     _guest = true;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kGuestKey, true);
-  }
-
-  /// Persists an offline demo session for [email]. Used as the no-network
-  /// fallback for a SupabaseConfig test account.
-  Future<void> saveOfflineSession(String email) async {
-    _email = email;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kEmailKey, email);
   }
 
   /// Clears the persisted offline demo session (used on sign-out).
