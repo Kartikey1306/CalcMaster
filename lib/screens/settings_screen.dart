@@ -80,6 +80,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  // App Store 5.1.1(v): an app that creates accounts must let the user delete
+  // the account in-app. This deletes it on the server; on failure the user
+  // stays signed in and sees the real error.
+  Future<void> _deleteAccount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete account?'),
+        content: const Text(
+          'This permanently deletes your account from our servers and signs '
+          'you out. This cannot be undone.\n\n'
+          'Your account is shared across American Group LLC apps, so it is '
+          'deleted for every one of them you sign in to with it.\n\n'
+          'Notes and settings on this device are not part of your account '
+          'and stay on this device.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete permanently',
+                style: TextStyle(color: AppColors.danger)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    final auth = context.read<AuthProvider>();
+    final ok = await auth.deleteAccount();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(ok
+            ? 'Your account was permanently deleted.'
+            : '${auth.error ?? 'Could not delete your account.'} '
+                'You are still signed in.'),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
@@ -124,6 +167,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Text((AglL10n.of(context)?.authSignOut ?? 'Sign out'),
                     style: TextStyle(color: AppColors.accentPrimary)),
               ),
+            ),
+          if (auth.isLoggedIn)
+            _Tile(
+              icon: Icons.delete_forever_outlined,
+              iconColor: AppColors.danger,
+              title: 'Delete account',
+              subtitle: 'Permanently delete your account',
+              onTap: _deleteAccount,
             )
           else
             _Tile(

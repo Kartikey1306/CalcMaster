@@ -15,6 +15,11 @@ enum AuthStatus { unknown, authenticated, unauthenticated }
 /// Auth backed by Supabase (GoTrue). Supabase persists/refreshes the session
 /// automatically; we mirror its state into [AuthStatus] for the UI.
 class AuthProvider extends ChangeNotifier {
+  /// [client] is for tests; the app uses the global [Supabase] client.
+  AuthProvider({SupabaseClient? client}) : _injectedClient = client;
+
+  final SupabaseClient? _injectedClient;
+
   AuthStatus _status = AuthStatus.unknown;
   Map<String, dynamic>? _user;
   String? _error;
@@ -44,7 +49,7 @@ class AuthProvider extends ChangeNotifier {
   /// True when the user has explicitly chosen guest mode (persisted).
   bool get isGuest => _localAuth.isGuest;
 
-  SupabaseClient get _client => Supabase.instance.client;
+  SupabaseClient get _client => _injectedClient ?? Supabase.instance.client;
 
   final AuthService _localAuth = AuthService.instance;
 
@@ -352,6 +357,43 @@ class AuthProvider extends ChangeNotifier {
     _isDemo = false;
     _status = AuthStatus.unauthenticated;
     notifyListeners();
+  }
+
+  /// Permanently deletes the signed-in account on the server (App Store
+  /// 5.1.1(v)), then signs out and clears the account's local session data.
+  ///
+  /// Calls `public.delete_user()` on the org's Supabase project, which deletes
+  /// the caller (`auth.uid()`). That project is shared by the American Group
+  /// LLC apps, so the account goes for all of them. If the call fails —
+  /// offline, not signed in, or the function is not deployed — this returns
+  /// false with [error] set and NOTHING is signed out, so the UI never reports
+  /// a deletion that did not happen.
+  Future<bool> deleteAccount() async {
+    _error = null;
+    _notice = null;
+    try {
+      await _client.rpc('delete_user');
+    } on PostgrestException catch (e) {
+      _error = 'Could not delete your account: ${e.message}';
+      notifyListeners();
+      return false;
+    } on AuthException catch (e) {
+      _error = 'Could not delete your account: ${e.message}';
+      notifyListeners();
+      return false;
+    } catch (e) {
+      // Network/socket error (device offline) or Supabase never initialized.
+      _error = 'Could not delete your account. Check your connection and '
+          'try again. ($e)';
+      notifyListeners();
+      return false;
+    }
+    // The server deleted the account: drop every local trace of it — the
+    // persisted Supabase session, the cached Google session and the profile.
+    _awaitingEmailConfirmation = false;
+    _pendingEmail = null;
+    await logout();
+    return true;
   }
 
   Future<void> refreshProfile() async {
