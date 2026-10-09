@@ -33,7 +33,10 @@ class _BannerAdSlotState extends State<BannerAdSlot> {
   void initState() {
     super.initState();
     if (!kIsWeb) {
-      _loadAd();
+      // Ads start only after the ATT prompt and consent; see main().
+      AdService.instance.ready.then((_) {
+        if (mounted) _loadAd();
+      });
     }
   }
 

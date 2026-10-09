@@ -12,6 +12,7 @@ import 'l10n/generated/app_localizations.dart';
 import 'monetization/ad_service.dart';
 import 'monetization/analytics_service.dart';
 import 'monetization/premium_provider.dart';
+import 'monetization/tracking_service.dart';
 import 'services/supabase_config.dart';
 import 'state/auth_provider.dart';
 import 'state/notes_provider.dart';
@@ -56,12 +57,17 @@ Future<void> main() async {
   // Fire-and-forget bootstrap. Each service no-ops gracefully when its
   // credentials are missing, so this never blocks startup.
   AnalyticsService.instance.bootstrap();
-  AdService.instance.bootstrap();
   // Loaded before the first frame so a returning user never sees a flash of
   // the wrong language.
   final locale = AglLocaleController();
   await locale.load();
   runApp(CalcMasterApp(localeController: locale));
+  // The ATT prompt goes up once the first screen has rendered and the app is
+  // active (iOS drops a request made any earlier), and the ads SDK — consent,
+  // initialisation, every ad request — only starts after it is answered.
+  TrackingService.instance
+      .requestWhenActive()
+      .whenComplete(AdService.instance.bootstrap);
 }
 
 class CalcMasterApp extends StatelessWidget {

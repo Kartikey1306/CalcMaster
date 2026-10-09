@@ -1,4 +1,5 @@
 import 'package:agl_ads/agl_ads.dart';
+import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
@@ -22,6 +23,12 @@ class AdService {
   int _interstitialCounter = 0;
   InterstitialAd? _cachedInterstitial;
   bool _loadingInterstitial = false;
+  final Completer<void> _ready = Completer<void>();
+
+  /// Completes when [bootstrap] has finished, whether or not it succeeded.
+  /// `main()` only bootstraps after the ATT prompt is answered, so an ad slot
+  /// built on the first screen waits on this rather than requesting early.
+  Future<void> get ready => _ready.future;
 
   /// Single gate for ad loading. Previously this was
   /// `adsEnabled || _hasTestAds()`, and `_hasTestAds()` only checked that a
@@ -52,10 +59,14 @@ class AdService {
     } catch (e) {
       // Initialization can fail on emulators without Google Play Services etc.
       debugPrint('[AdService] Mobile Ads init failed: $e');
+    } finally {
+      if (!_ready.isCompleted) _ready.complete();
     }
   }
 
   String? bannerUnitId() {
+    // No ad may be requested until UMP says consent allows it.
+    if (!AglConsent.adsAllowed) return null;
     if (!enabled) return null;
     try {
       if (Platform.isIOS) return MonetizationConfig.admobIosBanner;

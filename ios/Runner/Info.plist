@@ -46,7 +46,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>CalcMaster uses your location to detect your region and currency, and when you tap Use my location in the GPS Coordinates tool.</string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>CalcMaster uses tracking to show relevant ads and improve our service. You can opt out anytime.</string>
+	<string>CalcMaster uses this to show you more relevant ads. If you choose Ask App Not to Track, you will still see ads, but they will not be personalised.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchScreen</key>
