@@ -91,5 +91,7 @@
 	<string>Main</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>CalcMaster uses your location to detect your region and currency, and when you tap Use my location in the GPS Coordinates tool. CalcMaster never uses your location in the background.</string>
 </dict>
 </plist>
