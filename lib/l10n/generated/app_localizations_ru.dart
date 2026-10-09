@@ -274,9 +274,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paywallCancelAnytime => 'Отмена в любое время';
 
   @override
-  String get paywallAnnualSavings => 'Экономия 44% · самый популярный';
-
-  @override
   String get paywallLifetimeForever => 'Заплатите один раз, владейте навсегда';
 
   @override

@@ -273,9 +273,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get paywallCancelAnytime => 'कभी भी रद्द करें';
 
   @override
-  String get paywallAnnualSavings => '44% बचाएँ · सबसे लोकप्रिय';
-
-  @override
   String get paywallLifetimeForever =>
       'एक बार भुगतान करें, हमेशा के लिए स्वामित्व रखें';
 

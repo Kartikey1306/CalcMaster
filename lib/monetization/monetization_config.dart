@@ -115,17 +115,8 @@ class MonetizationConfig {
   static bool get receiptVerificationReady =>
       receiptVerificationUrl.startsWith('https://');
 
-  // Display prices shown on the paywall. These are *cosmetic only* — the real
-  // price is fetched from the store at purchase time. Keep these in sync with
-  // App Store Connect / Play Console base pricing for honest UX.
-  static const String priceMonthly =
-      '\$2.99 / month'; // REPLACE with store price
-  static const String priceAnnual =
-      '\$19.99 / year'; // REPLACE with store price
-  static const String priceLifetime =
-      '\$49.99 once'; // REPLACE with store price
-  static const String annualSavingsLabel =
-      'Save 44% · most popular'; // REPLACE if pricing changes
+  // Prices are not configured here: the paywall shows the store's localized
+  // price (`PremiumProvider.productFor(tier)?.price`) or "Price unavailable".
 
   // ───────────────────────────────────────────────────────────────────
   //  FIREBASE · analytics, crashlytics, FCM (re-engagement)

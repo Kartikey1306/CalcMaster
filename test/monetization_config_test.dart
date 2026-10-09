@@ -56,12 +56,6 @@ void main() {
           equals('calcmaster_pro_lifetime'));
     });
 
-    test('Display prices have ready-to-show strings', () {
-      expect(MonetizationConfig.priceMonthly, contains('\$'));
-      expect(MonetizationConfig.priceAnnual, contains('\$'));
-      expect(MonetizationConfig.priceLifetime, contains('\$'));
-    });
-
     test('Affiliate slot map covers known slots', () {
       expect(
           MonetizationConfig.affiliateSlots

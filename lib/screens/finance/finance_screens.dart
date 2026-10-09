@@ -653,7 +653,13 @@ class _CurrencyCalcState extends State<CurrencyCalc> {
     final num = safeNumber(amount.text);
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeCurrency,
-      subtitle: regionState.ratesLive ? 'Live rates' : 'Offline rates',
+      subtitle: rates.isEmpty
+          ? (regionState.ratesLoading
+              ? 'Loading rates…'
+              : 'Rates unavailable')
+          : regionState.ratesLive
+              ? 'ECB rates, ${regionState.ratesDate}'
+              : 'ECB rates, ${regionState.ratesDate} (offline)',
       actions: [
         IconButton(
           tooltip: 'Refresh exchange rates',
@@ -673,15 +679,24 @@ class _CurrencyCalcState extends State<CurrencyCalc> {
           onChange: (v) => setState(() => from = v),
         ),
         const SizedBox(height: Spacing.lg),
-        for (final code in allCodes.where((c) => c != from).take(18))
-          ResultRow(
-            label: code,
-            value: () {
-              final v = convertCurrency(num, from!, code, rates);
-              return v.isFinite ? formatNumber(v) : '—';
-            }(),
-            highlight: code == regionState.region.currency,
-          ),
+        if (rates.isEmpty)
+          Text(
+            regionState.ratesLoading
+                ? 'Loading exchange rates…'
+                : 'Exchange rates unavailable. Connect to the internet and '
+                    'tap refresh.',
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+          )
+        else
+          for (final code in allCodes.where((c) => c != from).take(18))
+            ResultRow(
+              label: code,
+              value: () {
+                final v = convertCurrency(num, from!, code, rates);
+                return v.isFinite ? formatNumber(v) : '—';
+              }(),
+              highlight: code == regionState.region.currency,
+            ),
       ]),
     );
   }

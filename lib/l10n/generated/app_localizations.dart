@@ -628,12 +628,6 @@ abstract class AppLocalizations {
   /// **'Cancel anytime'**
   String get paywallCancelAnytime;
 
-  /// No description provided for @paywallAnnualSavings.
-  ///
-  /// In en, this message translates to:
-  /// **'Save 44% · most popular'**
-  String get paywallAnnualSavings;
-
   /// No description provided for @paywallLifetimeForever.
   ///
   /// In en, this message translates to:

@@ -267,9 +267,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get paywallCancelAnytime => '언제든 취소';
 
   @override
-  String get paywallAnnualSavings => '44% 절약 · 가장 인기';
-
-  @override
   String get paywallLifetimeForever => '한 번 결제, 평생 소유';
 
   @override

@@ -271,9 +271,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paywallCancelAnytime => 'ألغِ في أي وقت';
 
   @override
-  String get paywallAnnualSavings => 'وفّر 44٪ · الأكثر شعبية';
-
-  @override
   String get paywallLifetimeForever => 'ادفع مرة واحدة، احتفظ بها للأبد';
 
   @override

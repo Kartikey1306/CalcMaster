@@ -42,9 +42,26 @@ class _PaywallScreenState extends State<PaywallScreen> {
     }
   }
 
+  /// The store's localized price for [tier], or "Price unavailable" when the
+  /// product has not loaded (simulator, store unreachable, not configured).
+  static String priceLineFor(PremiumProvider premium, SubscriptionTier tier) =>
+      premium.productFor(tier)?.price ?? 'Price unavailable';
+
+  /// True only when the store's own prices show the annual plan costs less
+  /// than twelve months of the monthly one.
+  static bool annualIsCheaper(PremiumProvider premium) {
+    final monthly = premium.productFor(SubscriptionTier.monthly);
+    final annual = premium.productFor(SubscriptionTier.annual);
+    if (monthly == null || annual == null) return false;
+    if (monthly.currencyCode != annual.currencyCode) return false;
+    return annual.rawPrice < monthly.rawPrice * 12;
+  }
+
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final premium = context.watch<PremiumProvider>();
+    final selectedAvailable = premium.productFor(_selected) != null;
     return Scaffold(
       backgroundColor: AppColors.bg,
       appBar: AppBar(
@@ -87,7 +104,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
               _TierCard(
                 tier: SubscriptionTier.monthly,
                 title: loc.paywallTierMonthly,
-                priceLine: MonetizationConfig.priceMonthly,
+                priceLine: priceLineFor(premium, SubscriptionTier.monthly),
                 detail: loc.paywallCancelAnytime,
                 selected: _selected == SubscriptionTier.monthly,
                 onTap: () =>
@@ -96,9 +113,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
               _TierCard(
                 tier: SubscriptionTier.annual,
                 title: loc.paywallTierAnnual,
-                priceLine: MonetizationConfig.priceAnnual,
-                detail: loc.paywallAnnualSavings,
-                badge: loc.paywallBadgeBestValue,
+                priceLine: priceLineFor(premium, SubscriptionTier.annual),
+                badge:
+                    annualIsCheaper(premium) ? loc.paywallBadgeBestValue : null,
                 selected: _selected == SubscriptionTier.annual,
                 onTap: () =>
                     setState(() => _selected = SubscriptionTier.annual),
@@ -106,7 +123,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
               _TierCard(
                 tier: SubscriptionTier.lifetime,
                 title: loc.paywallTierLifetime,
-                priceLine: MonetizationConfig.priceLifetime,
+                priceLine: priceLineFor(premium, SubscriptionTier.lifetime),
                 detail: loc.paywallLifetimeForever,
                 selected: _selected == SubscriptionTier.lifetime,
                 onTap: () =>
@@ -121,7 +138,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     foregroundColor: AppColors.bg,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  onPressed: _busy ? null : _purchase,
+                  // No store product for this tier means nothing real to buy.
+                  onPressed: _busy || !selectedAvailable ? null : _purchase,
                   child: Text(
                     _busy ? loc.paywallProcessing : loc.paywallContinue,
                     style: const TextStyle(
@@ -246,7 +264,7 @@ class _TierCard extends StatelessWidget {
   final SubscriptionTier tier;
   final String title;
   final String priceLine;
-  final String detail;
+  final String? detail;
   final String? badge;
   final bool selected;
   final VoidCallback onTap;
@@ -255,7 +273,7 @@ class _TierCard extends StatelessWidget {
     required this.tier,
     required this.title,
     required this.priceLine,
-    required this.detail,
+    this.detail,
     this.badge,
     required this.selected,
     required this.onTap,
@@ -338,10 +356,12 @@ class _TierCard extends StatelessWidget {
                           ),
                         ],
                       ]),
-                      const SizedBox(height: 2),
-                      Text(detail,
-                          style: const TextStyle(
-                              color: AppColors.textMuted, fontSize: 13)),
+                      if (detail != null) ...[
+                        const SizedBox(height: 2),
+                        Text(detail!,
+                            style: const TextStyle(
+                                color: AppColors.textMuted, fontSize: 13)),
+                      ],
                     ],
                   ),
                 ),

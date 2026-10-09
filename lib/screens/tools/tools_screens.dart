@@ -528,6 +528,55 @@ class _DateDiffCalcState extends State<DateDiffCalc> {
 }
 // =================== TIME ZONES ===================
 
+/// Daylight-saving rules in force for the cities on the Time Zones screen
+/// (US Energy Policy Act 2005, EU Directive 2000/84/EC, NSW/VIC/ACT/TAS law).
+enum DstRule { none, us, eu, auSoutheast }
+
+/// The [n]th (1-based) Sunday of [month] in [year], or the last one if [n] is 0.
+DateTime _sunday(int year, int month, int n) {
+  if (n == 0) {
+    final last = DateTime.utc(year, month + 1, 0);
+    return DateTime.utc(year, month, last.day - last.weekday % 7);
+  }
+  final first = DateTime.utc(year, month, 1);
+  return DateTime.utc(year, month, 1 + (7 - first.weekday) % 7 + 7 * (n - 1));
+}
+
+/// UTC offset in hours at instant [utc] for a place whose standard offset is
+/// [standardHours] and which follows [rule].
+double utcOffsetHours(double standardHours, DstRule rule, DateTime utc) {
+  final y = utc.year;
+  final std = standardHours;
+  bool inDst;
+  switch (rule) {
+    case DstRule.none:
+      return std;
+    case DstRule.us:
+      // 02:00 local standard time, 2nd Sunday of March, to 02:00 local
+      // daylight time, 1st Sunday of November.
+      final start =
+          _sunday(y, 3, 2).add(Duration(minutes: ((2 - std) * 60).round()));
+      final end =
+          _sunday(y, 11, 1).add(Duration(minutes: ((1 - std) * 60).round()));
+      inDst = !utc.isBefore(start) && utc.isBefore(end);
+    case DstRule.eu:
+      // 01:00 UTC, last Sunday of March, to 01:00 UTC, last Sunday of October.
+      final start = _sunday(y, 3, 0).add(const Duration(hours: 1));
+      final end = _sunday(y, 10, 0).add(const Duration(hours: 1));
+      inDst = !utc.isBefore(start) && utc.isBefore(end);
+    case DstRule.auSoutheast:
+      // Southern hemisphere: daylight time until 03:00 local daylight time,
+      // 1st Sunday of April, and again from 02:00 local standard time,
+      // 1st Sunday of October.
+      final end =
+          _sunday(y, 4, 1).add(Duration(minutes: ((2 - std) * 60).round()));
+      final start =
+          _sunday(y, 10, 1).add(Duration(minutes: ((2 - std) * 60).round()));
+      inDst = utc.isBefore(end) || !utc.isBefore(start);
+  }
+  return inDst ? std + 1 : std;
+}
+
 class TimeZonesScreen extends StatefulWidget {
   const TimeZonesScreen({super.key});
   @override
@@ -548,18 +597,19 @@ class _TimeZonesScreenState extends State<TimeZonesScreen> {
     super.dispose();
   }
 
-  // Approximate fixed UTC offsets (no DST handling).
-  final List<({String label, String flag, double offsetHours})> zones = const [
-    (label: 'Cupertino', flag: '🇺🇸', offsetHours: -7),
-    (label: 'New York', flag: '🇺🇸', offsetHours: -4),
-    (label: 'London', flag: '🇬🇧', offsetHours: 1),
-    (label: 'Berlin', flag: '🇩🇪', offsetHours: 2),
-    (label: 'Mumbai', flag: '🇮🇳', offsetHours: 5.5),
-    (label: 'Singapore', flag: '🇸🇬', offsetHours: 8),
-    (label: 'Tokyo', flag: '🇯🇵', offsetHours: 9),
-    (label: 'Sydney', flag: '🇦🇺', offsetHours: 10),
-    (label: 'São Paulo', flag: '🇧🇷', offsetHours: -3),
-    (label: 'Dubai', flag: '🇦🇪', offsetHours: 4),
+  // Standard UTC offsets plus each place's current daylight-saving rule.
+  final List<({String label, String flag, double offsetHours, DstRule dst})>
+      zones = const [
+    (label: 'Cupertino', flag: '🇺🇸', offsetHours: -8, dst: DstRule.us),
+    (label: 'New York', flag: '🇺🇸', offsetHours: -5, dst: DstRule.us),
+    (label: 'London', flag: '🇬🇧', offsetHours: 0, dst: DstRule.eu),
+    (label: 'Berlin', flag: '🇩🇪', offsetHours: 1, dst: DstRule.eu),
+    (label: 'Mumbai', flag: '🇮🇳', offsetHours: 5.5, dst: DstRule.none),
+    (label: 'Singapore', flag: '🇸🇬', offsetHours: 8, dst: DstRule.none),
+    (label: 'Tokyo', flag: '🇯🇵', offsetHours: 9, dst: DstRule.none),
+    (label: 'Sydney', flag: '🇦🇺', offsetHours: 10, dst: DstRule.auSoutheast),
+    (label: 'São Paulo', flag: '🇧🇷', offsetHours: -3, dst: DstRule.none),
+    (label: 'Dubai', flag: '🇦🇪', offsetHours: 4, dst: DstRule.none),
   ];
 
   @override
@@ -571,8 +621,10 @@ class _TimeZonesScreenState extends State<TimeZonesScreen> {
       child: Column(children: [
         for (final z in zones)
           Builder(builder: (_) {
-            final dt =
-                nowUtc.add(Duration(minutes: (z.offsetHours * 60).round()));
+            final dt = nowUtc.add(Duration(
+                minutes:
+                    (utcOffsetHours(z.offsetHours, z.dst, nowUtc) * 60)
+                        .round()));
             final time = DateFormat('h:mm:ss a').format(dt);
             final day = DateFormat('EEE, MMM d').format(dt);
             return Container(

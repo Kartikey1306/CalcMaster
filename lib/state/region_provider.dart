@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,11 +14,15 @@ enum DetectResult { success, permissionDenied, unavailable, noMatch }
 class RegionProvider extends ChangeNotifier {
   static const _kRegion = 'region';
   static const _kAutoDetected = 'region_auto_detected';
+  static const _kRatesCache = 'rates_cache';
 
   RegionId _regionId = RegionId.US;
-  Map<String, double> _rates = Map<String, double>.from(staticRates);
+  // Empty until a real Frankfurter response (live or cached) is available.
+  Map<String, double> _rates = const {};
   bool _ratesLive = false;
+  bool _ratesLoading = true;
   int? _ratesUpdatedAt;
+  String? _ratesDate;
   bool _detecting = false;
 
   RegionId get regionId => _regionId;
@@ -24,6 +30,12 @@ class RegionProvider extends ChangeNotifier {
   Map<String, double> get rates => _rates;
   bool get ratesLive => _ratesLive;
   int? get ratesUpdatedAt => _ratesUpdatedAt;
+
+  /// ECB reference date of the rates in [rates], or `null` when there are none.
+  String? get ratesDate => _ratesDate;
+
+  /// True while a rates fetch is in flight.
+  bool get ratesLoading => _ratesLoading;
 
   /// True while a GPS detection is in flight (drives the picker's spinner).
   bool get detecting => _detecting;
@@ -46,6 +58,10 @@ class RegionProvider extends ChangeNotifier {
       // the user hasn't already denied location forever.
       _autoDetectOnFirstLaunch();
     }
+    final cachedRates = sp.getString(_kRatesCache);
+    final cached =
+        cachedRates == null ? null : RatesResult.fromCacheJson(cachedRates);
+    if (cached != null) _applyRates(cached);
     refreshRates();
   }
 
@@ -154,11 +170,27 @@ class RegionProvider extends ChangeNotifier {
     await setRegion(next);
   }
 
-  Future<void> refreshRates() async {
-    final result = await fetchLatestRates();
+  void _applyRates(RatesResult result) {
     _rates = result.rates;
     _ratesLive = result.live;
     _ratesUpdatedAt = result.fetchedAt;
+    _ratesDate = result.date;
+  }
+
+  /// Fetches fresh rates. On failure the last real (cached) rates stay, marked
+  /// not live; if there were none, [rates] stays empty.
+  Future<void> refreshRates() async {
+    _ratesLoading = true;
+    notifyListeners();
+    final result = await fetchLatestRates();
+    if (result != null) {
+      _applyRates(result);
+      final sp = await SharedPreferences.getInstance();
+      await sp.setString(_kRatesCache, jsonEncode(result.toJson()));
+    } else {
+      _ratesLive = false;
+    }
+    _ratesLoading = false;
     notifyListeners();
   }
 }

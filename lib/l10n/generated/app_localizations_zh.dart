@@ -267,9 +267,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get paywallCancelAnytime => '随时取消';
 
   @override
-  String get paywallAnnualSavings => '节省 44% · 最受欢迎';
-
-  @override
   String get paywallLifetimeForever => '一次付费,永久拥有';
 
   @override

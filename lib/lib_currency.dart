@@ -113,34 +113,44 @@ const List<Region> regions = [
 Region regionById(RegionId id) =>
     regions.firstWhere((r) => r.id == id, orElse: () => regions[0]);
 
-const Map<String, double> staticRates = {
-  'USD': 1,
-  'EUR': 0.92,
-  'GBP': 0.78,
-  'CAD': 1.36,
-  'AUD': 1.5,
-  'INR': 83.4,
-  'JPY': 149.2,
-  'CHF': 0.88,
-  'CNY': 7.18,
-  'MXN': 17.1,
-  'BRL': 5.05,
-  'KRW': 1310,
-  'SGD': 1.34,
-  'HKD': 7.81,
-  'NZD': 1.62,
-  'ZAR': 18.4,
-  'SEK': 10.4,
-  'NOK': 10.5,
-  'DKK': 6.85,
-};
-
 class RatesResult {
   final Map<String, double> rates;
+
+  /// When this device fetched the rates (ms since epoch).
   final int fetchedAt;
+
+  /// The ECB reference date Frankfurter reports for these rates (YYYY-MM-DD).
+  final String date;
   final bool live;
   const RatesResult(
-      {required this.rates, required this.fetchedAt, required this.live});
+      {required this.rates,
+      required this.fetchedAt,
+      required this.date,
+      required this.live});
+
+  Map<String, dynamic> toJson() =>
+      {'rates': rates, 'fetchedAt': fetchedAt, 'date': date};
+
+  /// Rebuilds a cached response. Always `live: false` — a cached rate is the
+  /// last real one we saw, not a current one. Returns `null` if the cache is
+  /// unreadable.
+  static RatesResult? fromCacheJson(String source) {
+    try {
+      final json = jsonDecode(source) as Map<String, dynamic>;
+      final raw = json['rates'] as Map<String, dynamic>;
+      final rates = <String, double>{
+        for (final e in raw.entries)
+          if (e.value is num) e.key: (e.value as num).toDouble(),
+      };
+      final date = json['date'] as String?;
+      final fetchedAt = json['fetchedAt'] as int?;
+      if (rates.isEmpty || date == null || fetchedAt == null) return null;
+      return RatesResult(
+          rates: rates, fetchedAt: fetchedAt, date: date, live: false);
+    } catch (_) {
+      return null;
+    }
+  }
 }
 
 // Frankfurter moved to api.frankfurter.dev/v1; the old api.frankfurter.app host
@@ -148,36 +158,45 @@ class RatesResult {
 // the redirect surviving.
 const String kRatesEndpoint = 'https://api.frankfurter.dev/v1/latest?from=USD';
 
-Future<RatesResult> fetchLatestRates() async {
+/// Parses a Frankfurter `latest?from=USD` body. Returns `null` if it does not
+/// carry rates and a reference date.
+RatesResult? parseRatesResponse(String body, int fetchedAt) {
   try {
-    final res = await http
-        .get(Uri.parse(kRatesEndpoint))
-        .timeout(const Duration(seconds: 8));
-    if (res.statusCode != 200) throw Exception('Status ${res.statusCode}');
-    final json = jsonDecode(res.body) as Map<String, dynamic>;
+    final json = jsonDecode(body) as Map<String, dynamic>;
     final raw = (json['rates'] as Map<String, dynamic>?) ?? {};
+    final date = json['date'] as String?;
+    if (raw.isEmpty || date == null) return null;
     final rates = <String, double>{'USD': 1};
     raw.forEach((k, v) {
       if (v is num) rates[k] = v.toDouble();
     });
     return RatesResult(
-        rates: rates,
-        fetchedAt: DateTime.now().millisecondsSinceEpoch,
-        live: true);
+        rates: rates, fetchedAt: fetchedAt, date: date, live: true);
   } catch (_) {
-    return RatesResult(
-      rates: Map<String, double>.from(staticRates),
-      fetchedAt: DateTime.now().millisecondsSinceEpoch,
-      live: false,
-    );
+    return null;
+  }
+}
+
+/// Fetches the latest ECB reference rates from Frankfurter. Returns `null` when
+/// the call fails; callers fall back to the last cached real response (or show
+/// that rates are unavailable), never to made-up rates.
+Future<RatesResult?> fetchLatestRates({http.Client? client}) async {
+  try {
+    final uri = Uri.parse(kRatesEndpoint);
+    final res = await (client == null ? http.get(uri) : client.get(uri))
+        .timeout(const Duration(seconds: 8));
+    if (res.statusCode != 200) return null;
+    return parseRatesResponse(res.body, DateTime.now().millisecondsSinceEpoch);
+  } catch (_) {
+    return null;
   }
 }
 
 double convertCurrency(
     double amount, String from, String to, Map<String, double> rates) {
   if (!amount.isFinite) return double.nan;
-  final fromR = rates[from] ?? staticRates[from];
-  final toR = rates[to] ?? staticRates[to];
+  final fromR = rates[from];
+  final toR = rates[to];
   if (fromR == null || toR == null) return double.nan;
   return (amount / fromR) * toR;
 }
