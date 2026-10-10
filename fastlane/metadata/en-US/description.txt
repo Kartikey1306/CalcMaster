@@ -31,10 +31,7 @@ Save calculations, formulas, and reminders. Search, edit, delete. Stays on your 
 
 —— CalcMaster Pro ——
 
-Optional subscription removes the small banner ad, refreshes currency rates instantly instead of every 24 hours, unlocks advanced finance insights, and supports indie development. Three tiers:
-• Monthly $2.99
-• Annual $19.99 (save 44%)
-• Lifetime $49.99 — pay once, own it forever
+Optional subscription removes the small banner ad, refreshes currency rates instantly instead of every 24 hours, unlocks advanced finance insights, and supports indie development. Choose monthly, annual, or a one-time lifetime purchase; prices are shown in the app in your local currency.
 
 Cancel any time from your device's subscription settings.
 
