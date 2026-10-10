@@ -33,7 +33,7 @@ describe('CalMaster — E2E Simulation Tests', () => {
         const u = new URL(url);
         return { scheme: u.protocol.replace(':',''), host: u.hostname, path: u.pathname, params: Object.fromEntries(u.searchParams) };
       };
-      const result = parseDeepLink('https://americangroupllc.com/calmaster?id=123&ref=email');
+      const result = parseDeepLink('https://www.americangroup.ai/products/calcmaster?id=123&ref=email');
       expect(result.host).toBe('americangroupllc.com');
       expect(result.params.id).toBe('123');
       expect(result.params.ref).toBe('email');

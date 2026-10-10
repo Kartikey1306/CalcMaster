@@ -3,7 +3,7 @@ const path = require('path');
 
 const APP_NAME = 'CalMaster';
 const APP_COLOR = '#37474F';
-const WEB_URL = 'https://americangroupllc.com/calmaster';
+const WEB_URL = 'https://www.americangroup.ai/products/calcmaster';
 
 let mainWindow;
 

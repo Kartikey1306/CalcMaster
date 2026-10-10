@@ -342,7 +342,7 @@ CalcMaster runs fully offline (Supabase auth is flag-gated off). A bundled
 local test account is available for reviewers and testers. The session is
 persisted across launches via `SharedPreferences`.
 
-- **Email:** `test@americangroupllc.com`
+- **Email:** `test@americangroup.ai`
 - **Password:** `Test1234!`
 
 Sign in from the login screen (shown before the tab shell) either by entering

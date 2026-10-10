@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   openBtn.addEventListener('click', () => {
-    chrome.tabs.create({ url: 'https://americangroupllc.com/calmaster' });
+    chrome.tabs.create({ url: 'https://www.americangroup.ai/products/calcmaster' });
   });
 
   notifBtn.addEventListener('click', () => {
