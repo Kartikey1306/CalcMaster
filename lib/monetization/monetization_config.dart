@@ -169,16 +169,16 @@ class MonetizationConfig {
   //  LEGAL / SUPPORT
   // ───────────────────────────────────────────────────────────────────
   // Served from marketing/site/ by .github/workflows/pages.yml. These MUST be
-  // real pages: safecodeg.com is a catch-all SPA that returns the American
+  // real pages: americangroup.ai is a catch-all SPA that returns the American
   // Group corporate homepage for every path, so the old /privacy-policy and
   // /terms links resolved 200 with the wrong content — an automatic App Store
   // rejection under Guideline 5.1.1.
   static const String privacyPolicyUrl =
-      'https://www.safecodeg.com/policy/calcmaster/';
+      'https://www.americangroup.ai/policy/calcmaster/';
   static const String termsOfServiceUrl =
-      'https://www.safecodeg.com/policy/calcmaster/terms.html';
-  static const String supportEmail = 'contact@safecodeg.com';
-  static const String marketingWebsite = 'https://www.safecodeg.com/';
+      'https://www.americangroup.ai/policy/calcmaster/terms.html';
+  static const String supportEmail = 'contact@americangroup.ai';
+  static const String marketingWebsite = 'https://www.americangroup.ai/';
   static const String appStoreUrl =
       'https://apps.apple.com/app/calcmaster/id0000000000'; // REPLACE after listing
   static const String playStoreUrl =

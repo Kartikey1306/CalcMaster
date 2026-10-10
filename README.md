@@ -118,9 +118,9 @@ Replace before submitting to App Store / Play Store / public web hosting.
 | `amazonAssociatesTagUS` / `_UK` / `_IN` | `calcmaster-20` / `-21` | affiliate-program.amazon.com → Tag |
 | `mealKitAffiliateUrl` / `wellnessSubscriptionUrl` | `example.com/affiliate/...?ref=DUMMY` | Real partner tracking URLs |
 | `affiliateSlots` | Amazon search URLs | Replace with concrete product detail page URLs |
-| `privacyPolicyUrl` / `termsOfServiceUrl` | `safecodeg.com/privacy` `/terms` | Publish at a real domain (Iubenda / Termly / GitHub Pages) |
-| `supportEmail` | `contact@safecodeg.com` | A real, monitored mailbox |
-| `marketingWebsite` / `appStoreUrl` / `playStoreUrl` | `safecodeg.com` / fake bundle IDs | After buying domain + listing apps |
+| `privacyPolicyUrl` / `termsOfServiceUrl` | `americangroup.ai/privacy` `/terms` | Publish at a real domain (Iubenda / Termly / GitHub Pages) |
+| `supportEmail` | `contact@americangroup.ai` | A real, monitored mailbox |
+| `marketingWebsite` / `appStoreUrl` / `playStoreUrl` | `americangroup.ai` / fake bundle IDs | After buying domain + listing apps |
 
 Master switches at the top of the same file:
 

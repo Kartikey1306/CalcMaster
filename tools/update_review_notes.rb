@@ -90,7 +90,7 @@ NOTES = <<~TXT
   7. REGULATED INDUSTRY AND THIRD-PARTY MATERIAL
   CalcMaster is not in a regulated industry. It gives no financial, tax, medical or legal advice, holds no funds, and only computes on values the user types in. Artwork and code are original or permissively licensed; exchange rates are public ECB data via Frankfurter and tax brackets are published government figures. No protected third-party material is included.
 
-  Contact: contact@safecodeg.com — we reply within one business day.
+  Contact: contact@americangroup.ai — we reply within one business day.
 TXT
 
 code, body = api(:get, "/v1/apps/#{APP}/appStoreVersions?limit=1")

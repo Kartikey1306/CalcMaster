@@ -91,20 +91,20 @@ Add as GitHub repo secrets:
 ---
 
 ## 🌐 PART C — Publish the legal pages (URLs already wired)
-Domain + support email are set everywhere: **`safecodeg.com`** / **`contact@safecodeg.com`**.
+Domain + support email are set everywhere: **`americangroup.ai`** / **`contact@americangroup.ai`**.
 The app + store metadata now point at:
-- Privacy: `https://www.safecodeg.com/privacy-policy`
-- Terms:   `https://www.safecodeg.com/terms`
-- Support: `https://www.safecodeg.com/support`
+- Privacy: `https://www.americangroup.ai/privacy-policy`
+- Terms:   `https://www.americangroup.ai/terms`
+- Support: `https://www.americangroup.ai/support`
 
 **You just need those pages to be LIVE at those exact paths.** Upload the contents of
-`marketing/site/` to a `/calcmaster/` folder on `safecodeg.com` (the pages already
+`marketing/site/` to a `/calcmaster/` folder on `americangroup.ai` (the pages already
 cross-link by relative filename, so they work as a folder).
 
 > If you'd rather host them somewhere with a different path (root, or GitHub Pages),
 > tell me the final paths and I'll re-point the metadata + config. The `.github/workflows/pages.yml`
 > workflow is still available as a free fallback.
-> Also confirm `contact@safecodeg.com` is a real mailbox — Apple's reviewer emails it.
+> Also confirm `contact@americangroup.ai` is a real mailbox — Apple's reviewer emails it.
 
 ---
 

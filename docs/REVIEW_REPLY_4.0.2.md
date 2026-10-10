@@ -128,7 +128,7 @@ Under ~5 minutes, no cuts, no voiceover needed.
 >    brackets are published government figures.
 >
 > Please let us know if anything else would help. We reply within one business
-> day at contact@safecodeg.com.
+> day at contact@americangroup.ai.
 
 ## 4. Still open
 

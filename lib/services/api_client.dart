@@ -14,7 +14,7 @@ class ApiClient {
 
   static const String _baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://api.safecodeg.com/api/v1',
+    defaultValue: 'https://api.americangroup.ai/api/v1',
   );
 
   // Auth is owned by Supabase; gateway calls carry the current Supabase JWT.

@@ -135,19 +135,19 @@ We'd love to hear from you. Tap Settings → Send feedback to reach the team.
 ### Support URL
 
 ```
-https://www.safecodeg.com/support
+https://www.americangroup.ai/support
 ```
 
 ### Marketing URL (optional)
 
 ```
-https://www.safecodeg.com
+https://www.americangroup.ai
 ```
 
 ### Privacy Policy URL (REQUIRED)
 
 ```
-https://www.safecodeg.com/privacy-policy
+https://www.americangroup.ai/privacy-policy
 ```
 
 > **Action required**: publish a real privacy policy at that URL before submitting. Use Iubenda, Termly, or a static page on GitHub Pages. The Settings → Privacy screen in the app already links to it.
@@ -205,19 +205,19 @@ productivity
 ### Contact email
 
 ```
-contact@safecodeg.com
+contact@americangroup.ai
 ```
 
 ### Website
 
 ```
-https://www.safecodeg.com
+https://www.americangroup.ai
 ```
 
 ### Privacy Policy URL (REQUIRED)
 
 ```
-https://www.safecodeg.com/privacy-policy
+https://www.americangroup.ai/privacy-policy
 ```
 
 ### Content rating questionnaire (recommended answers — confirms PEGI 3 / Everyone / 4+)
@@ -250,14 +250,14 @@ Test instructions:
 3. Tap the gear icon in the top-right to open Settings.
 4. From Settings, tap "Subscribe to Pro" to see the paywall.
    — On this build, "Continue" intentionally returns a sandbox snackbar; production credentials will be configured before the listing goes live.
-5. Tap "Send feedback" in Settings to test mailto: contact@safecodeg.com.
+5. Tap "Send feedback" in Settings to test mailto: contact@americangroup.ai.
 
 Privacy:
 • Location: requested only when the user explicitly taps "Use my location" in the GPS Coordinates tool. Not transmitted.
 • Network: a single GET to api.frankfurter.dev for European Central Bank currency rates, used by the Currency converter. Offline fallback is built in.
 • Tracking: No App Tracking Transparency prompt is required because we don't track users across apps or websites.
 
-If you need a demo subscription account or any other access, please email contact@safecodeg.com and we'll respond within one business day.
+If you need a demo subscription account or any other access, please email contact@americangroup.ai and we'll respond within one business day.
 ```
 
 ---
@@ -291,8 +291,8 @@ When you're ready to submit, copy each field above into the relevant store dashb
 - [ ] Short description — (above)
 - [ ] Full description — (above)
 - [ ] What's new — (above)
-- [ ] Email — *contact@safecodeg.com*
-- [ ] Website — *https://www.safecodeg.com*
+- [ ] Email — *contact@americangroup.ai*
+- [ ] Website — *https://www.americangroup.ai*
 - [ ] Privacy Policy URL — REQUIRED, must be live
 - [ ] Category — Tools (primary)
 - [ ] Tags — calculator, unit converter, finance, utility, productivity
