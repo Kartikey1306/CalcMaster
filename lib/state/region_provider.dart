@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui' show Locale, PlatformDispatcher;
 
 import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
@@ -13,7 +14,6 @@ enum DetectResult { success, permissionDenied, unavailable, noMatch }
 
 class RegionProvider extends ChangeNotifier {
   static const _kRegion = 'region';
-  static const _kAutoDetected = 'region_auto_detected';
   static const _kRatesCache = 'rates_cache';
 
   RegionId _regionId = RegionId.US;
@@ -52,31 +52,21 @@ class RegionProvider extends ChangeNotifier {
         _regionId = RegionId.values.firstWhere((r) => r.name == saved);
         notifyListeners();
       } catch (_) {}
-    } else if (!(sp.getBool(_kAutoDetected) ?? false)) {
-      // First launch with no saved region: try once to detect the country
-      // from GPS. Fire-and-forget so it never blocks startup, and only if
-      // the user hasn't already denied location forever.
-      _autoDetectOnFirstLaunch();
+    } else {
+      // First launch with no saved region: follow the device's region
+      // setting. Location is never requested here — only when the user taps
+      // "Detect" in the region picker (or "Use my location" in the GPS tool).
+      final fromLocale = regionForLocale(PlatformDispatcher.instance.locale);
+      if (fromLocale != null && fromLocale != _regionId) {
+        _regionId = fromLocale;
+        notifyListeners();
+      }
     }
     final cachedRates = sp.getString(_kRatesCache);
     final cached =
         cachedRates == null ? null : RatesResult.fromCacheJson(cachedRates);
     if (cached != null) _applyRates(cached);
     refreshRates();
-  }
-
-  Future<void> _autoDetectOnFirstLaunch() async {
-    final sp = await SharedPreferences.getInstance();
-    await sp.setBool(_kAutoDetected, true);
-    try {
-      final perm = await Geolocator.checkPermission();
-      // Don't surface a permission prompt unprompted if the user already said
-      // no; otherwise request gently. A manual "Detect" button remains.
-      if (perm == LocationPermission.deniedForever) return;
-      await detectRegionFromLocation();
-    } catch (_) {
-      // Ignore — manual selection still works.
-    }
   }
 
   /// Detects the country from the device location and switches the region/
@@ -100,7 +90,7 @@ class RegionProvider extends ChangeNotifier {
           await placemarkFromCoordinates(pos.latitude, pos.longitude);
       final iso =
           placemarks.isNotEmpty ? placemarks.first.isoCountryCode : null;
-      final matched = iso == null ? null : _regionForCountry(iso);
+      final matched = iso == null ? null : regionForCountry(iso);
       if (matched == null) return DetectResult.noMatch;
 
       await setRegion(matched);
@@ -138,7 +128,15 @@ class RegionProvider extends ChangeNotifier {
     'ES',
   };
 
-  RegionId? _regionForCountry(String iso) {
+  /// The region for a device locale's country (e.g. `ja_JP` -> JP), or
+  /// `null` when the locale carries no country or it has no matching region.
+  static RegionId? regionForLocale(Locale locale) {
+    final cc = locale.countryCode;
+    if (cc == null || cc.isEmpty) return null;
+    return regionForCountry(cc);
+  }
+
+  static RegionId? regionForCountry(String iso) {
     final code = iso.toUpperCase();
     const direct = {
       'US': RegionId.US,
