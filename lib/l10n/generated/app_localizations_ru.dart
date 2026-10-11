@@ -223,14 +223,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get paywallSubtitle =>
-      'Без рекламы, расширенная аналитика, актуальные курсы валют и поддержка независимой разработки.';
+      'Разбивка кредитов и вложений по годам и поддержка независимой разработки.';
 
   @override
   String get paywallBenefitAdFree => 'Без рекламы';
 
   @override
-  String get paywallBenefitAdvanced =>
-      'Расширенный налоговый и финансовый анализ';
+  String get paywallBenefitAdvanced => 'Разбивка кредитов и вложений по годам';
 
   @override
   String get paywallBenefitRealtime => 'Курсы валют в реальном времени';

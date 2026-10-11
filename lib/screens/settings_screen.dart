@@ -192,7 +192,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: isPro ? loc.settingsCalcMasterPro : loc.settingsSubscribePro,
             subtitle: isPro
                 ? 'Active subscription · thanks!'
-                : 'Remove ads + advanced features',
+                : (MonetizationConfig.adsReady
+                    ? 'Remove ads + year-by-year finance breakdowns'
+                    : 'Year-by-year loan & investment breakdowns'),
             trailing: isPro
                 ? const ProBadge()
                 : const Icon(Icons.chevron_right, color: AppColors.textDim),
@@ -223,19 +225,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: Spacing.lg),
           _SectionHeader(label: loc.settingsPreferences),
-          _Tile(
-            icon: Icons.notifications_outlined,
-            iconColor: AppColors.accentPrimary,
-            title: loc.settingsNotifications,
-            subtitle: _loaded
-                ? (_notificationsEnabled ? 'Reminders & rate alerts on' : 'Off')
-                : 'Loading…',
-            trailing: Switch(
-              value: _notificationsEnabled,
-              activeTrackColor: AppColors.accentPrimary,
-              onChanged: _loaded ? _toggleNotifications : null,
+          // Only offered once a real push transport is attached: until then
+          // the switch could store an opt-in but nothing would ever be sent.
+          if (NotificationService.instance.isLive)
+            _Tile(
+              icon: Icons.notifications_outlined,
+              iconColor: AppColors.accentPrimary,
+              title: loc.settingsNotifications,
+              subtitle: _loaded
+                  ? (_notificationsEnabled ? 'Reminders & rate alerts on' : 'Off')
+                  : 'Loading…',
+              trailing: Switch(
+                value: _notificationsEnabled,
+                activeTrackColor: AppColors.accentPrimary,
+                onChanged: _loaded ? _toggleNotifications : null,
+              ),
             ),
-          ),
           _Tile(
             icon: Icons.language,
             iconColor: AppColors.accentPrimary,

@@ -219,13 +219,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get paywallTitle => '解锁 CalcMaster Pro';
 
   @override
-  String get paywallSubtitle => '去除广告,获得高级洞察,即时刷新汇率,支持独立开发。';
+  String get paywallSubtitle => '贷款和投资的逐年明细,并支持独立开发。';
 
   @override
   String get paywallBenefitAdFree => '无广告体验';
 
   @override
-  String get paywallBenefitAdvanced => '高级税务与财务洞察';
+  String get paywallBenefitAdvanced => '贷款与投资逐年明细';
 
   @override
   String get paywallBenefitRealtime => '实时汇率刷新';

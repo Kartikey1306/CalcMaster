@@ -223,13 +223,13 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get paywallSubtitle =>
-      'विज्ञापन हटाएँ, उन्नत अंतर्दृष्टि, तत्काल मुद्रा दर ताज़ा करें, और स्वतंत्र विकास का समर्थन करें।';
+      'ऋण और निवेश का साल-दर-साल ब्योरा, और स्वतंत्र विकास का समर्थन।';
 
   @override
   String get paywallBenefitAdFree => 'विज्ञापन रहित अनुभव';
 
   @override
-  String get paywallBenefitAdvanced => 'उन्नत टैक्स + वित्तीय अंतर्दृष्टि';
+  String get paywallBenefitAdvanced => 'ऋण और निवेश का साल-दर-साल ब्योरा';
 
   @override
   String get paywallBenefitRealtime => 'रीयल-टाइम मुद्रा रिफ़्रेश';

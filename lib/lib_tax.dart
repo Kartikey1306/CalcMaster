@@ -22,6 +22,26 @@ const Map<RegionId, double> salesTaxRate = {
   RegionId.AE: 0.05,
 };
 
+/// Customary restaurant tip, in percent, used as the tip calculator's default
+/// for each region. These are the commonly cited norms for sit-down service
+/// (US 15-20%, Canada 15-20%, Mexico 10-15%, UK/eurozone/India/UAE around
+/// 10%, Brazil's 10% "taxa de servico", Australia optional ~10%) and zero
+/// where tipping is not customary (Japan, South Korea). The user can always
+/// type their own percentage.
+const Map<RegionId, double> customaryTipPercent = {
+  RegionId.US: 18,
+  RegionId.UK: 10,
+  RegionId.EU: 10,
+  RegionId.CA: 15,
+  RegionId.AU: 10,
+  RegionId.IN: 10,
+  RegionId.JP: 0,
+  RegionId.BR: 10,
+  RegionId.MX: 15,
+  RegionId.KR: 0,
+  RegionId.AE: 10,
+};
+
 const Map<RegionId, Map<FilingStatus, double>> standardDeduction = {
   RegionId.US: {
     FilingStatus.single: 15000,

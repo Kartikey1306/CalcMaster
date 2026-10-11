@@ -1,13 +1,15 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../lib_currency.dart';
+import '../../lib_finance.dart';
 import '../../lib_format.dart';
 import '../../lib_payroll.dart';
 import '../../lib_tax.dart';
+import '../../monetization/analytics_service.dart';
+import '../../monetization/premium_gate.dart';
 import '../../state/region_provider.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/chip_picker.dart';
@@ -356,13 +358,41 @@ class TipCalc extends StatefulWidget {
 
 class _TipCalcState extends State<TipCalc> {
   final bill = TextEditingController();
-  final tipPct = TextEditingController(text: '18');
+  final tipPct = TextEditingController();
   final people = TextEditingController(text: '2');
+
+  /// Region whose customary tip is currently in [tipPct], or null before the
+  /// first default has been applied.
+  RegionId? _defaultFor;
+
+  /// Once the user types their own percentage it is never overwritten.
+  bool _tipEdited = false;
+  bool _applyingDefault = false;
+
   @override
   void initState() {
     super.initState();
-    for (final c in [bill, tipPct, people]) {
+    for (final c in [bill, people]) {
       c.addListener(() => setState(() {}));
+    }
+    tipPct.addListener(() {
+      if (_applyingDefault) return;
+      _tipEdited = true;
+      setState(() {});
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Follow the region's tipping custom (0% in Japan, 18% in the US, ...)
+    // until the user enters a percentage of their own.
+    final regionId = Provider.of<RegionProvider>(context).regionId;
+    if (!_tipEdited && regionId != _defaultFor) {
+      _defaultFor = regionId;
+      _applyingDefault = true;
+      tipPct.text = formatNumber(customaryTipPercent[regionId] ?? 0);
+      _applyingDefault = false;
     }
   }
 
@@ -383,12 +413,15 @@ class _TipCalcState extends State<TipCalc> {
     final p = safeNumber(people.text).toInt().clamp(1, 1000000);
     final tip = b * t;
     final total = b + tip;
+    final customary = customaryTipPercent[region.id] ?? 0;
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeTip,
       subtitle: '${region.flag} ${region.currency}',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         NumberInput(label: 'Bill (${region.currency})', controller: bill),
         NumberInput(label: 'Tip %', controller: tipPct),
+        Text('Customary tip in ${region.label}: ${formatNumber(customary)}%',
+            style: const TextStyle(color: AppColors.textDim, fontSize: 12)),
         NumberInput(
             label: 'People',
             controller: people,
@@ -487,20 +520,26 @@ class _CompoundCalcState extends State<CompoundCalc> {
     final region = context.watch<RegionProvider>().region;
     String cur(double n) => formatCurrency(n, region.locale, region.currency);
     final P = safeNumber(principal.text);
-    final r = safeNumber(ratePct.text) / 100;
+    final ratePctValue = safeNumber(ratePct.text);
     final t = safeNumber(years.text);
-    final n = double.parse(freq);
+    final n = int.parse(freq);
     final payment = safeNumber(pmt.text);
-    double future = P;
-    if (n > 0 && t > 0 && r >= 0) {
-      final factor = math.pow(1 + r / n, n * t).toDouble();
-      future = P * factor +
-          (payment > 0 && r > 0
-              ? payment * ((factor - 1) / (r / n))
-              : payment * n * t);
-    }
-    final contributed = P + payment * n * t;
+    final future = compoundFutureValue(
+      principal: P,
+      annualRatePct: ratePctValue,
+      years: t,
+      monthlyContribution: payment,
+      compoundsPerYear: n,
+    );
+    final contributed = P + payment * 12 * (t > 0 ? t : 0);
     final interest = future - contributed;
+    final schedule = compoundGrowthByYear(
+      principal: P,
+      annualRatePct: ratePctValue,
+      years: t,
+      monthlyContribution: payment,
+      compoundsPerYear: n,
+    );
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeCompound,
       subtitle: 'Future value of an investment',
@@ -530,6 +569,20 @@ class _CompoundCalcState extends State<CompoundCalc> {
         ResultRow(label: 'Future value', value: cur(future), highlight: true),
         ResultRow(label: 'Total contributed', value: cur(contributed)),
         ResultRow(label: 'Interest earned', value: cur(interest)),
+        if (schedule.isNotEmpty)
+          YearlyBreakdown(
+            currency: region.currency,
+            headers: const ['Year', 'Contributed', 'Interest', 'Balance'],
+            rows: [
+              for (final y in schedule)
+                [
+                  formatNumber(y.year, maxDigits: 2),
+                  formatNumber(y.contributed, maxDigits: 0),
+                  formatNumber(y.interest, maxDigits: 0),
+                  formatNumber(y.balance, maxDigits: 0),
+                ],
+            ],
+          ),
       ]),
     );
   }
@@ -568,20 +621,13 @@ class _EmiCalcState extends State<EmiCalc> {
     final region = context.watch<RegionProvider>().region;
     String cur(double n) => formatCurrency(n, region.locale, region.currency);
     final P = safeNumber(principal.text);
-    final r = safeNumber(ratePct.text) / 100 / 12;
-    final n = safeNumber(years.text) * 12;
-    double emi = 0, totalInterest = 0, totalPayable = 0;
-    if (P > 0 && n > 0 && r >= 0) {
-      if (r == 0) {
-        emi = P / n;
-        totalPayable = P;
-      } else {
-        final factor = math.pow(1 + r, n).toDouble();
-        emi = (P * r * factor) / (factor - 1);
-        totalPayable = emi * n;
-        totalInterest = totalPayable - P;
-      }
-    }
+    final ratePctValue = safeNumber(ratePct.text);
+    final termYears = safeNumber(years.text);
+    final emi = emiMonthly(P, ratePctValue, termYears);
+    final n = termYears * 12;
+    final totalPayable = emi > 0 ? emi * n : 0.0;
+    final totalInterest = emi > 0 ? totalPayable - P : 0.0;
+    final schedule = amortizationByYear(P, ratePctValue, termYears);
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeEMI,
       subtitle: 'Equated monthly installment',
@@ -594,7 +640,140 @@ class _EmiCalcState extends State<EmiCalc> {
         ResultRow(label: 'Monthly EMI', value: cur(emi), highlight: true),
         ResultRow(label: 'Total interest', value: cur(totalInterest)),
         ResultRow(label: 'Total payable', value: cur(totalPayable)),
+        if (schedule.isNotEmpty)
+          YearlyBreakdown(
+            currency: region.currency,
+            headers: const ['Year', 'Principal', 'Interest', 'Balance'],
+            rows: [
+              for (final y in schedule)
+                [
+                  '${y.year}',
+                  formatNumber(y.principalPaid, maxDigits: 0),
+                  formatNumber(y.interestPaid, maxDigits: 0),
+                  formatNumber(y.balance, maxDigits: 0),
+                ],
+            ],
+          ),
       ]),
+    );
+  }
+}
+
+// =================== YEAR-BY-YEAR (PRO) ===================
+
+/// Year-by-year table under the EMI and compound-interest results. This is
+/// the "advanced finance insights" CalcMaster Pro sells: Pro users see the
+/// table, everyone else sees what it is and a way to the paywall.
+class YearlyBreakdown extends StatelessWidget {
+  final String currency;
+  final List<String> headers;
+  final List<List<String>> rows;
+
+  const YearlyBreakdown({
+    super.key,
+    required this.currency,
+    required this.headers,
+    required this.rows,
+  });
+
+  static const _title = 'Year-by-year breakdown';
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: Spacing.lg),
+      child: PremiumGate(
+        fallback: const _BreakdownLocked(title: _title),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('$_title ($currency)',
+                style: const TextStyle(
+                    color: AppColors.text,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700)),
+            const SizedBox(height: Spacing.sm),
+            _row(headers, header: true),
+            for (final r in rows) _row(r),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _row(List<String> cells, {bool header = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: AppColors.border)),
+      ),
+      child: Row(children: [
+        for (var i = 0; i < cells.length; i++)
+          Expanded(
+            flex: i == 0 ? 2 : 3,
+            child: Text(
+              cells[i],
+              textAlign: i == 0 ? TextAlign.start : TextAlign.end,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: header ? AppColors.textMuted : AppColors.text,
+                fontSize: header ? 12 : 13,
+                fontWeight: header ? FontWeight.w600 : FontWeight.w400,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+          ),
+      ]),
+    );
+  }
+}
+
+class _BreakdownLocked extends StatelessWidget {
+  final String title;
+  const _BreakdownLocked({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(Spacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(Radii.card),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            const Icon(Icons.lock_outline, size: 18, color: AppColors.warning),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(title,
+                  style: const TextStyle(
+                      color: AppColors.text,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700)),
+            ),
+          ]),
+          const SizedBox(height: 6),
+          const Text(
+            'See how much you pay or earn in every year, and the balance '
+            'left at the end of each one. Included with CalcMaster Pro.',
+            style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+          ),
+          const SizedBox(height: Spacing.sm),
+          TextButton(
+            onPressed: () {
+              AnalyticsService.instance.logPaywallShown('yearly_breakdown');
+              context.push('/paywall');
+            },
+            child: const Text('See CalcMaster Pro',
+                style: TextStyle(color: AppColors.warning)),
+          ),
+        ],
+      ),
     );
   }
 }

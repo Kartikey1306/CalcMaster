@@ -535,7 +535,7 @@ abstract class AppLocalizations {
   /// No description provided for @paywallSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Remove ads, get advanced insights, refresh currency rates instantly, and support indie development.'**
+  /// **'Year-by-year breakdowns for loans and investments, and support for independent development.'**
   String get paywallSubtitle;
 
   /// No description provided for @paywallBenefitAdFree.
@@ -547,7 +547,7 @@ abstract class AppLocalizations {
   /// No description provided for @paywallBenefitAdvanced.
   ///
   /// In en, this message translates to:
-  /// **'Advanced tax + finance insights'**
+  /// **'Year-by-year loan and investment breakdowns'**
   String get paywallBenefitAdvanced;
 
   /// No description provided for @paywallBenefitRealtime.

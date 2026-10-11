@@ -219,13 +219,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get paywallTitle => 'CalcMaster Pro を解放';
 
   @override
-  String get paywallSubtitle => '広告非表示、詳細インサイト、リアルタイム為替、開発支援。';
+  String get paywallSubtitle => 'ローンと投資の年ごとの内訳、そして開発支援。';
 
   @override
   String get paywallBenefitAdFree => '広告なし体験';
 
   @override
-  String get paywallBenefitAdvanced => '高度な税務・財務インサイト';
+  String get paywallBenefitAdvanced => 'ローンと投資の年ごとの内訳';
 
   @override
   String get paywallBenefitRealtime => 'リアルタイム為替更新';

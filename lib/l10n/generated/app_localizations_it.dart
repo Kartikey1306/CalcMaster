@@ -223,14 +223,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get paywallSubtitle =>
-      'Senza pubblicità, statistiche avanzate, valute in tempo reale e supporto allo sviluppo indipendente.';
+      'Dettaglio anno per anno di prestiti e investimenti, e supporto allo sviluppo indipendente.';
 
   @override
   String get paywallBenefitAdFree => 'Esperienza senza pubblicità';
 
   @override
   String get paywallBenefitAdvanced =>
-      'Statistiche fiscali e finanziarie avanzate';
+      'Dettaglio annuale di prestiti e investimenti';
 
   @override
   String get paywallBenefitRealtime => 'Valute in tempo reale';

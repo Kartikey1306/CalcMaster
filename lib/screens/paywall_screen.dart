@@ -96,10 +96,13 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     const TextStyle(color: AppColors.textMuted, fontSize: 14),
               ),
               const SizedBox(height: Spacing.lg),
-              _Benefit(label: loc.paywallBenefitAdFree),
+              // Only benefits Pro really delivers. "Ad-free" is listed only
+              // when this build can show ads at all; real-time rates and
+              // priority support are not offered (the ECB publishes rates
+              // once a day, and there is no separate support queue).
+              if (MonetizationConfig.adsReady)
+                _Benefit(label: loc.paywallBenefitAdFree),
               _Benefit(label: loc.paywallBenefitAdvanced),
-              _Benefit(label: loc.paywallBenefitRealtime),
-              _Benefit(label: loc.paywallBenefitSupport),
               const SizedBox(height: Spacing.lg),
               _TierCard(
                 tier: SubscriptionTier.monthly,

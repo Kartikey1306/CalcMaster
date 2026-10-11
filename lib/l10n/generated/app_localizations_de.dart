@@ -224,13 +224,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get paywallSubtitle =>
-      'Werbefrei, erweiterte Einblicke, Live-Wechselkurse und Indie-Entwicklung unterstützen.';
+      'Jahresübersichten für Kredite und Geldanlagen – und Unterstützung unabhängiger Entwicklung.';
 
   @override
   String get paywallBenefitAdFree => 'Werbefreie Erfahrung';
 
   @override
-  String get paywallBenefitAdvanced => 'Erweiterte Steuer- und Finanzeinblicke';
+  String get paywallBenefitAdvanced =>
+      'Jahresübersicht für Kredite und Geldanlagen';
 
   @override
   String get paywallBenefitRealtime => 'Live-Währungsupdate';

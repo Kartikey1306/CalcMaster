@@ -219,13 +219,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get paywallTitle => 'CalcMaster Pro 잠금 해제';
 
   @override
-  String get paywallSubtitle => '광고 제거, 고급 인사이트, 실시간 환율, 인디 개발 지원.';
+  String get paywallSubtitle => '대출과 투자의 연도별 내역, 그리고 인디 개발 지원.';
 
   @override
   String get paywallBenefitAdFree => '광고 없는 경험';
 
   @override
-  String get paywallBenefitAdvanced => '고급 세금 + 금융 인사이트';
+  String get paywallBenefitAdvanced => '대출·투자 연도별 내역';
 
   @override
   String get paywallBenefitRealtime => '실시간 환율 새로고침';

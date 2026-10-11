@@ -221,13 +221,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get paywallSubtitle =>
-      'بدون إعلانات، رؤى متقدمة، تحديث فوري لأسعار العملات، ودعم التطوير المستقل.';
+      'تفصيل سنة بسنة للقروض والاستثمارات، ودعم التطوير المستقل.';
 
   @override
   String get paywallBenefitAdFree => 'تجربة بدون إعلانات';
 
   @override
-  String get paywallBenefitAdvanced => 'رؤى ضريبية ومالية متقدمة';
+  String get paywallBenefitAdvanced => 'تفصيل سنوي للقروض والاستثمارات';
 
   @override
   String get paywallBenefitRealtime => 'تحديث فوري لأسعار العملات';

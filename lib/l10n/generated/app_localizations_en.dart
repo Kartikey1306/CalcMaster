@@ -222,13 +222,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paywallSubtitle =>
-      'Remove ads, get advanced insights, refresh currency rates instantly, and support indie development.';
+      'Year-by-year breakdowns for loans and investments, and support for independent development.';
 
   @override
   String get paywallBenefitAdFree => 'Ad-free experience';
 
   @override
-  String get paywallBenefitAdvanced => 'Advanced tax + finance insights';
+  String get paywallBenefitAdvanced =>
+      'Year-by-year loan and investment breakdowns';
 
   @override
   String get paywallBenefitRealtime => 'Real-time currency refresh';
