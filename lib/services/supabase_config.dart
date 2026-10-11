@@ -73,6 +73,18 @@ class SupabaseConfig {
     return googleServerClientId.isNotEmpty;
   }
 
+  /// Whether "Sign in with Apple" can complete on this platform.
+  ///
+  /// The app uses the native ID-token flow, which only exists on Apple
+  /// platforms. On Android `getAppleIDCredential` needs
+  /// `webAuthenticationOptions` (a Services ID web flow and a redirect URI),
+  /// which this app does not configure, so the button would always fail
+  /// there; it is hidden instead. Email/password and Google remain.
+  static bool get appleSignInAvailable {
+    if (kIsWeb) return false;
+    return Platform.isIOS || Platform.isMacOS;
+  }
+
   /// Apple Services ID (bundle/service identifier) and Developer Team ID used
   /// for "Sign in with Apple". The Services ID must be registered as the Apple
   /// provider's Client ID in the Supabase dashboard. On a real iOS device the

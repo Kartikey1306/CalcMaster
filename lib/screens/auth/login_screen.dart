@@ -376,29 +376,33 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                           // Sign in with Apple — native ID-token flow. Optional,
                           // just like Google; the app never requires an account.
-                          SizedBox(
-                            height: 50,
-                            child: OutlinedButton.icon(
-                              onPressed: _loading ? null : _appleSignIn,
-                              style: OutlinedButton.styleFrom(
-                                backgroundColor:
-                                    Colors.white.withValues(alpha: 0.06),
-                                side: const BorderSide(color: AppColors.border),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(Radii.button),
+                          // Hidden off Apple platforms, where the native flow
+                          // cannot complete (see SupabaseConfig.appleSignInAvailable).
+                          if (SupabaseConfig.appleSignInAvailable) ...[
+                            SizedBox(
+                              height: 50,
+                              child: OutlinedButton.icon(
+                                onPressed: _loading ? null : _appleSignIn,
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor:
+                                      Colors.white.withValues(alpha: 0.06),
+                                  side: const BorderSide(color: AppColors.border),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(Radii.button),
+                                  ),
                                 ),
+                                icon: const Icon(Icons.apple,
+                                    color: AppColors.text, size: 24),
+                                label: Text((AglL10n.of(context)?.authContinueWithApple ?? 'Continue with Apple'),
+                                    style: TextStyle(
+                                        color: AppColors.text,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600)),
                               ),
-                              icon: const Icon(Icons.apple,
-                                  color: AppColors.text, size: 24),
-                              label: Text((AglL10n.of(context)?.authContinueWithApple ?? 'Continue with Apple'),
-                                  style: TextStyle(
-                                      color: AppColors.text,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600)),
                             ),
-                          ),
-                          const SizedBox(height: Spacing.md),
+                            const SizedBox(height: Spacing.md),
+                          ],
                           // Prominent guest entry — login is OPTIONAL, so this
                           // is the primary way into the app.
                           SizedBox(
