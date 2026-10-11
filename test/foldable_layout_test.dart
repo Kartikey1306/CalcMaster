@@ -92,7 +92,6 @@ const _detailRoutes = <String>[
   '/privacy',
   '/about',
   '/login',
-  '/ai-chat',
 ];
 
 void main() {

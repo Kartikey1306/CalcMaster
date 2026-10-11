@@ -1,6 +1,6 @@
 # AGENTS.md — CalcMaster
 
-**What:** Flutter world calculator + converter (10 unit categories, 5 calculators, 8 finance tools, 9 utility tools, notes, AI chat) — 12 locales, 11 regions, offline-first.
+**What:** Flutter world calculator + converter (10 unit categories, 5 calculators, 8 finance tools, 9 utility tools, notes) — 12 locales, 11 regions, offline-first.
 
 ## Run commands
 ```bash
@@ -40,8 +40,7 @@ Single Flutter client (iOS/Android/Web). Provider (ChangeNotifier) state + go_ro
 | `lib/monetization/*_service.dart` | ad / analytics / affiliate / notification / tracking singletons (no-op until flag on) |
 | `lib/monetization/premium_provider.dart` + `premium_gate.dart` | Pro entitlement state + gating |
 | `lib/services/supabase_config.dart` | Supabase URL/anon key (env-overridable) |
-| `lib/services/api_client.dart` | REST gateway (Supabase JWT bearer) for profile + AI chat |
-| `lib/screens/` | Feature screens grouped: `calculate/`, `finance/`, `tools/`, `ai/`, `auth/` + top-level |
+| `lib/screens/` | Feature screens grouped: `calculate/`, `finance/`, `tools/`, `auth/` + top-level |
 | `lib/widgets/` | Reusable UI: `tab_scaffold`, `glass_card`, `hub_tile`, `number_input`, `banner_ad_slot`, etc. |
 | `lib/widgets/calc_key.dart` | `CalcKey` / `CalcKeypad` / `CalcDisplay` — the round-key keypad UI shared by Standard, Scientific and Convert |
 | `lib/widgets/keypad_calc_state.dart` | `KeypadCalcState` — expression state behind every keypad screen (live result, `=` commit, backspace, +/−, %) |
@@ -52,7 +51,7 @@ Single Flutter client (iOS/Android/Web). Provider (ChangeNotifier) state + go_ro
 | `docs/DESIGN.md` | Full architecture/design doc |
 
 ## Flow
-`main()` → `/splash` (2s animated) → `TabScaffold` (bottom nav / desktop rail) with 5 branches: **Convert** (`/convert` → `/convert/:id`) · **Calculate** (`/calculate/{standard,scientific,percentage,base,fraction}`) · **Finance** (`/finance/{tax,paycheck,tip,discount,compound,emi,currency,unit-price}`) · **Tools** (`/tools/{gps,ohm,bmi,date-diff,time-zones,adc-dac,age,aspect-ratio,calendar}`) · **Notes**. Modal routes over the shell: `/settings /paywall /privacy /about /login /ai-chat`.
+`main()` → `/splash` (2s animated) → `TabScaffold` (bottom nav / desktop rail) with 5 branches: **Convert** (`/convert` → `/convert/:id`) · **Calculate** (`/calculate/{standard,scientific,percentage,base,fraction}`) · **Finance** (`/finance/{tax,paycheck,tip,discount,compound,emi,currency,unit-price}`) · **Tools** (`/tools/{gps,ohm,bmi,date-diff,time-zones,adc-dac,age,aspect-ratio,calendar}`) · **Notes**. Modal routes over the shell: `/settings /paywall /privacy /about /login`.
 
 ## State management
 Provider / ChangeNotifier via `MultiProvider` in `main.dart`: `RegionProvider`, `NotesProvider`, `PremiumProvider`, `AuthProvider`. Persistence = SharedPreferences (region, notes) + Supabase (session). No backend DB owned by this repo.
@@ -68,7 +67,7 @@ Provider / ChangeNotifier via `MultiProvider` in `main.dart`: `RegionProvider`, 
 | Add/translate UI strings | `lib/l10n/app_en.arb` (source) + other `app_*.arb`, then `flutter gen-l10n` |
 | Monetization keys / toggle ads-subs-affiliates-analytics-fcm | `lib/monetization/monetization_config.dart` |
 | App icon / splash | edit `assets/logo/*.svg`, re-render, run `dart run tools/gen_icon.dart` then `flutter_launcher_icons`/`native_splash` |
-| Auth / AI backend endpoints | `lib/services/supabase_config.dart`, `lib/services/api_client.dart` |
+| Auth backend endpoints | `lib/services/supabase_config.dart` |
 
 ## Gotchas
 - **Pinned Flutter SDK** at `/Users/spatchava/agl/.flutter-sdk/bin/flutter` — use it, not a global `flutter`.
