@@ -44,6 +44,13 @@ class AdService {
   Future<void> bootstrap() async {
     if (kIsWeb || _initialized) return;
     if (_isInTest()) return;
+    if (!enabled) {
+      // No real ad units in this build, so no ad can ever be requested: do
+      // not show the UMP consent form or start the ads SDK for nothing.
+      // `ready` still completes so a banner slot waiting on it settles.
+      if (!_ready.isCompleted) _ready.complete();
+      return;
+    }
     try {
       // AdMob policy: in the EEA, the UK and Switzerland an ad may not be
       // *requested* until the user has been asked — a non-personalised ad is
