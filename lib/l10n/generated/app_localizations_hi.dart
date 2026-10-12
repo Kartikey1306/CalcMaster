@@ -216,6 +216,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get settingsPrivacyPolicy => 'गोपनीयता नीति';
 
   @override
+  String get settingsPrivacyChoices => 'गोपनीयता विकल्प';
+
+  @override
   String get settingsAbout => 'CalcMaster के बारे में';
 
   @override

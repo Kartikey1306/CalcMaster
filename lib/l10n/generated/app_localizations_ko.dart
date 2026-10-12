@@ -213,6 +213,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsPrivacyPolicy => '개인정보 처리방침';
 
   @override
+  String get settingsPrivacyChoices => '개인정보 보호 선택';
+
+  @override
   String get settingsAbout => 'CalcMaster 정보';
 
   @override

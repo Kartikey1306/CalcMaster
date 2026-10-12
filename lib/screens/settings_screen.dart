@@ -1,3 +1,4 @@
+import 'package:agl_ads/agl_ads.dart';
 import 'package:agl_i18n/agl_i18n.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -14,7 +15,18 @@ import '../theme/tokens.dart';
 import '../widgets/pro_badge.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({
+    super.key,
+    this.isPrivacyOptionsRequired = AglConsent.isPrivacyOptionsRequired,
+    this.showPrivacyOptions = AglConsent.showPrivacyOptions,
+  });
+
+  /// Google UMP: whether this user (EEA/UK/CH) must be offered a way to
+  /// change their ad-consent choice. Injectable for tests.
+  final Future<bool> Function() isPrivacyOptionsRequired;
+
+  /// Reopens Google's privacy-options form. Injectable for tests.
+  final Future<void> Function() showPrivacyOptions;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -23,11 +35,19 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _notificationsEnabled = false;
   bool _loaded = false;
+  bool _privacyOptionsRequired = false;
 
   @override
   void initState() {
     super.initState();
     _hydrate();
+    _loadPrivacyOptionsRequirement();
+  }
+
+  Future<void> _loadPrivacyOptionsRequirement() async {
+    final required = await widget.isPrivacyOptionsRequired();
+    if (!mounted) return;
+    setState(() => _privacyOptionsRequired = required);
   }
 
   Future<void> _hydrate() async {
@@ -271,6 +291,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: loc.settingsPrivacyPolicy,
             onTap: () => context.push('/privacy'),
           ),
+          if (_privacyOptionsRequired)
+            _Tile(
+              icon: Icons.privacy_tip_outlined,
+              iconColor: AppColors.text,
+              title: loc.settingsPrivacyChoices,
+              onTap: widget.showPrivacyOptions,
+            ),
           _Tile(
             icon: Icons.info_outline,
             iconColor: AppColors.text,

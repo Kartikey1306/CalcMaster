@@ -216,6 +216,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsPrivacyPolicy => 'Privacy policy';
 
   @override
+  String get settingsPrivacyChoices => 'Scelte sulla privacy';
+
+  @override
   String get settingsAbout => 'Informazioni';
 
   @override

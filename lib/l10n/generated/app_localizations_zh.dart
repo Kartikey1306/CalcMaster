@@ -213,6 +213,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsPrivacyPolicy => '隐私政策';
 
   @override
+  String get settingsPrivacyChoices => '隐私选项';
+
+  @override
   String get settingsAbout => '关于 CalcMaster';
 
   @override

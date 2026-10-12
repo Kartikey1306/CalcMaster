@@ -216,6 +216,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsPrivacyPolicy => 'Политика конфиденциальности';
 
   @override
+  String get settingsPrivacyChoices => 'Настройки конфиденциальности';
+
+  @override
   String get settingsAbout => 'О CalcMaster';
 
   @override

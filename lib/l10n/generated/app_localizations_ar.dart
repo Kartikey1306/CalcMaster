@@ -214,6 +214,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsPrivacyPolicy => 'سياسة الخصوصية';
 
   @override
+  String get settingsPrivacyChoices => 'خيارات الخصوصية';
+
+  @override
   String get settingsAbout => 'حول CalcMaster';
 
   @override

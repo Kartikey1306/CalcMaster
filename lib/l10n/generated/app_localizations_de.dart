@@ -217,6 +217,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsPrivacyPolicy => 'Datenschutz';
 
   @override
+  String get settingsPrivacyChoices => 'Datenschutzoptionen';
+
+  @override
   String get settingsAbout => 'Über CalcMaster';
 
   @override
