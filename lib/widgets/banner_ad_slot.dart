@@ -7,13 +7,14 @@ import '../monetization/ad_service.dart';
 import '../monetization/premium_provider.dart';
 
 /// 50dp banner ad anchored above the bottom nav. Uses the real google_mobile_ads
-/// SDK with Google's TEST ad unit IDs by default — these serve test ads safely
-/// without a real AdMob account.
+/// SDK; the unit comes from `--dart-define=ADMOB_BANNER_<PLATFORM>` (Google's
+/// test unit in debug/profile only).
 ///
 /// Renders nothing when:
 ///   - on web (AdMob not supported on web)
 ///   - the user is Pro
-///   - ads are disabled in MonetizationConfig and no test ID present
+///   - ads are disabled, this is a SCREENSHOT build, or a release build has
+///     no real banner unit
 ///   - the ad failed to load (graceful degrade — slot collapses)
 class BannerAdSlot extends StatefulWidget {
   const BannerAdSlot({super.key});

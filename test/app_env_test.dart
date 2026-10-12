@@ -92,7 +92,18 @@ void main() {
           .map((m) => m.group(1)!));
     }
     const harness = {'APP_ENV', 'FLUTTER_TEST', 'FIREBASE_CONFIGURED'};
-    final known = {...required, ...secretKeys, ...harness};
+    // Passed by CI / the screenshot tooling, never by env/*.json: AdMob unit
+    // ids (agl-manifest scripts/agl_paths.py admob_defines) and SCREENSHOT.
+    const ciDefines = {
+      'ADMOB_BANNER_ANDROID',
+      'ADMOB_BANNER_IOS',
+      'ADMOB_INTERSTITIAL_ANDROID',
+      'ADMOB_INTERSTITIAL_IOS',
+      'ADMOB_NATIVE_ANDROID',
+      'ADMOB_NATIVE_IOS',
+      'SCREENSHOT',
+    };
+    final known = {...required, ...secretKeys, ...harness, ...ciDefines};
     expect(keys.difference(known), isEmpty,
         reason: 'Undocumented dart-define key(s). Add them to env/*.json '
             '(or env/secrets.example.json) and to env/README.md.');

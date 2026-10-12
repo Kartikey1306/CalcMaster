@@ -1,6 +1,5 @@
 import 'package:agl_ads/agl_ads.dart';
 import 'dart:async';
-import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -10,9 +9,9 @@ import 'monetization_config.dart';
 
 /// AdMob wrapper using the real google_mobile_ads SDK.
 ///
-/// The default credentials in MonetizationConfig are Google's official TEST
-/// ad unit IDs — these serve safe test ads without requiring a real AdMob
-/// account. Replace with production unit IDs before public release.
+/// Unit ids come from build-time `--dart-define=ADMOB_<FORMAT>_<PLATFORM>`
+/// (see MonetizationConfig.resolveAdUnit): Google's test units in debug and
+/// profile, and no ad at all in a release build that was not given a real one.
 ///
 /// On web and in widget tests, every method gracefully no-ops.
 class AdService {
@@ -34,8 +33,9 @@ class AdService {
   /// `adsEnabled || _hasTestAds()`, and `_hasTestAds()` only checked that a
   /// unit ID string was non-empty — which is always true — so ads rendered
   /// even with `adsEnabled = false`. It now defers entirely to
-  /// [MonetizationConfig.adsReady], which additionally requires real
-  /// (non-test) unit IDs, so a release build cannot ship test ads.
+  /// [MonetizationConfig.adsReady], which additionally requires a unit for
+  /// this platform (a real one in release) and is false in SCREENSHOT builds,
+  /// so a release build cannot ship test ads.
   bool get enabled {
     if (kIsWeb) return false;
     return MonetizationConfig.adsReady;
@@ -75,33 +75,19 @@ class AdService {
     // No ad may be requested until UMP says consent allows it.
     if (!AglConsent.adsAllowed) return null;
     if (!enabled) return null;
-    try {
-      if (Platform.isIOS) return MonetizationConfig.admobIosBanner;
-      if (Platform.isAndroid) return MonetizationConfig.admobAndroidBanner;
-    } catch (_) {}
-    return null;
+    return MonetizationConfig.bannerUnit;
   }
 
   String? interstitialUnitId() {
     if (!enabled) return null;
-    try {
-      if (Platform.isIOS) return MonetizationConfig.admobIosInterstitial;
-      if (Platform.isAndroid) {
-        return MonetizationConfig.admobAndroidInterstitial;
-      }
-    } catch (_) {}
-    return null;
+    return MonetizationConfig.interstitialUnit;
   }
 
   String? nativeUnitId() {
     // No ad may be requested until UMP says consent allows it.
     if (!AglConsent.adsAllowed) return null;
     if (!enabled) return null;
-    try {
-      if (Platform.isIOS) return MonetizationConfig.admobIosNative;
-      if (Platform.isAndroid) return MonetizationConfig.admobAndroidNative;
-    } catch (_) {}
-    return null;
+    return MonetizationConfig.nativeUnit;
   }
 
   /// Builds a fresh BannerAd. Caller is responsible for calling `ad.load()`

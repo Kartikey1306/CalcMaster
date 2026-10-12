@@ -48,6 +48,17 @@ makes the paths that depend on them inert.
 | `QA_EMAIL` |
 | `QA_PASSWORD` |
 
+## Build-time defines passed by CI (never in env/*.json)
+
+| Key | Role |
+|---|---|
+| `ADMOB_BANNER_ANDROID` · `ADMOB_BANNER_IOS` | AdMob banner unit per platform. Empty: Google's test unit in debug/profile, **no ad** in release. |
+| `ADMOB_INTERSTITIAL_*` · `ADMOB_NATIVE_*` | Same rule; these formats currently have no call sites. |
+| `SCREENSHOT` | `true` for store-screenshot builds: no ads are loaded. |
+
+AdMob unit ids come from agl-manifest `docs/admob-ids.json` via
+`scripts/agl_paths.py admob_defines`; they are not committed here.
+
 ## Commands
 
 ```bash

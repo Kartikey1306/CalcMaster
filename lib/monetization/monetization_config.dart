@@ -10,12 +10,17 @@
 //   2. Paste the real value
 //   3. Flip the matching master switch at the top of the class to `true`
 //
-// Defaults are SAFE to ship today: ad unit IDs are Google's official
-// TEST IDs, RevenueCat keys are dummy strings, affiliate tags are dummies.
+// Defaults are SAFE to ship today: ad unit IDs come from build-time
+// --dart-define (release builds without them request no ads), RevenueCat
+// keys are dummy strings, affiliate tags are dummies.
 // Until the master switches are flipped to `true`, every service in
 // `lib/monetization/` short-circuits cleanly and the app behaves as if
 // monetization were absent.
 // =====================================================================
+
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart';
 
 class MonetizationConfig {
   // ───────────────────────────────────────────────────────────────────
@@ -45,40 +50,47 @@ class MonetizationConfig {
   // ───────────────────────────────────────────────────────────────────
   //  ADMOB · in-app advertising
   // ───────────────────────────────────────────────────────────────────
-  // REPLACE: AdMob console → Apps → CalcMaster iOS / Android → Ad units
-  // Google's official TEST ad unit IDs are used as defaults — these will
-  // serve test ads (not earning) when `adsEnabled` is true and
-  // `google_mobile_ads` is wired in. Switch to your real production unit IDs
-  // before public release.
-  // https://developers.google.com/admob/flutter/quick-start
+  // App IDs are REAL (AdMob plan, agl-manifest/docs/admob-ids.json).
   // Publisher: pub-8528784688453695 (see marketing/site/app-ads.txt).
-  // App IDs are REAL. Must match ios/Runner/Info.plist GADApplicationIdentifier
-  // and android/.../AndroidManifest.xml APPLICATION_ID, or the SDK crashes on
+  // Must match ios/Runner/Info.plist GADApplicationIdentifier and
+  // android/.../AndroidManifest.xml APPLICATION_ID, or the SDK crashes on
   // init.
   static const String admobAppIdIos = 'ca-app-pub-8528784688453695~9148987425';
   static const String admobAppIdAndroid =
       'ca-app-pub-8528784688453695~5377349094';
 
-  // ⚠️ STILL TEST UNITS — no revenue. The previous Android values belonged to a
-  // different publisher (pub-1804742004018995) and would not serve under the
-  // app IDs above, so they were reset to Google's official test units rather
-  // than left mismatched. Replace all six with real unit IDs from
-  // AdMob console → Apps → CalcMaster iOS/Android → Ad units.
-  // `adUnitsAreReal` below gates ad loading until that happens.
-  static const String admobIosBanner =
-      'ca-app-pub-3940256099942544/2934735716'; // REPLACE
+  // Ad UNIT ids are not committed. CI passes them at build time as
+  // --dart-define=ADMOB_<FORMAT>_<PLATFORM>=<id> (agl-manifest
+  // scripts/agl_paths.py admob_defines). An empty define means: Google's test
+  // unit in debug/profile, and NO ad at all in release — see [resolveAdUnit].
+  static const String admobIosBanner = String.fromEnvironment('ADMOB_BANNER_IOS');
   static const String admobAndroidBanner =
-      'ca-app-pub-3940256099942544/6300978111'; // REPLACE
+      String.fromEnvironment('ADMOB_BANNER_ANDROID');
 
   static const String admobIosInterstitial =
-      'ca-app-pub-3940256099942544/4411468910'; // REPLACE
+      String.fromEnvironment('ADMOB_INTERSTITIAL_IOS');
   static const String admobAndroidInterstitial =
-      'ca-app-pub-3940256099942544/1033173712'; // REPLACE
+      String.fromEnvironment('ADMOB_INTERSTITIAL_ANDROID');
 
-  static const String admobIosNative =
-      'ca-app-pub-3940256099942544/3986624511'; // REPLACE
+  static const String admobIosNative = String.fromEnvironment('ADMOB_NATIVE_IOS');
   static const String admobAndroidNative =
-      'ca-app-pub-3940256099942544/2247696110'; // REPLACE
+      String.fromEnvironment('ADMOB_NATIVE_ANDROID');
+
+  // Google's published test units, used only by debug/profile builds.
+  // https://developers.google.com/admob/flutter/test-ads
+  static const String testIosBanner = 'ca-app-pub-3940256099942544/2934735716';
+  static const String testAndroidBanner =
+      'ca-app-pub-3940256099942544/6300978111';
+  static const String testIosInterstitial =
+      'ca-app-pub-3940256099942544/4411468910';
+  static const String testAndroidInterstitial =
+      'ca-app-pub-3940256099942544/1033173712';
+  static const String testIosNative = 'ca-app-pub-3940256099942544/3986624511';
+  static const String testAndroidNative =
+      'ca-app-pub-3940256099942544/2247696110';
+
+  /// Store-screenshot builds (`--dart-define=SCREENSHOT=true`) never load ads.
+  static const bool screenshotMode = bool.fromEnvironment('SCREENSHOT');
 
   // ───────────────────────────────────────────────────────────────────
   //  REVENUECAT · subscriptions
@@ -208,28 +220,65 @@ class MonetizationConfig {
   /// "Test Ad" placeholders and earns nothing.
   static const String _testAdPublisher = 'ca-app-pub-3940256099942544';
 
-  /// True only when the ad units the app actually renders are real (non-test)
-  /// units. Ads stay off until this is true, so a half-configured build can
-  /// never ship test ads — swapping in real banner units turns ads on with no
-  /// other code change.
+  /// The unit to request for one format on one platform.
   ///
-  /// Banner is deliberately the ONLY format checked: it is the only one the app
-  /// renders (`BannerAdSlot` in `tab_scaffold.dart`). `AdService` also exposes
-  /// `preloadInterstitial`/`showInterstitial` and `nativeUnitId`, but nothing
-  /// calls them, so requiring those unit IDs here would keep ads switched off
-  /// forever. Add them back to this list if those formats are ever wired up.
-  static bool get adUnitsAreReal => ![
-        admobIosBanner,
-        admobAndroidBanner,
-      ].any((id) => id.startsWith(_testAdPublisher));
+  /// [define] is the `ADMOB_<FORMAT>_<PLATFORM>` value baked in at build time.
+  /// Release builds request only a real unit: an empty define — or a Google
+  /// test unit passed by mistake — yields null, i.e. no ad. Debug/profile
+  /// builds fall back to [testUnit] so the slot can be exercised locally.
+  static String? resolveAdUnit(
+    String define,
+    String testUnit, {
+    bool releaseMode = kReleaseMode,
+  }) {
+    if (releaseMode) {
+      if (define.isEmpty || define.startsWith(_testAdPublisher)) return null;
+      return define;
+    }
+    return define.isNotEmpty ? define : testUnit;
+  }
+
+  /// true on iOS, false on Android, null anywhere AdMob does not run.
+  static bool? get _isIos {
+    if (kIsWeb) return null;
+    try {
+      if (Platform.isIOS) return true;
+      if (Platform.isAndroid) return false;
+    } catch (_) {}
+    return null;
+  }
+
+  static String? _unitForPlatform(
+      String iosDefine, String androidDefine, String iosTest, String androidTest) {
+    final ios = _isIos;
+    if (ios == null) return null;
+    return ios
+        ? resolveAdUnit(iosDefine, iosTest)
+        : resolveAdUnit(androidDefine, androidTest);
+  }
+
+  static String? get bannerUnit => _unitForPlatform(
+      admobIosBanner, admobAndroidBanner, testIosBanner, testAndroidBanner);
+  static String? get interstitialUnit => _unitForPlatform(admobIosInterstitial,
+      admobAndroidInterstitial, testIosInterstitial, testAndroidInterstitial);
+  static String? get nativeUnit => _unitForPlatform(
+      admobIosNative, admobAndroidNative, testIosNative, testAndroidNative);
+
+  /// True when this build was given a live (non-test) banner unit for at least
+  /// one platform. Banner is the only format the app renders (`BannerAdSlot`
+  /// in `tab_scaffold.dart`); interstitial/native have no call sites.
+  static bool get adUnitsAreReal => [admobIosBanner, admobAndroidBanner]
+      .any((id) => id.isNotEmpty && !id.startsWith(_testAdPublisher));
 
   /// The single source of truth for "should this build serve ads at all".
-  /// Requires the master switch, real app IDs, AND real unit IDs.
+  /// Requires the master switch, real app IDs, not a screenshot build, and a
+  /// banner unit for this platform (a real one in release).
   static bool get adsReady =>
       adsEnabled &&
+      !screenshotMode &&
       admobAppIdIos.isNotEmpty &&
       admobAppIdAndroid.isNotEmpty &&
-      adUnitsAreReal;
+      bannerUnit != null;
 
   /// True only when subscriptions are enabled AND a real RevenueCat key is in
   /// place (i.e. the dummy `_DUMMY_` marker has been removed).

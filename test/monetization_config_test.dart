@@ -35,11 +35,56 @@ void main() {
       expect(manifest, contains(MonetizationConfig.admobAppIdAndroid));
     });
 
-    test('iOS AdMob units are still Google test IDs (replace before App Store)',
-        () {
-      expect(MonetizationConfig.admobIosBanner, contains('3940256099942544'));
-      expect(MonetizationConfig.admobIosInterstitial,
-          contains('3940256099942544'));
+    test('no ad unit id is committed; units come from --dart-define', () {
+      // `flutter test` passes no ADMOB_* defines, so every unit is empty.
+      for (final unit in [
+        MonetizationConfig.admobIosBanner,
+        MonetizationConfig.admobAndroidBanner,
+        MonetizationConfig.admobIosInterstitial,
+        MonetizationConfig.admobAndroidInterstitial,
+        MonetizationConfig.admobIosNative,
+        MonetizationConfig.admobAndroidNative,
+      ]) {
+        expect(unit, isEmpty);
+      }
+      final source = File('lib/monetization/monetization_config.dart')
+          .readAsStringSync();
+      expect(RegExp(r'ca-app-pub-8528784688453695/\d+').hasMatch(source),
+          isFalse,
+          reason: 'real unit ids are passed by CI, not committed');
+    });
+
+    test('release build with an empty define requests no ad', () {
+      const testUnit = MonetizationConfig.testAndroidBanner;
+      expect(MonetizationConfig.resolveAdUnit('', testUnit, releaseMode: true),
+          isNull);
+      // A Google test unit passed by mistake is refused in release too.
+      expect(
+          MonetizationConfig.resolveAdUnit(testUnit, testUnit,
+              releaseMode: true),
+          isNull);
+    });
+
+    test('release build uses the real unit from the define', () {
+      const real = 'ca-app-pub-8528784688453695/7665581023';
+      expect(
+          MonetizationConfig.resolveAdUnit(
+              real, MonetizationConfig.testAndroidBanner,
+              releaseMode: true),
+          real);
+    });
+
+    test('debug/profile build with an empty define uses Google test unit', () {
+      expect(
+          MonetizationConfig.resolveAdUnit(
+              '', MonetizationConfig.testIosBanner,
+              releaseMode: false),
+          MonetizationConfig.testIosBanner);
+    });
+
+    test('screenshot builds are not the default', () {
+      // --dart-define=SCREENSHOT=true makes adsReady false.
+      expect(MonetizationConfig.screenshotMode, isFalse);
     });
 
     test('RevenueCat keys still hold dummy markers (replace before launch)',
@@ -78,9 +123,8 @@ void main() {
     });
 
     test('"ready" guards correctly reject dummy values', () {
-      // Ads must stay OFF while the banner units are Google's test units, so a
-      // release build can never ship "Test Ad" placeholders. Replacing the two
-      // banner IDs flips both of these to true with no other code change.
+      // No ADMOB_BANNER_* define in `flutter test`, and the host is neither
+      // Android nor iOS, so there is no banner unit and ads stay off.
       expect(MonetizationConfig.adUnitsAreReal, isFalse);
       expect(MonetizationConfig.adsReady, isFalse);
       // subscriptionsReady still checks the RevenueCat keys, which are dummies.
@@ -92,11 +136,9 @@ void main() {
     });
 
     test('banner is the only rendered ad format, and gates adUnitsAreReal', () {
-      // showInterstitial()/nativeUnitId() have no call sites, so requiring
-      // real interstitial/native units would keep ads off forever.
-      const testPublisher = 'ca-app-pub-3940256099942544';
-      expect(MonetizationConfig.admobIosBanner, startsWith(testPublisher));
-      expect(MonetizationConfig.admobAndroidBanner, startsWith(testPublisher));
+      // showInterstitial()/nativeUnitId() have no call sites, so only the
+      // banner defines decide whether the build carries a live unit.
+      expect(MonetizationConfig.bannerUnit, isNull); // host VM
       expect(MonetizationConfig.adUnitsAreReal, isFalse);
     });
   });

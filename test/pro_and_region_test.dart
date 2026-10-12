@@ -122,8 +122,9 @@ void main() {
     });
   });
 
-  test('ads SDK stays off without real ad units', () async {
-    // Shipping config uses Google test units, so no ad may be requested.
+  test('ads SDK stays off without an ad unit for this platform', () async {
+    // No ADMOB_* define and a host VM (neither Android nor iOS): no unit, so
+    // no ad may be requested.
     expect(MonetizationConfig.adsReady, isFalse);
     expect(AdService.instance.enabled, isFalse);
     expect(AdService.instance.bannerUnitId(), isNull);
