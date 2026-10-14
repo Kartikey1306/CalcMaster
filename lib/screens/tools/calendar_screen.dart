@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../l10n/generated/app_localizations.dart';
+
+import '../../sheet/sheet_engine.dart' show weekdayDayMonth;
 import '../../theme/tokens.dart';
 import '../../widgets/inner_scaffold.dart';
 import '../../widgets/result_row.dart';
@@ -19,7 +22,6 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
   late DateTime _visibleMonth; // any day in the month being shown
   late DateTime _selected;
 
-  static const _accent = CategoryAccent.pressure;
 
   @override
   void initState() {
@@ -49,21 +51,25 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
     final today = DateTime.now();
 
     return InnerScaffold(
-      title: 'Calendar',
+      title: AppLocalizations.of(context)!.toolCalendar,
       subtitle: 'Browse months · tap a day',
+      tool: 'calendar',
+      sheetLine: () =>
+          'Day of year (${weekdayDayMonth(_selected)} ${_selected.year}): '
+          '${_dayOfYear(_selected)}',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         _monthBar(locale),
-        const SizedBox(height: Spacing.md),
+        SizedBox(height: Spacing.md),
         _weekdayHeader(locale),
-        const SizedBox(height: Spacing.xs),
+        SizedBox(height: Spacing.xs),
         ..._buildWeeks(today),
-        const SizedBox(height: Spacing.xl),
+        SizedBox(height: Spacing.xl),
         Text('Selected day',
-            style: const TextStyle(
-                color: AppColors.textMuted,
+            style: TextStyle(
+                color: context.ledger.inkSoft,
                 fontSize: 13,
                 fontWeight: FontWeight.w600)),
-        const SizedBox(height: Spacing.sm),
+        SizedBox(height: Spacing.sm),
         ResultRow(
           label: 'Date',
           value: DateFormat.yMMMMEEEEd(locale).format(_selected),
@@ -91,19 +97,19 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
         child: Center(
           child: Text(
             DateFormat.yMMMM(locale).format(_visibleMonth),
-            style: const TextStyle(
-                color: AppColors.text,
+            style: TextStyle(
+                color: context.ledger.ink,
                 fontSize: 18,
                 fontWeight: FontWeight.w700),
           ),
         ),
       ),
       _navButton(Icons.chevron_right, () => _shiftMonth(1), 'Next month'),
-      const SizedBox(width: Spacing.xs),
+      SizedBox(width: Spacing.xs),
       TextButton(
         onPressed: _goToday,
-        style: TextButton.styleFrom(foregroundColor: _accent),
-        child: const Text('Today'),
+        style: TextButton.styleFrom(foregroundColor: context.ledger.primary),
+        child: Text('Today'),
       ),
     ]);
   }
@@ -111,7 +117,7 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
   Widget _navButton(IconData icon, VoidCallback onTap, String tooltip) {
     return IconButton(
       tooltip: tooltip,
-      icon: Icon(icon, color: AppColors.text, size: 26),
+      icon: Icon(icon, color: context.ledger.ink, size: 26),
       onPressed: onTap,
     );
   }
@@ -126,8 +132,8 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
             child: Center(
               child: Text(
                 DateFormat.E(locale).format(sunday.add(Duration(days: i))),
-                style: const TextStyle(
-                    color: AppColors.textDim,
+                style: TextStyle(
+                    color: context.ledger.inkSoft,
                     fontSize: 12,
                     fontWeight: FontWeight.w600),
               ),
@@ -158,7 +164,7 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
     final rows = <Widget>[];
     for (int i = 0; i < cells.length; i += 7) {
       rows.add(Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
+        padding: EdgeInsets.symmetric(vertical: 2),
         child: Row(
           children: [
             for (final day in cells.sublist(i, i + 7))
@@ -172,7 +178,7 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
 
   Widget _dayCell(DateTime? day, DateTime today) {
     if (day == null) {
-      return const AspectRatio(aspectRatio: 1, child: SizedBox());
+      return AspectRatio(aspectRatio: 1, child: SizedBox());
     }
 
     final isSelected = _sameDay(day, _selected);
@@ -181,9 +187,9 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
     return AspectRatio(
       aspectRatio: 1,
       child: Padding(
-        padding: const EdgeInsets.all(3),
+        padding: EdgeInsets.all(3),
         child: Material(
-          color: isSelected ? _accent : Colors.transparent,
+          color: isSelected ? context.ledger.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(Radii.button),
           child: InkWell(
             borderRadius: BorderRadius.circular(Radii.button),
@@ -193,14 +199,14 @@ class _CalendarToolScreenState extends State<CalendarToolScreen> {
                 borderRadius: BorderRadius.circular(Radii.button),
                 border: isToday && !isSelected
                     ? Border.all(
-                        color: _accent.withValues(alpha: 0.8), width: 1.5)
+                        color: context.ledger.primary.withValues(alpha: 0.8), width: 1.5)
                     : null,
               ),
               alignment: Alignment.center,
               child: Text(
                 '${day.day}',
                 style: TextStyle(
-                  color: isSelected ? AppColors.bg : AppColors.text,
+                  color: isSelected ? context.ledger.paper : context.ledger.ink,
                   fontSize: 15,
                   fontWeight:
                       isSelected || isToday ? FontWeight.w700 : FontWeight.w500,

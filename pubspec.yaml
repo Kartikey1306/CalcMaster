@@ -1,5 +1,5 @@
 name: calcmaster
-description: "World calculator and converter — Flutter version."
+description: "Sheet calculator: lines that work out as you type, with ECB rates on the day."
 publish_to: 'none'
 version: 4.0.2+5
 
@@ -34,25 +34,17 @@ dependencies:
   shared_preferences: ^2.3.3
   http: ^1.2.2
   intl: any  # pinned by flutter_localizations; see docs/I18N.md
-  google_fonts: ^6.2.1
   geolocator: ^13.0.2
   geocoding: ^3.0.0
   flutter_svg: ^2.0.16
   url_launcher: ^6.3.1
+  # About shows the installed version, read from the platform.
+  package_info_plus: ^9.0.1
   # ───── Real monetization SDKs (test creds work without accounts) ─────
   google_mobile_ads: ^5.3.1
   app_tracking_transparency: ^2.0.6+1
-  supabase_flutter: ^2.15.0
-  # ───── Seamless native sign-in (Supabase-native ID-token flow) ─────
-  # Optional Apple / Google sign-in. Login is NOT required — the app stays
-  # guest-first; these only power the optional "Sign in" entry points.
-  google_sign_in: ^6.2.1
-  sign_in_with_apple: ^6.1.0
-  crypto: ^3.0.3
-  # Real store in-app purchases (buy + restore). On devices without configured
-  # StoreKit/Play products (e.g. the simulator) this reports "unavailable"
-  # rather than granting anything.
-  in_app_purchase: ^3.3.1
+  # Share a sheet as text or CSV through the system share sheet.
+  share_plus: ^10.1.4
 
 dev_dependencies:
   flutter_test:
@@ -80,6 +72,32 @@ flutter:
     enable-swift-package-manager: false
   assets:
     - assets/icons/
+    - assets/fonts/GolosText-OFL.txt
+    - assets/fonts/RedditMono-OFL.txt
+  # Golos Text for the interface, Reddit Mono for every figure. Static
+  # instances cut from the OFL variable fonts in github.com/google/fonts
+  # (ofl/golostext, ofl/redditmono) so each weight renders as drawn.
+  fonts:
+    - family: GolosText
+      fonts:
+        - asset: assets/fonts/GolosText-400.ttf
+          weight: 400
+        - asset: assets/fonts/GolosText-500.ttf
+          weight: 500
+        - asset: assets/fonts/GolosText-600.ttf
+          weight: 600
+        - asset: assets/fonts/GolosText-700.ttf
+          weight: 700
+    - family: RedditMono
+      fonts:
+        - asset: assets/fonts/RedditMono-400.ttf
+          weight: 400
+        - asset: assets/fonts/RedditMono-500.ttf
+          weight: 500
+        - asset: assets/fonts/RedditMono-600.ttf
+          weight: 600
+        - asset: assets/fonts/RedditMono-700.ttf
+          weight: 700
 
 # ──────────────────────────────────────────────
 # App icon generation (run: dart run flutter_launcher_icons)
@@ -91,19 +109,23 @@ flutter_launcher_icons:
   image_path: "assets/icon/app_icon.png"
   min_sdk_android: 21
   remove_alpha_ios: true
-  background_color_ios: "#0B1020"
-  adaptive_icon_background: "#0B1020"
+  background_color_ios: "#F4F0E6"
+  adaptive_icon_background: "#F4F0E6"
   adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
 
 # ──────────────────────────────────────────────
 # Splash screen generation (run: dart run flutter_native_splash:create)
 # ──────────────────────────────────────────────
 flutter_native_splash:
-  color: "#0B1020"
+  color: "#F4F0E6"
+  color_dark: "#161A17"
   image: "assets/splash/splash_logo.png"
+  image_dark: "assets/splash/splash_logo_dark.png"
   android_12:
-    color: "#0B1020"
+    color: "#F4F0E6"
+    color_dark: "#161A17"
     image: "assets/splash/splash_logo.png"
+    image_dark: "assets/splash/splash_logo_dark.png"
   ios: true
   android: true
   fullscreen: false

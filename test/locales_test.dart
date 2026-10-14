@@ -3,21 +3,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
 import 'package:calcmaster/l10n/generated/app_localizations.dart';
-import 'package:calcmaster/screens/convert_home.dart';
-import 'package:calcmaster/state/notes_provider.dart';
+import 'package:calcmaster/screens/tools/tools_drawer.dart';
 import 'package:calcmaster/state/region_provider.dart';
+import 'package:calcmaster/theme/app_theme.dart';
 
-/// Boot the Convert hub in each of the 12 supported locales and assert that
-/// the locale's translated heading is rendered. Detects regressions where
-/// an ARB key is missing or a widget bypasses AppLocalizations.
+import 'support/app_harness.dart';
+
+/// Boot the Tools drawer in each of the 12 supported locales and assert that
+/// the locale's translated heading is rendered. Detects regressions where an
+/// ARB key is missing or a widget bypasses AppLocalizations.
 Widget wrap(Locale locale) {
-  return MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => RegionProvider()),
-      ChangeNotifierProvider(create: (_) => NotesProvider()),
-    ],
+  return ChangeNotifierProvider(
+    create: (_) => RegionProvider(client: offlineClient()),
     child: MaterialApp(
-      home: const ConvertHome(),
+      theme: buildAppTheme(),
+      home: const ToolsDrawer(),
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
@@ -26,31 +26,33 @@ Widget wrap(Locale locale) {
 }
 
 void main() {
-  // Per-locale expected hero heading on the Convert hub. These values mirror
-  // the `convertHubHeading` key in each lib/l10n/app_<lang>.arb file.
+  setUpApp();
+
+  // Per-locale Tools heading. These mirror `toolsTitle` in each
+  // lib/l10n/app_<lang>.arb file.
   const headings = <String, String>{
-    'en': 'Convert',
-    'es': 'Convertir',
-    'zh': '转换',
-    'hi': 'बदलें',
-    'fr': 'Convertir',
-    'ar': 'تحويل',
-    'de': 'Umrechnen',
-    'ja': '変換',
-    'pt': 'Converter',
-    'it': 'Converti',
-    'ko': '변환',
-    'ru': 'Конвертер',
+    'en': 'Tools',
+    'es': 'Herramientas',
+    'zh': '工具',
+    'hi': 'टूल',
+    'fr': 'Outils',
+    'ar': 'الأدوات',
+    'de': 'Werkzeuge',
+    'ja': 'ツール',
+    'pt': 'Ferramentas',
+    'it': 'Strumenti',
+    'ko': '도구',
+    'ru': 'Инструменты',
   };
 
   for (final entry in headings.entries) {
     final code = entry.key;
     final expected = entry.value;
-    testWidgets('Convert hub renders in $code locale', (tester) async {
+    testWidgets('Tools drawer renders in $code locale', (tester) async {
       await tester.pumpWidget(wrap(Locale(code)));
       await tester.pumpAndSettle();
       expect(find.text(expected), findsWidgets,
-          reason: 'Expected hub heading "$expected" for locale "$code"');
+          reason: 'Expected heading "$expected" for locale "$code"');
     });
   }
 
@@ -60,18 +62,7 @@ void main() {
     expect(
         codes,
         containsAll([
-          'en',
-          'es',
-          'zh',
-          'hi',
-          'fr',
-          'ar',
-          'de',
-          'ja',
-          'pt',
-          'ko',
-          'ru',
-          'it'
+          'en', 'es', 'zh', 'hi', 'fr', 'ar', 'de', 'ja', 'pt', 'ko', 'ru', 'it'
         ]));
     expect(AppLocalizations.supportedLocales.length, equals(12));
   });
@@ -79,35 +70,41 @@ void main() {
   testWidgets('Arabic forces RTL textDirection', (tester) async {
     await tester.pumpWidget(wrap(const Locale('ar')));
     await tester.pumpAndSettle();
-    final dir = Directionality.of(tester.element(find.byType(ConvertHome)));
+    final dir = Directionality.of(tester.element(find.byType(ToolsDrawer)));
     expect(dir, equals(TextDirection.rtl));
   });
 
   testWidgets('English uses LTR textDirection', (tester) async {
     await tester.pumpWidget(wrap(const Locale('en')));
     await tester.pumpAndSettle();
-    final dir = Directionality.of(tester.element(find.byType(ConvertHome)));
+    final dir = Directionality.of(tester.element(find.byType(ToolsDrawer)));
     expect(dir, equals(TextDirection.ltr));
   });
 
-  testWidgets('All locales have aiChatTitle key', (tester) async {
+  test('every locale translates the sheet, tools and settings strings',
+      () async {
+    final english = await AppLocalizations.delegate.load(const Locale('en'));
     for (final code in headings.keys) {
-      await tester.pumpWidget(wrap(Locale(code)));
-      await tester.pumpAndSettle();
-      final loc =
-          AppLocalizations.of(tester.element(find.byType(ConvertHome)))!;
-      expect(loc.aiChatTitle, isNotEmpty,
-          reason: 'aiChatTitle should be non-empty for locale $code');
-      expect(loc.aiChatHint, isNotEmpty,
-          reason: 'aiChatHint should be non-empty for locale $code');
-      expect(loc.authTwoFactor, isNotEmpty,
-          reason: 'authTwoFactor should be non-empty for locale $code');
-      expect(loc.deleteNoteTitle, isNotEmpty,
-          reason: 'deleteNoteTitle should be non-empty for locale $code');
-      expect(loc.privacyAtGlance, isNotEmpty,
-          reason: 'privacyAtGlance should be non-empty for locale $code');
-      expect(loc.labelFilingStatus, isNotEmpty,
-          reason: 'labelFilingStatus should be non-empty for locale $code');
+      final loc = await AppLocalizations.delegate.load(Locale(code));
+      final pairs = <String, (String, String)>{
+        'sheetsEmpty': (loc.sheetsEmpty, english.sheetsEmpty),
+        'sheetAddToSheet': (loc.sheetAddToSheet, english.sheetAddToSheet),
+        'sheetShareText': (loc.sheetShareText, english.sheetShareText),
+        'toolsGroupMoney': (loc.toolsGroupMoney, english.toolsGroupMoney),
+        'settingsRatesBody': (loc.settingsRatesBody(3), english.settingsRatesBody(3)),
+        'helpHowLinesWork': (loc.helpHowLinesWork, english.helpHowLinesWork),
+        'aboutBlurb': (loc.aboutBlurb, english.aboutBlurb),
+        'privacyAtGlance': (loc.privacyAtGlance, english.privacyAtGlance),
+        'labelFilingStatus': (loc.labelFilingStatus, english.labelFilingStatus),
+      };
+      pairs.forEach((key, v) {
+        expect(v.$1, isNotEmpty, reason: '$key is empty for $code');
+        if (code != 'en') {
+          expect(v.$1, isNot(equals(v.$2)),
+              reason: '$key in $code is still the English text');
+        }
+      });
+      expect(loc.sheetRatesAsOf('9 Oct 2026'), contains('9 Oct 2026'));
     }
   });
 }

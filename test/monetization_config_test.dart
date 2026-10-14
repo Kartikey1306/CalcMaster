@@ -5,16 +5,29 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:calcmaster/monetization/monetization_config.dart';
 
 void main() {
-  group('MonetizationConfig — single-file dummy defaults', () {
-    test('ads and subscriptions are on; the rest stay switched off', () {
-      // Subscriptions are live: the three products exist in App Store Connect
-      // and are READY_TO_SUBMIT. Affiliates/analytics/FCM still hold dummy
-      // credentials, so they must stay false.
+  group('MonetizationConfig — single-file defaults', () {
+    test('ads are on; analytics and push stay switched off', () {
       expect(MonetizationConfig.adsEnabled, isTrue);
-      expect(MonetizationConfig.subscriptionsEnabled, isTrue);
-      expect(MonetizationConfig.affiliatesEnabled, isFalse);
       expect(MonetizationConfig.analyticsEnabled, isFalse);
       expect(MonetizationConfig.fcmEnabled, isFalse);
+    });
+
+    test('nothing is for sale: no subscription, IAP or affiliate config', () {
+      // The Pro paywall, its RevenueCat dummy keys, product ids and the
+      // affiliate slots were removed (Apple 2.1(b) / 3.1.2(c)).
+      final source = File('lib/monetization/monetization_config.dart')
+          .readAsStringSync();
+      for (final gone in [
+        'revenueCat',
+        'DUMMY',
+        'calcmaster_pro',
+        'affiliate',
+        'subscriptionsEnabled',
+      ]) {
+        expect(source.contains(gone), isFalse, reason: '$gone is still there');
+      }
+      expect(File('pubspec.yaml').readAsStringSync(),
+          isNot(contains('in_app_purchase')));
     });
 
     test('AdMob app IDs are real and on the CalcMaster publisher', () {
@@ -87,35 +100,6 @@ void main() {
       expect(MonetizationConfig.screenshotMode, isFalse);
     });
 
-    test('RevenueCat keys still hold dummy markers (replace before launch)',
-        () {
-      expect(MonetizationConfig.revenueCatIosKey, contains('DUMMY'));
-      expect(MonetizationConfig.revenueCatAndroidKey, contains('DUMMY'));
-    });
-
-    test('Product IDs default to canonical names', () {
-      expect(
-          MonetizationConfig.productMonthly, equals('calcmaster_pro_monthly'));
-      expect(MonetizationConfig.productAnnual, equals('calcmaster_pro_annual'));
-      expect(MonetizationConfig.productLifetime,
-          equals('calcmaster_pro_lifetime'));
-    });
-
-    test('Affiliate slot map covers known slots', () {
-      expect(
-          MonetizationConfig.affiliateSlots
-              .containsKey('volume_buy_measuring_set'),
-          isTrue);
-      expect(MonetizationConfig.affiliateSlots.containsKey('bmi_smart_scale'),
-          isTrue);
-      expect(
-          MonetizationConfig.affiliateSlots
-              .containsKey('compound_savings_account'),
-          isTrue);
-      expect(
-          MonetizationConfig.affiliateSlots['_fallback'], contains('amazon'));
-    });
-
     test('Legal URLs and support email are present', () {
       expect(MonetizationConfig.privacyPolicyUrl, contains('http'));
       expect(MonetizationConfig.termsOfServiceUrl, contains('http'));
@@ -127,12 +111,6 @@ void main() {
       // Android nor iOS, so there is no banner unit and ads stay off.
       expect(MonetizationConfig.adUnitsAreReal, isFalse);
       expect(MonetizationConfig.adsReady, isFalse);
-      // subscriptionsReady still checks the RevenueCat keys, which are dummies.
-      // That guard is vestigial: purchases go through in_app_purchase/StoreKit
-      // (see PremiumProvider), not RevenueCat, so it does not gate anything.
-      expect(MonetizationConfig.subscriptionsReady, isFalse);
-      // affiliatesEnabled is false → affiliatesReady false
-      expect(MonetizationConfig.affiliatesReady, isFalse);
     });
 
     test('banner is the only rendered ad format, and gates adUnitsAreReal', () {

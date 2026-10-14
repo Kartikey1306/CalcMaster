@@ -2,6 +2,14 @@ import 'lib_currency.dart';
 
 enum FilingStatus { single, joint, head }
 
+/// The year the income-tax and paycheck tables describe. Shown beside every
+/// result ("Estimate using 2025 brackets") — never presented as current.
+const int taxTableYear = 2025;
+
+/// The label the Tax and Paycheck screens print next to their results.
+const String taxYearNote =
+    "Estimate using $taxTableYear brackets — check your current year's rules";
+
 class Bracket {
   final double upTo;
   final double rate;

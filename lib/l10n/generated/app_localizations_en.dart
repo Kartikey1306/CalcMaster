@@ -12,72 +12,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'CalcMaster';
 
   @override
-  String get appTagline => 'World calculator & converter';
-
-  @override
-  String get tabConvert => 'Convert';
-
-  @override
-  String get tabCalculate => 'Calculate';
-
-  @override
-  String get tabFinance => 'Finance';
-
-  @override
-  String get tabTools => 'Tools';
-
-  @override
-  String get tabNotes => 'Notes';
-
-  @override
-  String get pillUnitConversion => 'Unit Conversion';
-
-  @override
-  String get pillCalculators => 'Calculators';
-
-  @override
-  String get pillFinanceTools => 'Finance Tools';
-
-  @override
-  String get pillUtilityTools => 'Utility Tools';
-
-  @override
-  String get pillSavedNotes => 'Saved Notes';
-
-  @override
-  String get convertHubHeading => 'Convert';
-
-  @override
-  String get convertHubSubheading => 'Tap any unit to convert instantly';
-
-  @override
-  String get calculateHubHeading => 'Calculate';
-
-  @override
-  String get calculateHubSubheading =>
-      'Standard · Scientific · Percentage · Base · Fraction';
-
-  @override
-  String get financeHubHeading => 'Finance';
-
-  @override
-  String get financeHubSubheading =>
-      'Tax · Tip & Split · Discount · Compound Interest · EMI · Currency · Unit Price';
-
-  @override
-  String get toolsHubHeading => 'Tools';
-
-  @override
-  String get toolsHubSubheading =>
-      'GPS · Ohm\'s Law · BMI · Date Diff · Time Zones · ADC/DAC · Age · Aspect Ratio';
-
-  @override
-  String get notesHubHeading => 'Notes';
-
-  @override
-  String get notesHubSubheading => 'Save calculations, formulas, and reminders';
-
-  @override
   String get categoryDistance => 'Distance';
 
   @override
@@ -120,9 +54,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String labelUnitsAvailable(int count) {
     return '$count units available';
   }
-
-  @override
-  String get calcStandard => 'Standard';
 
   @override
   String get calcScientific => 'Scientific';
@@ -188,21 +119,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTitle => 'Settings';
 
   @override
-  String get settingsSubscription => 'Subscription';
-
-  @override
-  String get settingsSubscribePro => 'Subscribe to Pro';
-
-  @override
-  String get settingsCalcMasterPro => 'CalcMaster Pro';
-
-  @override
-  String get settingsRestorePurchases => 'Restore purchases';
-
-  @override
-  String get settingsPreferences => 'Preferences';
-
-  @override
   String get settingsNotifications => 'Notifications';
 
   @override
@@ -221,94 +137,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAbout => 'About CalcMaster';
 
   @override
-  String get paywallTitle => 'Unlock CalcMaster Pro';
-
-  @override
-  String get paywallSubtitle =>
-      'Year-by-year breakdowns for loans and investments, and support for independent development.';
-
-  @override
-  String get paywallBenefitAdFree => 'Ad-free experience';
-
-  @override
-  String get paywallBenefitAdvanced =>
-      'Year-by-year loan and investment breakdowns';
-
-  @override
-  String get paywallBenefitRealtime => 'Real-time currency refresh';
-
-  @override
-  String get paywallBenefitSupport => 'Priority email support';
-
-  @override
-  String get paywallTierMonthly => 'Monthly';
-
-  @override
-  String get paywallTierAnnual => 'Annual';
-
-  @override
-  String get paywallTierLifetime => 'Lifetime';
-
-  @override
-  String get paywallBadgeBestValue => 'BEST VALUE';
-
-  @override
-  String get paywallContinue => 'Continue';
-
-  @override
-  String get paywallProcessing => 'Processing…';
-
-  @override
-  String get paywallRestore => 'Restore purchases';
-
-  @override
-  String get paywallTermsFooter =>
-      'By continuing you agree to our Terms and Privacy Policy.';
-
-  @override
-  String get paywallTermsOfUse => 'Terms of Use';
-
-  @override
-  String get paywallSubscriptionsDisabled =>
-      'Subscriptions are not yet enabled in this build.';
-
-  @override
-  String get paywallCancelAnytime => 'Cancel anytime';
-
-  @override
-  String get paywallLifetimeForever => 'Pay once, own it forever';
-
-  @override
   String get regionPickerTitle => 'Select region';
-
-  @override
-  String get notesAddNote => 'Add note';
-
-  @override
-  String get notesSaveChanges => 'Save changes';
-
-  @override
-  String get notesSearch => 'Search notes';
-
-  @override
-  String get notesEmpty => 'No notes yet. Add your first one above.';
-
-  @override
-  String get notesDeleteHint => 'Tip: long-press a note to delete.';
-
-  @override
-  String get notesNewTitleHint => 'New note title';
-
-  @override
-  String get notesTitleHint => 'Title';
-
-  @override
-  String get notesBodyHint => 'Body';
-
-  @override
-  String actionCopy(String value) {
-    return 'Copied: $value';
-  }
 
   @override
   String get actionUseMyLocation => 'Use my location';
@@ -323,48 +152,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutVersion => 'Version';
 
   @override
-  String get aboutBuild => 'Build';
-
-  @override
-  String get aboutMadeWith => 'Made with';
-
-  @override
   String get aboutBlurb =>
-      'CalcMaster bundles the calculators most people actually use — unit conversions, percentages, scientific math, tax + finance, electronics, and a notes pad — in one polished app that respects your privacy and your battery.';
-
-  @override
-  String get aiChatHint => 'Ask CalcMaster AI...';
-
-  @override
-  String get aiChatTitle => 'CalcMaster AI';
-
-  @override
-  String get aiChatEmpty =>
-      'Ask me anything about calculations, conversions, or finance.';
-
-  @override
-  String get authTwoFactor => 'Two-Factor Authentication';
-
-  @override
-  String get authCancel => 'Cancel';
-
-  @override
-  String get authVerify => 'Verify';
-
-  @override
-  String get authOtpHint => '000000';
+      'CalcMaster works out real-life sums on ruled sheets: arithmetic, percentages, units, and currencies at the European Central Bank reference rate for the day you name. Thirty tools add their results to your sheet. Sheets stay on your device; there is no account.';
 
   @override
   String get privacyAtGlance => 'Privacy at a glance';
-
-  @override
-  String get deleteNoteTitle => 'Delete this note?';
-
-  @override
-  String get deleteNoteCancel => 'Cancel';
-
-  @override
-  String get deleteNoteConfirm => 'Delete';
 
   @override
   String get labelFilingStatus => 'Filing status';
@@ -389,4 +181,125 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get labelPctChangeXtoY => '% change from X to Y';
+
+  @override
+  String get toolsTitle => 'Tools';
+
+  @override
+  String get toolsSubtitle =>
+      'Every result can go onto your sheet — except BMI.';
+
+  @override
+  String get toolsGroupMoney => 'Money';
+
+  @override
+  String get toolsGroupMeasure => 'Measure';
+
+  @override
+  String get toolsGroupTime => 'Time';
+
+  @override
+  String get toolsGroupMaths => 'Maths';
+
+  @override
+  String get toolsGroupEngineering => 'Engineering';
+
+  @override
+  String get toolsGroupBody => 'Body';
+
+  @override
+  String get toolSalesTax => 'Sales tax / VAT';
+
+  @override
+  String get toolIncomeTax => 'Income tax estimate';
+
+  @override
+  String get toolCalendar => 'Calendar';
+
+  @override
+  String get settingsHomeCurrency => 'Home currency & region';
+
+  @override
+  String get settingsHomeCurrencyHint =>
+      'The currency the tools use, and the tax tables they apply.';
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get appearanceSystem => 'System';
+
+  @override
+  String get appearanceLedger => 'Ledger';
+
+  @override
+  String get appearanceNight => 'Night ledger';
+
+  @override
+  String get settingsRates => 'Rates';
+
+  @override
+  String settingsRatesBody(int count) {
+    return 'Reference rates from the European Central Bank. Cached rates: $count';
+  }
+
+  @override
+  String get settingsClearRateCache => 'Clear cache';
+
+  @override
+  String get helpHowLinesWork => 'How lines work';
+
+  @override
+  String get aboutTagline => 'Sums on ruled sheets, with ECB rates on the day';
+
+  @override
+  String get sheetsTitle => 'Sheets';
+
+  @override
+  String get sheetsSearchHint => 'Search titles and lines';
+
+  @override
+  String get sheetsNew => 'New';
+
+  @override
+  String get sheetsEmpty =>
+      'No sheets yet. Start one — every line works out as you type.';
+
+  @override
+  String get sheetNewSheet => 'New sheet';
+
+  @override
+  String get sheetShareText => 'Share as text';
+
+  @override
+  String get sheetExportCsv => 'Export CSV';
+
+  @override
+  String get sheetCopy => 'Copy to clipboard';
+
+  @override
+  String get sheetReprice => 'Re-price';
+
+  @override
+  String sheetRatesAsOf(String date) {
+    return 'Rates as of $date';
+  }
+
+  @override
+  String get sheetTotal => 'Total';
+
+  @override
+  String get sheetAddToSheet => 'Add to sheet';
+
+  @override
+  String get sheetRename => 'Rename';
+
+  @override
+  String get sheetDuplicate => 'Duplicate';
+
+  @override
+  String get sheetDelete => 'Delete';
+
+  @override
+  String get sheetUndo => 'Undo';
 }

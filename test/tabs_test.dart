@@ -1,143 +1,152 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
 
 import 'package:calcmaster/app_router.dart';
-import 'package:calcmaster/l10n/generated/app_localizations.dart';
-import 'package:calcmaster/monetization/premium_provider.dart';
-import 'package:calcmaster/state/notes_provider.dart';
-import 'package:calcmaster/state/region_provider.dart';
-import 'package:calcmaster/theme/app_theme.dart';
+import 'package:calcmaster/screens/help_screen.dart';
+import 'package:calcmaster/screens/sheet/sheet_screen.dart';
+import 'package:calcmaster/screens/tools/tools_drawer.dart';
 
-/// Boot the entire app under widget test, simulating a tap on each of the 5
-/// bottom-tab destinations and asserting no exception is thrown.
+import 'support/app_harness.dart';
+
+/// Boots the whole app and walks every destination from the controls on the
+/// sheet — the Sheets list, the Tools drawer (every group, every tool),
+/// Settings and Help — asserting each renders and none throws.
 ///
-/// This is the equivalent of "open the app, tap Convert/Calculate/Finance/Tools/Notes
-/// in turn" — strong evidence that none of the 5 tabs crash on first render.
+/// This replaces the old five-tab walk: there is no tab bar any more, so the
+/// equivalent of "tap each tab" is "open each destination from home".
 void main() {
-  Widget buildApp() {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => RegionProvider()),
-        ChangeNotifierProvider(create: (_) => NotesProvider()),
-        ChangeNotifierProvider(create: (_) => PremiumProvider()),
-      ],
-      child: MaterialApp.router(
-        title: 'CalcMaster',
-        theme: buildAppTheme(),
-        routerConfig: appRouter,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-      ),
-    );
+  setUpApp();
+
+  Future<void> boot(WidgetTester tester) async {
+    phone(tester);
+    await tester.pumpWidget(testApp());
+    await settle(tester);
   }
 
-  Future<void> tapTab(WidgetTester tester, String label) async {
-    final tab = find.text(label);
-    expect(tab, findsWidgets, reason: 'Tab "$label" should be in bottom nav');
-    await tester.tap(tab.first);
-    // Multiple settles in case of route transitions / async hydration
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pumpAndSettle(const Duration(milliseconds: 500));
-  }
-
-  group('Bottom nav · all 5 tabs render without crash', () {
-    testWidgets('Convert tab loads home with all 10 categories',
+  group('home and its destinations', () {
+    testWidgets('home is the sheet, with Sheets, Tools and More in the top bar',
         (tester) async {
-      await tester.pumpWidget(buildApp());
-      await tester.pumpAndSettle();
-
-      // Convert is initial — verify hero copy and a couple of cards
-      expect(find.text('CalcMaster'), findsOneWidget);
-      expect(find.text('Convert'), findsWidgets);
-      expect(find.text('Distance'), findsOneWidget);
-      expect(find.text('Volume'), findsOneWidget);
-      expect(find.text('Weight'), findsOneWidget);
-      // Bottom nav present
-      expect(find.text('Convert'), findsWidgets);
-      expect(find.text('Notes'), findsOneWidget);
+      await boot(tester);
+      expect(find.byType(SheetEditor), findsOneWidget);
+      expect(find.byTooltip('Sheets'), findsOneWidget);
+      expect(find.byTooltip('Tools'), findsOneWidget);
+      expect(find.byTooltip('More'), findsOneWidget);
+      expect(find.text('Total'), findsOneWidget);
     });
 
-    testWidgets('Calculate tab loads with 5 calculator cards', (tester) async {
-      await tester.pumpWidget(buildApp());
-      await tester.pumpAndSettle();
-      await tapTab(tester, 'Calculate');
-
-      expect(find.text('Calculate'), findsWidgets);
-      expect(find.text('CALCULATORS'), findsOneWidget);
-      expect(find.text('Standard'), findsOneWidget);
-      expect(find.text('Scientific'), findsOneWidget);
-      expect(find.text('Percentage'), findsOneWidget);
-      expect(find.text('Base'), findsOneWidget);
-      expect(find.text('Fraction'), findsOneWidget);
-    });
-
-    testWidgets('Finance tab loads with 8 finance cards', (tester) async {
-      await tester.pumpWidget(buildApp());
-      await tester.pumpAndSettle();
-      await tapTab(tester, 'Finance');
-
-      expect(find.text('Finance'), findsWidgets);
-      expect(find.text('FINANCE TOOLS'), findsOneWidget);
-      expect(find.text('Tax'), findsOneWidget);
-      expect(find.text('Paycheck'), findsOneWidget);
-      expect(find.text('Tip & Split'), findsOneWidget);
-      expect(find.text('Discount'), findsOneWidget);
-      expect(find.text('Compound Interest'), findsOneWidget);
-      expect(find.text('EMI / Loan'), findsOneWidget);
-      expect(find.text('Currency'), findsOneWidget);
-      expect(find.text('Unit Price'), findsOneWidget);
-    });
-
-    testWidgets('Tools tab loads with 8 tool cards', (tester) async {
-      await tester.pumpWidget(buildApp());
-      await tester.pumpAndSettle();
-      await tapTab(tester, 'Tools');
-
-      expect(find.text('Tools'), findsWidgets);
-      expect(find.text('UTILITY TOOLS'), findsOneWidget);
-      expect(find.text('GPS Coordinates'), findsOneWidget);
-      expect(find.text("Ohm's Law"), findsOneWidget);
-      expect(find.text('BMI'), findsOneWidget);
-      expect(find.text('Date Difference'), findsOneWidget);
-      expect(find.text('Time Zones'), findsOneWidget);
-      expect(find.text('ADC / DAC'), findsOneWidget);
-      expect(find.text('Age'), findsOneWidget);
-      expect(find.text('Aspect Ratio'), findsOneWidget);
-    });
-
-    testWidgets('Notes tab loads empty editor without crash', (tester) async {
-      await tester.pumpWidget(buildApp());
-      await tester.pumpAndSettle();
-      await tapTab(tester, 'Notes');
-
-      expect(find.text('Notes'), findsWidgets);
-      expect(find.text('SAVED NOTES'), findsOneWidget);
-      expect(find.text('Save calculations, formulas, and reminders'),
-          findsOneWidget);
-      // Editor button visible
-      expect(find.text('Add note'), findsOneWidget);
+    testWidgets('Sheets opens the list with its empty state and search',
+        (tester) async {
+      await boot(tester);
+      await tester.tap(find.byTooltip('Sheets'));
+      await settle(tester);
+      expect(find.text('Sheets'), findsWidgets);
+      expect(find.text('Search titles and lines'), findsOneWidget);
       expect(
-          find.text('No notes yet. Add your first one above.'), findsOneWidget);
+          find.text(
+              'No sheets yet. Start one — every line works out as you type.'),
+          findsOneWidget);
+      expect(find.text('New'), findsOneWidget);
+      // Back to the sheet.
+      await tester.tap(find.byTooltip('Back to the sheet'));
+      await settle(tester);
+      expect(find.byType(SheetEditor), findsOneWidget);
     });
 
-    testWidgets('Cycle through all 5 tabs in sequence without exception',
+    testWidgets('Tools lists all six groups and every tool',
         (tester) async {
-      await tester.pumpWidget(buildApp());
-      await tester.pumpAndSettle();
+      // A tall window so the drawer lays out every entry at once.
+      phone(tester, const Size(390, 3200));
+      await tester.pumpWidget(testApp());
+      await settle(tester);
+      await tester.tap(find.byTooltip('Tools'));
+      await settle(tester);
 
-      for (final label in [
-        'Calculate',
-        'Finance',
-        'Tools',
-        'Notes',
-        'Convert'
-      ]) {
-        await tapTab(tester, label);
-        // No exceptions = pass. tester.takeException() will throw if any flutter error occurred.
-        expect(tester.takeException(), isNull,
-            reason: 'Tab "$label" should not throw');
+      // In the order they appear, so one downward scroll meets them all.
+      const groups = ['MONEY', 'MEASURE', 'TIME', 'MATHS', 'ENGINEERING', 'BODY'];
+      const labels = [
+        'MONEY', 'Tip & Split', 'Discount', 'Sales tax / VAT',
+        'Income tax estimate', 'Paycheck', 'EMI / Loan', 'Compound Interest',
+        'Unit Price', 'Currency',
+        'MEASURE', 'Distance', 'Volume', 'Weight', 'Temperature', 'Speed',
+        'Area', 'Data Size', 'Fuel Economy', 'Pressure', 'Energy',
+        'Aspect Ratio',
+        'TIME', 'Date Difference', 'Age', 'Time Zones', 'Calendar',
+        'MATHS', 'Scientific', 'Percentage', 'Base', 'Fraction',
+        'ENGINEERING', "Ohm's Law", 'ADC / DAC', 'GPS Coordinates',
+        'BODY', 'BMI',
+      ];
+      expect(labels.where((l) => !groups.contains(l)), hasLength(32),
+          reason: '9 money + 10 units + aspect ratio + 4 time + 4 maths + '
+              '3 engineering + BMI');
+      for (final label in labels) {
+        expect(
+            find.descendant(
+                of: find.byType(ToolsDrawer), matching: find.text(label)),
+            findsOneWidget,
+            reason: label);
       }
+      // The Standard calculator (an iOS Calculator clone) is gone.
+      expect(find.text('Standard'), findsNothing);
+    });
+
+    testWidgets('every tool opens from the drawer without an exception',
+        (tester) async {
+      await boot(tester);
+      const routes = [
+        '/tools/tip', '/tools/discount', '/tools/sales-tax', '/tools/tax',
+        '/tools/paycheck', '/tools/emi', '/tools/compound', '/tools/unit-price',
+        '/tools/currency', '/tools/convert/distance', '/tools/convert/volume',
+        '/tools/convert/weight', '/tools/convert/temperature',
+        '/tools/convert/speed', '/tools/convert/area',
+        '/tools/convert/dataSize', '/tools/convert/fuelEconomy',
+        '/tools/convert/pressure', '/tools/convert/energy',
+        '/tools/aspect-ratio', '/tools/date-diff', '/tools/age',
+        '/tools/time-zones', '/tools/calendar', '/tools/scientific',
+        '/tools/percentage', '/tools/base', '/tools/fraction', '/tools/ohm',
+        '/tools/adc-dac', '/tools/gps', '/tools/bmi',
+      ];
+      for (final route in routes) {
+        appRouter.go(route);
+        await settle(tester);
+        expect(tester.takeException(), isNull, reason: route);
+      }
+      appRouter.go('/');
+      await settle(tester);
+    });
+
+    testWidgets('More opens Settings and How lines work', (tester) async {
+      await boot(tester);
+      await tester.tap(find.byTooltip('More'));
+      await settle(tester);
+      for (final item in [
+        'New sheet',
+        'Share as text',
+        'Export CSV',
+        'Copy to clipboard',
+        'How lines work',
+        'Settings',
+      ]) {
+        expect(find.text(item), findsWidgets, reason: item);
+      }
+      await tester.tap(find.text('Settings').last);
+      await settle(tester);
+      expect(find.text('HOME CURRENCY & REGION'), findsOneWidget);
+      expect(find.text('APPEARANCE'), findsOneWidget);
+      // No account section any more.
+      expect(find.text('ACCOUNT'), findsNothing);
+      expect(find.text('Sign in'), findsNothing);
+      await tester.tap(find.byTooltip('Close'));
+      await settle(tester);
+
+      await tester.tap(find.byTooltip('More'));
+      await settle(tester);
+      await tester.tap(find.text('How lines work').last);
+      await settle(tester);
+      await tester.scrollUntilVisible(find.text('Rate on the day'), 150,
+          scrollable: find.descendant(
+              of: find.byType(HelpScreen), matching: find.byType(Scrollable)));
+      expect(find.text('Rate on the day'), findsOneWidget);
+      expect(find.text('38.50 EUR on 14 Sep in USD'), findsOneWidget);
     });
   });
 }

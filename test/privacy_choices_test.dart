@@ -9,9 +9,10 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:calcmaster/l10n/generated/app_localizations.dart';
-import 'package:calcmaster/monetization/premium_provider.dart';
 import 'package:calcmaster/screens/settings_screen.dart';
-import 'package:calcmaster/state/auth_provider.dart';
+import 'package:calcmaster/state/region_provider.dart';
+
+import 'support/app_harness.dart';
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
@@ -25,8 +26,9 @@ void main() {
     await tester.pumpWidget(MultiProvider(
       providers: [
         ChangeNotifierProvider<AglLocaleController>.value(value: locale),
-        ChangeNotifierProvider(create: (_) => PremiumProvider()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        // Settings shows the home currency & region.
+        ChangeNotifierProvider(
+            create: (_) => RegionProvider(client: offlineClient())),
       ],
       child: MaterialApp(
         supportedLocales: locale.supportedLocales,

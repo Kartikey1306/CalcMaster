@@ -38,9 +38,9 @@ class ResultRow extends StatelessWidget {
 
   Widget _build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 4),
       child: Material(
-        color: highlight ? AppColors.surfaceAlt : AppColors.surface,
+        color: highlight ? context.ledger.surface : context.ledger.surface,
         borderRadius: BorderRadius.circular(Radii.button),
         child: InkWell(
           borderRadius: BorderRadius.circular(Radii.button),
@@ -53,24 +53,24 @@ class ResultRow extends StatelessWidget {
                 ..showSnackBar(
                   SnackBar(
                     behavior: SnackBarBehavior.floating,
-                    backgroundColor: AppColors.surfaceElevated,
-                    duration: const Duration(milliseconds: 1200),
+                    backgroundColor: context.ledger.surface,
+                    duration: Duration(milliseconds: 1200),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(Radii.button),
                       side: BorderSide(
-                          color: AppColors.success.withValues(alpha: 0.4)),
+                          color: context.ledger.primary.withValues(alpha: 0.4)),
                     ),
                     content: Row(
                       children: [
-                        const Icon(Icons.check_circle_outline,
-                            color: AppColors.success, size: 18),
-                        const SizedBox(width: Spacing.sm),
+                        Icon(Icons.check_circle_outline,
+                            color: context.ledger.primary, size: 18),
+                        SizedBox(width: Spacing.sm),
                         Expanded(
                           child: Text(
                             'Copied  $value',
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                color: AppColors.text,
+                            style: TextStyle(
+                                color: context.ledger.ink,
                                 fontWeight: FontWeight.w600),
                           ),
                         ),
@@ -81,11 +81,11 @@ class ResultRow extends StatelessWidget {
             }
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(
+            padding: EdgeInsets.symmetric(
                 horizontal: Spacing.lg, vertical: Spacing.md),
             decoration: BoxDecoration(
               border: Border.all(
-                  color: highlight ? AppColors.borderStrong : AppColors.border),
+                  color: highlight ? context.ledger.rule : context.ledger.rule),
               borderRadius: BorderRadius.circular(Radii.button),
             ),
             child: Row(
@@ -95,36 +95,36 @@ class ResultRow extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(label,
-                          style: const TextStyle(
-                              color: AppColors.text,
+                          style: TextStyle(
+                              color: context.ledger.ink,
                               fontSize: 16,
                               fontWeight: FontWeight.w600)),
                       if (caption != null)
                         Padding(
-                          padding: const EdgeInsets.only(top: 2),
+                          padding: EdgeInsets.only(top: 2),
                           child: Text(caption!,
-                              style: const TextStyle(
-                                  color: AppColors.textMuted, fontSize: 13)),
+                              style: TextStyle(
+                                  color: context.ledger.inkSoft, fontSize: 13)),
                         ),
                     ],
                   ),
                 ),
                 ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 180),
+                  constraints: BoxConstraints(maxWidth: 180),
                   child: Text(
                     value,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.end,
                     style: TextStyle(
-                      color: highlight ? AppColors.success : AppColors.text,
+                      color: highlight ? context.ledger.primary : context.ledger.ink,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-                const SizedBox(width: Spacing.md),
-                const Icon(Icons.copy_outlined,
-                    size: 16, color: AppColors.textDim),
+                SizedBox(width: Spacing.md),
+                Icon(Icons.copy_outlined,
+                    size: 16, color: context.ledger.inkSoft),
               ],
             ),
           ),

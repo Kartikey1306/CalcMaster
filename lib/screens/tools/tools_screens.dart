@@ -85,25 +85,31 @@ class _GpsCalcState extends State<GpsCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.toolGps,
       subtitle: 'Decimal ↔ DMS',
+      tool: 'gps',
+      sheetLine: () {
+        if (lat.text.isEmpty) return null;
+        final la = safeNumber(lat.text);
+        return 'Latitude (${_toDms(la, true)}): ${plainNumber(la)}';
+      },
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         NumberInput(label: 'Latitude (decimal)', controller: lat),
         NumberInput(label: 'Longitude (decimal)', controller: lng),
-        const SizedBox(height: Spacing.md),
+        SizedBox(height: Spacing.md),
         SizedBox(
           width: double.infinity,
           child: FilledButton.icon(
             style: FilledButton.styleFrom(
-                backgroundColor: AppColors.text,
-                foregroundColor: AppColors.bg,
-                padding: const EdgeInsets.symmetric(vertical: 14)),
+                backgroundColor: context.ledger.ink,
+                foregroundColor: context.ledger.paper,
+                padding: EdgeInsets.symmetric(vertical: 14)),
             onPressed: loading ? null : _useMyLoc,
-            icon: const Icon(Icons.navigation, size: 18),
+            icon: Icon(Icons.navigation, size: 18),
             label: Text(loading
                 ? AppLocalizations.of(context)!.actionLocating
                 : AppLocalizations.of(context)!.actionUseMyLocation),
           ),
         ),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         ResultRow(
             label: 'Latitude (DMS)',
             value: _toDms(safeNumber(lat.text), true),
@@ -174,15 +180,30 @@ class _OhmCalcState extends State<OhmCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.toolOhm,
       subtitle: 'Enter any two values',
+      tool: 'ohm',
+      sheetLine: () {
+        // The first value the user did not type is the one that was solved.
+        for (final (name, unit, typed, value) in [
+          ('Voltage', 'V', v.text, s.V),
+          ('Current', 'A', i.text, s.I),
+          ('Resistance', 'ohm', r.text, s.R),
+          ('Power', 'W', p.text, s.P),
+        ]) {
+          if (typed.isEmpty && value != null && value.isFinite) {
+            return '$name in $unit (Ohm\'s law): ${plainNumber(value)}';
+          }
+        }
+        return null;
+      },
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         NumberInput(label: 'Voltage (V)', controller: v),
         NumberInput(label: 'Current (A)', controller: i),
         NumberInput(label: 'Resistance (Ω)', controller: r),
         NumberInput(label: 'Power (W)', controller: p),
-        const SizedBox(height: Spacing.lg),
-        const Text('Solved',
-            style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
-        const SizedBox(height: Spacing.sm),
+        SizedBox(height: Spacing.lg),
+        Text('Solved',
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
+        SizedBox(height: Spacing.sm),
         ResultRow(
             label: 'V',
             caption: 'Voltage',
@@ -238,14 +259,14 @@ class _BmiCalcState extends State<BmiCalc> {
 
   ({String label, Color color}) _category(double bmi) {
     if (!bmi.isFinite || bmi <= 0) {
-      return (label: '—', color: AppColors.textMuted);
+      return (label: '—', color: context.ledger.inkSoft);
     }
     if (bmi < 18.5) {
-      return (label: 'Underweight', color: const Color(0xFF7CC8FF));
+      return (label: 'Underweight', color: context.ledger.result);
     }
-    if (bmi < 25) return (label: 'Healthy weight', color: AppColors.success);
-    if (bmi < 30) return (label: 'Overweight', color: AppColors.warning);
-    return (label: 'Obese', color: AppColors.danger);
+    if (bmi < 25) return (label: 'Healthy weight', color: context.ledger.primary);
+    if (bmi < 30) return (label: 'Overweight', color: context.ledger.result);
+    return (label: 'Obese', color: context.ledger.error);
   }
 
   @override
@@ -266,11 +287,11 @@ class _BmiCalcState extends State<BmiCalc> {
       title: AppLocalizations.of(context)!.toolBmi,
       subtitle: 'Body Mass Index',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('Units',
-            style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
-        const SizedBox(height: Spacing.sm),
+        Text('Units',
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
+        SizedBox(height: Spacing.sm),
         ChipPicker<String>(
-          options: const [
+          options: [
             (id: 'metric', label: 'Metric (cm, kg)'),
             (id: 'imperial', label: 'Imperial (in, lb)')
           ],
@@ -283,18 +304,18 @@ class _BmiCalcState extends State<BmiCalc> {
         NumberInput(
             label: system == 'metric' ? 'Weight (kg)' : 'Weight (lb)',
             controller: w),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         Container(
-          padding: const EdgeInsets.all(Spacing.lg),
+          padding: EdgeInsets.all(Spacing.lg),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: context.ledger.surface,
             border: Border.all(color: cat.color.withValues(alpha: 0.33)),
-            borderRadius: BorderRadius.circular(Radii.card),
+            borderRadius: BorderRadius.circular(Radii.button),
           ),
           child: Column(children: [
             Text(bmi.isFinite ? formatNumber(bmi, maxDigits: 1) : '—',
-                style: const TextStyle(
-                    color: AppColors.text,
+                style: TextStyle(
+                    color: context.ledger.ink,
                     fontSize: 32,
                     fontWeight: FontWeight.w700)),
             Text(cat.label,
@@ -304,14 +325,14 @@ class _BmiCalcState extends State<BmiCalc> {
                     fontWeight: FontWeight.w600)),
           ]),
         ),
-        const SizedBox(height: Spacing.md),
-        const ResultRow(label: 'Healthy range', value: '18.5 – 24.9'),
+        SizedBox(height: Spacing.md),
+        ResultRow(label: 'Healthy range', value: '18.5 – 24.9'),
       ]),
     );
   }
 }
 
-// // =================== DATE DIFF ===================
+// =================== DATE DIFF ===================
 
 DateTime? _parseDate(String input) {
   final m = RegExp(r'^(\d{4})-(\d{1,2})-(\d{1,2})$').firstMatch(input);
@@ -329,63 +350,6 @@ String _isoDate(DateTime d) {
   final dd = d.day.toString().padLeft(2, '0');
   return '${d.year}-$mm-$dd';
 }
-
-// class DateDiffCalc extends StatefulWidget {
-//   const DateDiffCalc({super.key});
-//   @override
-//   State<DateDiffCalc> createState() => _DateDiffCalcState();
-// }
-// class _DateDiffCalcState extends State<DateDiffCalc> {
-//   late TextEditingController from;
-//   late TextEditingController to;
-//   @override
-//   void initState() {
-//     super.initState();
-//     final today = _isoDate(DateTime.now());
-//     from = TextEditingController(text: today);
-//     to = TextEditingController(text: today);
-//     for (final c in [from, to]) c.addListener(() => setState(() {}));
-//   }
-//   @override void dispose() { for (final c in [from, to]) c.dispose(); super.dispose(); }
-//   @override
-//   Widget build(BuildContext context) {
-//     final a0 = _parseDate(from.text);
-//     final b0 = _parseDate(to.text);
-//     DateTime? a = a0, b = b0;
-//     if (a != null && b != null && a.isAfter(b)) { final t = a; a = b; b = t; }
-//     String calendar = '—';
-//     String totalDays = '—', weeks = '—', hours = '—';
-//     if (a != null && b != null) {
-//       var years = b.year - a.year;
-//       var months = b.month - a.month;
-//       var days = b.day - a.day;
-//       if (days < 0) {
-//         months -= 1;
-//         final prevLast = DateTime(b.year, b.month, 0).day;
-//         days += prevLast;
-//       }
-//       if (months < 0) { years -= 1; months += 12; }
-//       calendar = '${years}y ${months}m ${days}d';
-//       final diff = b.difference(a);
-//       totalDays = '${diff.inDays}';
-//       weeks = '${diff.inDays ~/ 7}';
-//       hours = '${diff.inHours}';
-//     }
-//     return InnerScaffold(
-//       title: AppLocalizations.of(context)!.toolDateDiff,
-//       subtitle: 'YYYY-MM-DD format',
-//       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-//         NumberInput(label: 'From', controller: from, keyboardType: TextInputType.text),
-//         NumberInput(label: 'To', controller: to, keyboardType: TextInputType.text),
-//         const SizedBox(height: Spacing.lg),
-//         ResultRow(label: 'Calendar', value: calendar, highlight: true),
-//         ResultRow(label: 'Total days', value: totalDays),
-//         ResultRow(label: 'Weeks', value: weeks),
-//         ResultRow(label: 'Hours', value: hours),
-//       ]),
-//     );
-//   }
-// }
 
 class DateDiffCalc extends StatefulWidget {
   const DateDiffCalc({super.key});
@@ -486,6 +450,10 @@ class _DateDiffCalcState extends State<DateDiffCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.toolDateDiff,
       subtitle: 'Tap the fields to select dates',
+      tool: 'date_diff',
+      sheetLine: () => a == null || b == null
+          ? null
+          : 'Days from ${_isoDate(a)} to ${_isoDate(b)}: ${b.difference(a).inDays}',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -503,7 +471,7 @@ class _DateDiffCalcState extends State<DateDiffCalc> {
             readOnly: true,
             onTap: () => _pickDate(to),
           ),
-          const SizedBox(height: Spacing.lg),
+          SizedBox(height: Spacing.lg),
           ResultRow(
             label: 'Calendar',
             value: calendar,
@@ -561,8 +529,8 @@ double utcOffsetHours(double standardHours, DstRule rule, DateTime utc) {
       inDst = !utc.isBefore(start) && utc.isBefore(end);
     case DstRule.eu:
       // 01:00 UTC, last Sunday of March, to 01:00 UTC, last Sunday of October.
-      final start = _sunday(y, 3, 0).add(const Duration(hours: 1));
-      final end = _sunday(y, 10, 0).add(const Duration(hours: 1));
+      final start = _sunday(y, 3, 0).add(Duration(hours: 1));
+      final end = _sunday(y, 10, 0).add(Duration(hours: 1));
       inDst = !utc.isBefore(start) && utc.isBefore(end);
     case DstRule.auSoutheast:
       // Southern hemisphere: daylight time until 03:00 local daylight time,
@@ -585,10 +553,13 @@ class TimeZonesScreen extends StatefulWidget {
 
 class _TimeZonesScreenState extends State<TimeZonesScreen> {
   Timer? _timer;
+
+  /// The city "Add to sheet" measures from here; tap a row to choose.
+  int _selected = 0;
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => setState(() {}));
+    _timer = Timer.periodic(Duration(seconds: 1), (_) => setState(() {}));
   }
 
   @override
@@ -599,8 +570,8 @@ class _TimeZonesScreenState extends State<TimeZonesScreen> {
 
   // Standard UTC offsets plus each place's current daylight-saving rule.
   final List<({String label, String flag, double offsetHours, DstRule dst})>
-      zones = const [
-    (label: 'Cupertino', flag: '🇺🇸', offsetHours: -8, dst: DstRule.us),
+      zones = [
+    (label: 'San Francisco', flag: '🇺🇸', offsetHours: -8, dst: DstRule.us),
     (label: 'New York', flag: '🇺🇸', offsetHours: -5, dst: DstRule.us),
     (label: 'London', flag: '🇬🇧', offsetHours: 0, dst: DstRule.eu),
     (label: 'Berlin', flag: '🇩🇪', offsetHours: 1, dst: DstRule.eu),
@@ -614,12 +585,20 @@ class _TimeZonesScreenState extends State<TimeZonesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final nowUtc = DateTime.now().toUtc();
+    final now = DateTime.now();
+    final nowUtc = now.toUtc();
+    final here = now.timeZoneOffset.inMinutes / 60;
+    final pick = zones[_selected];
     return InnerScaffold(
       title: AppLocalizations.of(context)!.toolTimeZones,
-      subtitle: 'Live world clocks',
+      subtitle: 'Live world clocks · tap a city to add it',
+      tool: 'time_zones',
+      sheetLine: () {
+        final diff = utcOffsetHours(pick.offsetHours, pick.dst, nowUtc) - here;
+        return 'Hours from here to ${pick.label}: ${plainNumber(diff, maxDigits: 2)}';
+      },
       child: Column(children: [
-        for (final z in zones)
+        for (final (index, z) in zones.indexed)
           Builder(builder: (_) {
             final dt = nowUtc.add(Duration(
                 minutes:
@@ -627,38 +606,51 @@ class _TimeZonesScreenState extends State<TimeZonesScreen> {
                         .round()));
             final time = DateFormat('h:mm:ss a').format(dt);
             final day = DateFormat('EEE, MMM d').format(dt);
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              padding: const EdgeInsets.symmetric(
+            final chosen = index == _selected;
+            return Semantics(
+              button: true,
+              selected: chosen,
+              label: '${z.label}, $time',
+              excludeSemantics: true,
+              child: InkWell(
+              onTap: () => setState(() => _selected = index),
+              child: Container(
+              margin: EdgeInsets.symmetric(vertical: 4),
+              padding: EdgeInsets.symmetric(
                   horizontal: Spacing.lg, vertical: Spacing.md),
               decoration: BoxDecoration(
-                color: AppColors.surface,
-                border: Border.all(color: AppColors.border),
+                color: context.ledger.surface,
+                border: Border.all(
+                    color: chosen ? context.ledger.primary : context.ledger.rule,
+                    width: chosen ? 1.5 : 1),
                 borderRadius: BorderRadius.circular(Radii.button),
               ),
               child: Row(children: [
-                Text(z.flag, style: const TextStyle(fontSize: 22)),
-                const SizedBox(width: Spacing.md),
+                Text(z.flag, style: TextStyle(fontSize: 22)),
+                SizedBox(width: Spacing.md),
                 Expanded(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(z.label,
-                            style: const TextStyle(
-                                color: AppColors.text,
+                            style: TextStyle(
+                                color: context.ledger.ink,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         Text(day,
-                            style: const TextStyle(
-                                color: AppColors.textMuted, fontSize: 13)),
+                            style: TextStyle(
+                                color: context.ledger.inkSoft, fontSize: 13)),
                       ]),
                 ),
                 Text(time,
-                    style: const TextStyle(
-                        color: AppColors.text,
+                    style: TextStyle(
+                        fontFamily: Fonts.figures,
+                        color: context.ledger.ink,
                         fontSize: 16,
-                        fontWeight: FontWeight.w700)),
+                        fontWeight: FontWeight.w600)),
               ]),
+            ),
+              ),
             );
           }),
       ]),
@@ -715,8 +707,19 @@ class _AdcDacCalcState extends State<AdcDacCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.toolAdcDac,
       subtitle: mode == 'adc' ? 'Analog → Digital' : 'Digital → Analog',
+      tool: 'adc_dac',
+      sheetLine: () {
+        if (mode == 'adc') {
+          if (analog.text.isEmpty || code == null) return null;
+          return 'ADC code ($n-bit, ${plainNumber(safeNumber(analog.text))} V of '
+              '${plainNumber(ref)} V): $code';
+        }
+        if (digital.text.isEmpty || voltage == null) return null;
+        return 'DAC output in V ($n-bit, code $code, ${plainNumber(ref)} V ref): '
+            '${plainNumber(voltage)}';
+      },
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        ChipPicker<String>(options: const [
+        ChipPicker<String>(options: [
           (id: 'adc', label: 'ADC'),
           (id: 'dac', label: 'DAC')
         ], value: mode, onChange: (v) => setState(() => mode = v)),
@@ -732,7 +735,7 @@ class _AdcDacCalcState extends State<AdcDacCalc> {
               label: 'Digital code',
               controller: digital,
               keyboardType: TextInputType.number),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         if (mode == 'adc') ...[
           ResultRow(
               label: 'Digital code (decimal)',
@@ -754,61 +757,6 @@ class _AdcDacCalcState extends State<AdcDacCalc> {
     );
   }
 }
-
-// =================== AGE ===================
-//
-// class AgeCalc extends StatefulWidget {
-//   const AgeCalc({super.key});
-//   @override
-//   State<AgeCalc> createState() => _AgeCalcState();
-// }
-// class _AgeCalcState extends State<AgeCalc> {
-//   final dob = TextEditingController(text: '2000-01-01');
-//   late TextEditingController ref;
-//   @override
-//   void initState() {
-//     super.initState();
-//     ref = TextEditingController(text: _isoDate(DateTime.now()));
-//     for (final c in [dob, ref]) c.addListener(() => setState(() {}));
-//   }
-//   @override void dispose() { for (final c in [dob, ref]) c.dispose(); super.dispose(); }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final a = _parseDate(dob.text);
-//     final b = _parseDate(ref.text);
-//     String age = '—', total = '—', next = '—';
-//     if (a != null && b != null && !a.isAfter(b)) {
-//       var years = b.year - a.year;
-//       var months = b.month - a.month;
-//       var days = b.day - a.day;
-//       if (days < 0) {
-//         months -= 1;
-//         final prevLast = DateTime(b.year, b.month, 0).day;
-//         days += prevLast;
-//       }
-//       if (months < 0) { years -= 1; months += 12; }
-//       age = '${years}y ${months}m ${days}d';
-//       total = '${b.difference(a).inDays}';
-//       var nb = DateTime(b.year, a.month, a.day);
-//       if (nb.isBefore(b)) nb = DateTime(b.year + 1, a.month, a.day);
-//       final daysToNext = nb.difference(b).inDays;
-//       next = '${_isoDate(nb)} · in $daysToNext days';
-//     }
-//     return InnerScaffold(
-//       title: AppLocalizations.of(context)!.toolAge,
-//       subtitle: 'YYYY-MM-DD',
-//       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-//         NumberInput(label: 'Date of birth', controller: dob, keyboardType: TextInputType.text),
-//         NumberInput(label: 'Reference date', controller: ref, keyboardType: TextInputType.text),
-//         const SizedBox(height: Spacing.lg),
-//         ResultRow(label: (AppLocalizations.of(context)?.toolAge ?? 'Age'), value: age, highlight: true),
-//         ResultRow(label: 'Total days lived', value: total),
-//         ResultRow(label: 'Next birthday', value: next),
-//       ]),
-//     );
-//   }
-// }
 
 // =================== AGE ===================
 
@@ -900,6 +848,13 @@ class _AgeCalcState extends State<AgeCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.toolAge,
       subtitle: 'Tap the fields to select dates',
+      tool: 'age',
+      sheetLine: () {
+        if (a == null || b == null || a.isAfter(b)) return null;
+        var years = b.year - a.year;
+        if (b.month < a.month || (b.month == a.month && b.day < a.day)) years--;
+        return 'Age in years on ${_isoDate(b)} (born ${_isoDate(a)}): $years';
+      },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -917,7 +872,7 @@ class _AgeCalcState extends State<AgeCalc> {
             readOnly: true,
             onTap: () => _pickDate(ref),
           ),
-          const SizedBox(height: Spacing.lg),
+          SizedBox(height: Spacing.lg),
           ResultRow(
             label: (AppLocalizations.of(context)?.toolAge ?? 'Age'),
             value: age,
@@ -1003,6 +958,19 @@ class _AspectRatioCalcState extends State<AspectRatioCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.toolAspectRatio,
       subtitle: 'Solve missing W or H',
+      tool: 'aspect_ratio',
+      sheetLine: () {
+        if (!ratio.isFinite) return null;
+        if (width2.isFinite && !height2.isFinite) {
+          return 'Height for width ${plainNumber(width2)} at '
+              '${_reduce(width1, height1)}: ${plainNumber(width2 / ratio, maxDigits: 2)}';
+        }
+        if (height2.isFinite && !width2.isFinite) {
+          return 'Width for height ${plainNumber(height2)} at '
+              '${_reduce(width1, height1)}: ${plainNumber(height2 * ratio, maxDigits: 2)}';
+        }
+        return 'Aspect ratio ${_reduce(width1, height1)}: ${plainNumber(ratio, maxDigits: 4)}';
+      },
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Expanded(
@@ -1010,14 +978,14 @@ class _AspectRatioCalcState extends State<AspectRatioCalc> {
             NumberInput(label: 'W₁', controller: w1),
             NumberInput(label: 'H₁', controller: h1),
           ])),
-          const SizedBox(width: Spacing.md),
+          SizedBox(width: Spacing.md),
           Expanded(
               child: Column(children: [
             NumberInput(label: 'W₂ (optional)', controller: w2),
             NumberInput(label: 'H₂ (optional)', controller: h2),
           ])),
         ]),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         ResultRow(
             label: 'Ratio (decimal)',
             value: ratio.isFinite ? formatNumber(ratio, maxDigits: 4) : '—'),

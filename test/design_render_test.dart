@@ -6,15 +6,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:calcmaster/app_router.dart';
-import 'package:calcmaster/l10n/generated/app_localizations.dart';
-import 'package:calcmaster/monetization/premium_provider.dart';
-import 'package:calcmaster/state/notes_provider.dart';
+import 'package:calcmaster/lib_currency.dart';
+import 'package:calcmaster/sheet/sheet_store.dart';
 import 'package:calcmaster/state/region_provider.dart';
-import 'package:calcmaster/theme/app_theme.dart';
+
+import 'support/app_harness.dart';
 
 /// Renders real screens to PNGs under `test/goldens/` so the UI can be
 /// inspected without a device:
@@ -23,71 +22,79 @@ import 'package:calcmaster/theme/app_theme.dart';
 ///
 /// These are review artifacts, not assertions. `dart_test.yaml` marks the
 /// `design` tag as skipped, so `flutter test` never runs them and a pixel diff
-/// (or a machine without DejaVu installed) can never fail CI — hence the
-/// explicit `--run-skipped` above.
+/// can never fail CI — hence the explicit `--run-skipped` above.
 void main() {
-  const phone = Size(390, 844);
+  const phoneSize = Size(390, 844);
 
   setUpAll(() async {
-    // Widget tests ship no fonts, so text would render as tofu boxes. Load a
-    // system face under the families the app asks for.
-    GoogleFonts.config.allowRuntimeFetching = false;
-    final regular = File('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf');
-    final bold = File('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf');
-    if (regular.existsSync()) {
-      for (final family in ['Roboto', 'Inter', 'packages/calcmaster/Inter']) {
-        final loader = FontLoader(family)
-          ..addFont(Future.value(ByteData.sublistView(regular.readAsBytesSync())));
-        if (bold.existsSync()) {
-          loader.addFont(Future.value(ByteData.sublistView(bold.readAsBytesSync())));
-        }
-        await loader.load();
+    HttpOverrides.global = OfflineHttpOverrides();
+    // Widget tests ship no fonts, so text would render as boxes. Load the
+    // two bundled families the app actually uses.
+    for (final family in ['GolosText', 'RedditMono']) {
+      final loader = FontLoader(family);
+      for (final w in [400, 500, 600, 700]) {
+        final bytes = File('assets/fonts/$family-$w.ttf').readAsBytesSync();
+        loader.addFont(Future.value(ByteData.sublistView(bytes)));
       }
+      await loader.load();
+    }
+    final icons = File(
+        '${Platform.environment['FLUTTER_ROOT'] ?? '/Users/spatchava/agl/.flutter-sdk'}'
+        '/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf');
+    if (icons.existsSync()) {
+      await (FontLoader('MaterialIcons')
+            ..addFont(Future.value(ByteData.sublistView(icons.readAsBytesSync()))))
+          .load();
     }
   });
+  tearDownAll(() => HttpOverrides.global = null);
 
-  Widget buildApp() => MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => RegionProvider()),
-          ChangeNotifierProvider(create: (_) => NotesProvider()),
-          ChangeNotifierProvider(create: (_) => PremiumProvider()),
-        ],
-        child: MaterialApp.router(
-          theme: buildAppTheme(),
-          routerConfig: appRouter,
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-        ),
-      );
+  Map<String, Object> tripSheet({String? theme}) => {
+        'region': 'US',
+        if (theme != null) 'theme_mode': theme,
+        SheetStore.kSheets: '[{"id":"trip","title":"Lisbon expenses",'
+            '"createdAt":1,"updatedAt":2,"lines":['
+            '{"text":"Trip to Lisbon"},'
+            '{"text":"Dinner: 38.50 EUR on 14 Sep in USD"},'
+            '{"text":"Hotel: 120 GBP on 2026-09-15 in USD"},'
+            '{"text":"Ferry: 100 EUR on 2026-10-10 in USD"},'
+            '{"text":"Taxi: 18 USD + 15%"},'
+            '{"text":"Museum: 30 AED in USD"},'
+            '{"text":"total"}]}]',
+        SheetStore.kRateCache: '{'
+            '"${datedRateKey('2026-09-14', 'EUR', 'USD')}":{"base":"EUR","quote":"USD","rate":1.1551,"date":"2026-09-14"},'
+            '"${datedRateKey('2026-09-15', 'GBP', 'USD')}":{"base":"GBP","quote":"USD","rate":1.3524,"date":"2026-09-15"},'
+            '"${datedRateKey('2026-10-10', 'EUR', 'USD')}":{"base":"EUR","quote":"USD","rate":1.1206,"date":"2026-10-09"}'
+            '}',
+      };
 
-  Future<void> shoot(WidgetTester tester, String name, {String? tapTab}) async {
-    tester.view.physicalSize = phone * 2;
+  Future<void> shoot(WidgetTester tester, String name,
+      {Map<String, Object>? prefs, String? route}) async {
+    SharedPreferences.setMockInitialValues(prefs ?? {});
+    appRouter.go('/');
+    tester.view.physicalSize = phoneSize * 2;
     tester.view.devicePixelRatio = 2.0;
     addTearDown(tester.view.reset);
 
-    await tester.pumpWidget(buildApp());
-    await tester.pump(const Duration(milliseconds: 300));
-    await tester.pumpAndSettle(const Duration(milliseconds: 400));
-
-    if (tapTab != null) {
-      final tab = find.text(tapTab);
-      if (tab.evaluate().isNotEmpty) {
-        await tester.tap(tab.first);
-        await tester.pump(const Duration(milliseconds: 200));
-        await tester.pumpAndSettle(const Duration(milliseconds: 400));
-      }
+    await tester.pumpWidget(testApp(region: RegionProvider(client: offlineClient())));
+    await settle(tester);
+    if (route != null) {
+      appRouter.go(route);
+      await settle(tester);
     }
-
     await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/$name.png'),
-    );
+        find.byType(MaterialApp), matchesGoldenFile('goldens/$name.png'));
+    appRouter.go('/');
+    await settle(tester);
   }
 
-  testWidgets('convert tab', (t) => shoot(t, '01_convert'));
-  testWidgets('calculate tab', (t) => shoot(t, '02_calculate', tapTab: 'Calculate'));
-  testWidgets('finance tab', (t) => shoot(t, '03_finance', tapTab: 'Finance'));
-  testWidgets('tools tab', (t) => shoot(t, '04_tools', tapTab: 'Tools'));
-  testWidgets('notes tab', (t) => shoot(t, '05_notes', tapTab: 'Notes'));
+  testWidgets('first launch', (t) => shoot(t, '01_first_launch'));
+  testWidgets('a worked sheet',
+      (t) => shoot(t, '02_sheet', prefs: tripSheet()));
+  testWidgets('tools drawer',
+      (t) => shoot(t, '03_tools', prefs: tripSheet(), route: '/tools'));
+  testWidgets('sheets list',
+      (t) => shoot(t, '04_sheets', prefs: tripSheet(), route: '/sheets'));
+  testWidgets('night ledger',
+      (t) => shoot(t, '05_night', prefs: tripSheet(theme: 'dark')));
 }

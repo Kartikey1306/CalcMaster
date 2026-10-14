@@ -4,15 +4,17 @@ import 'dart:ui' show Locale, PlatformDispatcher;
 import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../lib_currency.dart';
+import '../sheet/sheets_controller.dart';
 
 /// Outcome of a GPS-based region detection attempt, so the UI can show the
 /// right feedback (a toast, a permission hint, etc.).
 enum DetectResult { success, permissionDenied, unavailable, noMatch }
 
-class RegionProvider extends ChangeNotifier {
+class RegionProvider extends ChangeNotifier implements LatestRatesSource {
   static const _kRegion = 'region';
   static const _kRatesCache = 'rates_cache';
 
@@ -40,9 +42,24 @@ class RegionProvider extends ChangeNotifier {
   /// True while a GPS detection is in flight (drives the picker's spinner).
   bool get detecting => _detecting;
 
-  RegionProvider() {
+  @override
+  RatesResult? get latestTable => _rates.isEmpty
+      ? null
+      : RatesResult(
+          rates: _rates,
+          fetchedAt: _ratesUpdatedAt ?? 0,
+          date: _ratesDate ?? '',
+          live: _ratesLive);
+
+  @override
+  bool get latestOffline => !_ratesLoading && !_ratesLive;
+
+  /// [client] is for tests; the app uses the default HTTP client.
+  RegionProvider({http.Client? client}) : _client = client {
     _hydrate();
   }
+
+  final http.Client? _client;
 
   Future<void> _hydrate() async {
     final sp = await SharedPreferences.getInstance();
@@ -177,10 +194,11 @@ class RegionProvider extends ChangeNotifier {
 
   /// Fetches fresh rates. On failure the last real (cached) rates stay, marked
   /// not live; if there were none, [rates] stays empty.
+  @override
   Future<void> refreshRates() async {
     _ratesLoading = true;
     notifyListeners();
-    final result = await fetchLatestRates();
+    final result = await fetchLatestRates(client: _client);
     if (result != null) {
       _applyRates(result);
       final sp = await SharedPreferences.getInstance();

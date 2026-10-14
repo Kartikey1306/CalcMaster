@@ -1,110 +1,121 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:calcmaster/app_router.dart';
-import 'package:calcmaster/l10n/generated/app_localizations.dart';
-import 'package:calcmaster/monetization/premium_provider.dart';
-import 'package:calcmaster/state/notes_provider.dart';
-import 'package:calcmaster/state/region_provider.dart';
-import 'package:calcmaster/theme/app_theme.dart';
 
-/// Accessibility guarantees for the tab shell.
+import 'support/app_harness.dart';
+
+/// Accessibility guarantees for the sheet and the screens around it.
 ///
 /// Uses Flutter's own guideline matchers (tap-target size, rendered text
-/// contrast, semantic labels) plus a large-text sweep. Text scaling is the
-/// usual source of breakage on these screens: a RenderFlex overflow throws in
-/// debug, so pumping at 2.0x turns "does it survive a user with large fonts?"
-/// into a pass/fail question instead of a guess.
-/// Blocks real sockets. `RegionProvider` refreshes FX rates on construction;
-/// in a test that live request outlives the test body and the zone reports it
-/// as an unhandled error. `fetchLatestRates()` already catches failures and
-/// falls back to the bundled static rates, so refusing to connect exercises
-/// the offline path rather than papering over anything.
-class _OfflineHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) =>
-      throw const SocketException('network disabled in tests');
-}
-
+/// contrast, labelled tap targets) plus a large-text sweep. Text scaling is
+/// the usual source of breakage: a RenderFlex overflow throws in debug, so
+/// pumping at 2.0x turns "does it survive a user with large fonts?" into a
+/// pass/fail question instead of a guess.
 void main() {
-  setUpAll(() => HttpOverrides.global = _OfflineHttpOverrides());
-  tearDownAll(() => HttpOverrides.global = null);
-  setUp(() => SharedPreferences.setMockInitialValues({}));
+  setUpApp();
 
-  const tabs = ['Convert', 'Calculate', 'Finance', 'Tools', 'Notes'];
-
-  Widget buildApp({TextScaler? scaler}) {
-    final app = MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => RegionProvider()),
-        ChangeNotifierProvider(create: (_) => NotesProvider()),
-        ChangeNotifierProvider(create: (_) => PremiumProvider()),
-      ],
-      child: MaterialApp.router(
-        theme: buildAppTheme(),
-        routerConfig: appRouter,
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        builder: scaler == null
-            ? null
-            : (context, child) => MediaQuery(
-                  data: MediaQuery.of(context).copyWith(textScaler: scaler),
-                  child: child!,
-                ),
-      ),
-    );
-    return app;
-  }
-
-  Future<void> settle(WidgetTester tester) async {
-    await tester.pump(const Duration(milliseconds: 200));
-    await tester.pumpAndSettle(const Duration(milliseconds: 400));
+  Future<void> expectGuidelines(WidgetTester tester) async {
+    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+    await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+    await expectLater(tester, meetsGuideline(textContrastGuideline));
+    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
   }
 
   group('tap targets, contrast and semantics', () {
-    testWidgets('the tab shell meets platform guidelines', (tester) async {
+    testWidgets('the empty first sheet meets platform guidelines',
+        (tester) async {
+      phone(tester);
       final handle = tester.ensureSemantics();
-      await tester.pumpWidget(buildApp());
+      await tester.pumpWidget(testApp());
       await settle(tester);
-
-      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
-      await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
-      await expectLater(tester, meetsGuideline(textContrastGuideline));
-      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
-
+      await expectGuidelines(tester);
       handle.dispose();
     });
+
+    testWidgets('a worked sheet — results, captions, errors, the key row and '
+        'the footer — meets platform guidelines', (tester) async {
+      phone(tester);
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(testApp());
+      await settle(tester);
+      final field = find.byType(TextField);
+      await tester.enterText(field.at(0), 'Shelf: 12 ft in m');
+      await tester.testTextInput.receiveAction(TextInputAction.next);
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).at(1), '50 AED in USD');
+      await tester.testTextInput.receiveAction(TextInputAction.next);
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).at(2), '#1 * 2');
+      await tester.pump();
+      // A line has focus, so the key row is showing.
+      expect(find.bySemanticsLabel('Insert Plus'), findsOneWidget);
+      // Every interactive control on the sheet is labelled.
+      for (final label in [
+        'Line 1',
+        'Line 1 options',
+        'Insert Plus',
+        'Insert Minus',
+        'Insert Multiply',
+      ]) {
+        expect(find.bySemanticsLabel(label), findsWidgets, reason: label);
+      }
+      expect(find.bySemanticsLabel(RegExp(r'^Line 1 result 3\.6576 m')),
+          findsOneWidget);
+      await expectGuidelines(tester);
+      handle.dispose();
+    });
+
+    for (final route in ['/sheets', '/tools', '/settings', '/help']) {
+      testWidgets('$route meets platform guidelines', (tester) async {
+        phone(tester);
+        final handle = tester.ensureSemantics();
+        await tester.pumpWidget(testApp());
+        await settle(tester);
+        appRouter.go(route);
+        await settle(tester);
+        await expectGuidelines(tester);
+        handle.dispose();
+        appRouter.go('/');
+        await settle(tester);
+      });
+    }
   });
 
   group('large text does not break layout', () {
     // 2.0x is within what iOS and Android expose to users.
     for (final scale in <double>[1.3, 2.0]) {
-      testWidgets('every tab survives ${scale}x text', (tester) async {
-        // A taller viewport than the 600px test default: at 2.0x the default
-        // surface is shorter than a real phone and would report overflows no
-        // device would ever show.
-        tester.view.physicalSize = const Size(1170, 2532);
-        tester.view.devicePixelRatio = 3.0;
-        addTearDown(tester.view.reset);
-
-        await tester.pumpWidget(buildApp(scaler: TextScaler.linear(scale)));
+      testWidgets('every destination survives ${scale}x text', (tester) async {
+        phone(tester);
+        textScale(tester, scale);
+        await tester.pumpWidget(testApp());
         await settle(tester);
         expect(tester.takeException(), isNull,
-            reason: 'Convert tab overflowed at ${scale}x text');
+            reason: 'the sheet overflowed at ${scale}x text');
+        await tester.enterText(find.byType(TextField).first,
+            'Dinner: 38.50 EUR on 14 Sep in USD');
+        await tester.pump();
+        expect(tester.takeException(), isNull,
+            reason: 'a waiting currency line overflowed at ${scale}x');
 
-        for (final label in tabs.skip(1)) {
-          final tab = find.text(label);
-          if (tab.evaluate().isEmpty) continue;
-          await tester.tap(tab.first);
+        for (final route in [
+          '/sheets',
+          '/tools',
+          '/tools/tip',
+          '/tools/currency',
+          '/tools/scientific',
+          '/settings',
+          '/help',
+          '/about',
+          '/privacy',
+        ]) {
+          appRouter.go(route);
           await settle(tester);
           expect(tester.takeException(), isNull,
-              reason: '$label tab overflowed at ${scale}x text');
+              reason: '$route overflowed at ${scale}x text');
         }
+        appRouter.go('/');
+        await settle(tester);
       });
     }
   });

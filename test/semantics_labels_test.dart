@@ -1,21 +1,14 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:calcmaster/app_router.dart';
 import 'package:calcmaster/l10n/generated/app_localizations.dart';
-import 'package:calcmaster/monetization/premium_provider.dart';
-import 'package:calcmaster/state/notes_provider.dart';
-import 'package:calcmaster/state/region_provider.dart';
 import 'package:calcmaster/theme/app_theme.dart';
 import 'package:calcmaster/widgets/calc_key.dart';
-import 'package:calcmaster/widgets/hub_tile.dart';
 import 'package:calcmaster/widgets/number_input.dart';
 import 'package:calcmaster/widgets/result_row.dart';
-import 'package:calcmaster/widgets/rich_hub_card.dart';
+
+import 'support/app_harness.dart';
 
 /// Screen-reader labels.
 ///
@@ -23,19 +16,10 @@ import 'package:calcmaster/widgets/rich_hub_card.dart';
 /// (tap targets, contrast, every tappable thing is labelled). This file proves
 /// the labels say something a blind user can act on: a keypad key announces
 /// "Divide", not the glyph "÷"; a result row announces "Future value, $1,234"
-/// as one phrase instead of two disconnected fragments.
-///
-/// See `accessibility_test.dart` for why sockets are blocked here.
-class _OfflineHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) =>
-      throw const SocketException('network disabled in tests');
-}
-
+/// as one phrase instead of two disconnected fragments; a sheet line announces
+/// its number, its result and what a tap does.
 void main() {
-  setUpAll(() => HttpOverrides.global = _OfflineHttpOverrides());
-  tearDownAll(() => HttpOverrides.global = null);
-  setUp(() => SharedPreferences.setMockInitialValues({}));
+  setUpApp();
 
   Widget host(Widget child) => MaterialApp(
         theme: buildAppTheme(),
@@ -119,38 +103,6 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('a hub tile announces its title and description',
-        (tester) async {
-      final handle = tester.ensureSemantics();
-      await tester.pumpWidget(host(HubTile(
-        title: 'Mortgage',
-        description: 'Monthly payment',
-        icon: Icons.home,
-        iconColor: Colors.amber,
-        onTap: () {},
-      )));
-
-      expect(
-          find.bySemanticsLabel('Mortgage, Monthly payment'), findsOneWidget);
-      handle.dispose();
-    });
-
-    testWidgets('a rich hub card announces its title and subtitle',
-        (tester) async {
-      final handle = tester.ensureSemantics();
-      await tester.pumpWidget(host(RichHubCard(
-        title: 'Aspect ratio',
-        subtitle: 'Solve missing W or H',
-        svgPath: 'assets/icons/scientific.svg',
-        accent: Colors.amber,
-        onTap: () {},
-      )));
-
-      expect(find.bySemanticsLabel('Aspect ratio, Solve missing W or H'),
-          findsOneWidget);
-      handle.dispose();
-    });
-
     testWidgets('a number input names its field and its unit', (tester) async {
       final handle = tester.ensureSemantics();
       await tester.pumpWidget(host(NumberInput(
@@ -165,59 +117,67 @@ void main() {
   });
 
   group('the running app', () {
-    Widget buildApp() => MultiProvider(
-          providers: [
-            ChangeNotifierProvider(create: (_) => RegionProvider()),
-            ChangeNotifierProvider(create: (_) => NotesProvider()),
-            ChangeNotifierProvider(create: (_) => PremiumProvider()),
-          ],
-          child: MaterialApp.router(
-            theme: buildAppTheme(),
-            routerConfig: appRouter,
-            debugShowCheckedModeBanner: false,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-          ),
-        );
-
-    testWidgets('the bottom nav exposes selected tabs by name', (tester) async {
+    testWidgets('the top bar actions are named', (tester) async {
+      phone(tester);
       final handle = tester.ensureSemantics();
-      await tester.pumpWidget(buildApp());
-      await tester.pump(const Duration(milliseconds: 200));
-      await tester.pumpAndSettle(const Duration(milliseconds: 400));
+      await tester.pumpWidget(testApp());
+      await settle(tester);
 
-      for (final label in ['Convert', 'Calculate', 'Finance', 'Tools']) {
-        expect(find.bySemanticsLabel(label), findsWidgets,
-            reason: 'the $label tab must be announced by name');
+      for (final label in ['Sheets', 'Tools', 'More']) {
+        expect(find.byTooltip(label), findsOneWidget,
+            reason: 'the $label action must be announced by name');
       }
+      expect(find.bySemanticsLabel(RegExp(r'^Sheet title: ')), findsOneWidget,
+          reason: 'the title says it is the sheet title and can be renamed');
+      handle.dispose();
+    });
 
-      // The tab you are on has to be distinguishable from the ones you are not.
-      final navItems = tester
-          .widgetList<Semantics>(find.byType(Semantics))
-          .where((s) => s.properties.inMutuallyExclusiveGroup ?? false)
-          .toList();
-      expect(navItems.map((s) => s.properties.label),
-          containsAll(<String>['Convert', 'Calculate']));
-      final selected =
-          navItems.where((s) => s.properties.selected ?? false).toList();
-      expect(selected.length, 1, reason: 'exactly one tab is current');
-      expect(selected.single.properties.label, 'Convert');
+    testWidgets('a sheet line reads as its number, result and what a tap '
+        'does; the total reads as one phrase', (tester) async {
+      phone(tester);
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(testApp());
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).first, '12 ft in m');
+      await tester.pump();
 
+      expect(find.bySemanticsLabel('Line 1'), findsWidgets);
+      final result = tester.getSemantics(
+          find.bySemanticsLabel(RegExp(r'^Line 1 result 3\.6576 m')));
+      expect(result.hint,
+          'Tap to insert #1 into the line you are editing. Long press to copy.');
+      expect(find.bySemanticsLabel('Total, 3.6576 m'), findsOneWidget);
+      handle.dispose();
+    });
+
+    testWidgets('an error line is announced with its reason', (tester) async {
+      phone(tester);
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(testApp());
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).first, '3 kg in m');
+      await tester.pump();
+      expect(find.bySemanticsLabel("Line 1: Can't convert kg to m"),
+          findsOneWidget);
       handle.dispose();
     });
 
     testWidgets('the region pill is named, not just a flag emoji',
         (tester) async {
+      phone(tester);
       final handle = tester.ensureSemantics();
-      await tester.pumpWidget(buildApp());
-      await tester.pump(const Duration(milliseconds: 200));
-      await tester.pumpAndSettle(const Duration(milliseconds: 400));
+      await tester.pumpWidget(testApp());
+      await settle(tester);
+      appRouter.go('/settings');
+      await settle(tester);
 
       expect(
-        find.bySemanticsLabel('Region: US, currency USD'),
+        find.bySemanticsLabel(RegExp(r'^Region: \w+, currency [A-Z]{3}$')),
         findsOneWidget,
       );
       handle.dispose();
+      appRouter.go('/');
+      await settle(tester);
     });
   });
 }

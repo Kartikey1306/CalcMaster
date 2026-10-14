@@ -12,73 +12,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get appTitle => 'CalcMaster';
 
   @override
-  String get appTagline => 'विश्व कैलकुलेटर और कन्वर्टर';
-
-  @override
-  String get tabConvert => 'बदलें';
-
-  @override
-  String get tabCalculate => 'गणना';
-
-  @override
-  String get tabFinance => 'वित्त';
-
-  @override
-  String get tabTools => 'उपकरण';
-
-  @override
-  String get tabNotes => 'नोट्स';
-
-  @override
-  String get pillUnitConversion => 'यूनिट कन्वर्जन';
-
-  @override
-  String get pillCalculators => 'कैलकुलेटर';
-
-  @override
-  String get pillFinanceTools => 'वित्त उपकरण';
-
-  @override
-  String get pillUtilityTools => 'उपयोगी उपकरण';
-
-  @override
-  String get pillSavedNotes => 'सहेजे गए नोट्स';
-
-  @override
-  String get convertHubHeading => 'बदलें';
-
-  @override
-  String get convertHubSubheading =>
-      'तुरंत कन्वर्ट करने के लिए किसी भी यूनिट पर टैप करें';
-
-  @override
-  String get calculateHubHeading => 'गणना';
-
-  @override
-  String get calculateHubSubheading =>
-      'मानक · वैज्ञानिक · प्रतिशत · आधार · भिन्न';
-
-  @override
-  String get financeHubHeading => 'वित्त';
-
-  @override
-  String get financeHubSubheading =>
-      'टैक्स · टिप · छूट · चक्रवृद्धि · EMI · मुद्रा · इकाई मूल्य';
-
-  @override
-  String get toolsHubHeading => 'उपकरण';
-
-  @override
-  String get toolsHubSubheading =>
-      'GPS · ओम का नियम · BMI · तिथि अंतर · समय क्षेत्र · ADC/DAC · आयु · पहलू अनुपात';
-
-  @override
-  String get notesHubHeading => 'नोट्स';
-
-  @override
-  String get notesHubSubheading => 'गणना, सूत्र और रिमाइंडर सहेजें';
-
-  @override
   String get categoryDistance => 'दूरी';
 
   @override
@@ -121,9 +54,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String labelUnitsAvailable(int count) {
     return '$count यूनिट उपलब्ध';
   }
-
-  @override
-  String get calcStandard => 'मानक';
 
   @override
   String get calcScientific => 'वैज्ञानिक';
@@ -189,21 +119,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get settingsTitle => 'सेटिंग्स';
 
   @override
-  String get settingsSubscription => 'सदस्यता';
-
-  @override
-  String get settingsSubscribePro => 'Pro की सदस्यता लें';
-
-  @override
-  String get settingsCalcMasterPro => 'CalcMaster Pro';
-
-  @override
-  String get settingsRestorePurchases => 'खरीद पुनर्स्थापित करें';
-
-  @override
-  String get settingsPreferences => 'प्राथमिकताएँ';
-
-  @override
   String get settingsNotifications => 'सूचनाएँ';
 
   @override
@@ -222,94 +137,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get settingsAbout => 'CalcMaster के बारे में';
 
   @override
-  String get paywallTitle => 'CalcMaster Pro अनलॉक करें';
-
-  @override
-  String get paywallSubtitle =>
-      'ऋण और निवेश का साल-दर-साल ब्योरा, और स्वतंत्र विकास का समर्थन।';
-
-  @override
-  String get paywallBenefitAdFree => 'विज्ञापन रहित अनुभव';
-
-  @override
-  String get paywallBenefitAdvanced => 'ऋण और निवेश का साल-दर-साल ब्योरा';
-
-  @override
-  String get paywallBenefitRealtime => 'रीयल-टाइम मुद्रा रिफ़्रेश';
-
-  @override
-  String get paywallBenefitSupport => 'प्राथमिकता ईमेल सहायता';
-
-  @override
-  String get paywallTierMonthly => 'मासिक';
-
-  @override
-  String get paywallTierAnnual => 'वार्षिक';
-
-  @override
-  String get paywallTierLifetime => 'आजीवन';
-
-  @override
-  String get paywallBadgeBestValue => 'सर्वोत्तम मूल्य';
-
-  @override
-  String get paywallContinue => 'जारी रखें';
-
-  @override
-  String get paywallProcessing => 'संसाधित हो रहा है…';
-
-  @override
-  String get paywallRestore => 'खरीद पुनर्स्थापित करें';
-
-  @override
-  String get paywallTermsFooter =>
-      'जारी रखकर आप हमारी शर्तों और गोपनीयता नीति से सहमत हैं।';
-
-  @override
-  String get paywallTermsOfUse => 'उपयोग की शर्तें';
-
-  @override
-  String get paywallSubscriptionsDisabled =>
-      'इस संस्करण में सदस्यताएँ अभी सक्षम नहीं हैं।';
-
-  @override
-  String get paywallCancelAnytime => 'कभी भी रद्द करें';
-
-  @override
-  String get paywallLifetimeForever =>
-      'एक बार भुगतान करें, हमेशा के लिए स्वामित्व रखें';
-
-  @override
   String get regionPickerTitle => 'क्षेत्र चुनें';
-
-  @override
-  String get notesAddNote => 'नोट जोड़ें';
-
-  @override
-  String get notesSaveChanges => 'परिवर्तन सहेजें';
-
-  @override
-  String get notesSearch => 'नोट्स खोजें';
-
-  @override
-  String get notesEmpty => 'अभी कोई नोट नहीं। ऊपर पहला जोड़ें।';
-
-  @override
-  String get notesDeleteHint => 'टिप: हटाने के लिए नोट को देर तक दबाएँ।';
-
-  @override
-  String get notesNewTitleHint => 'नए नोट का शीर्षक';
-
-  @override
-  String get notesTitleHint => 'शीर्षक';
-
-  @override
-  String get notesBodyHint => 'विवरण';
-
-  @override
-  String actionCopy(String value) {
-    return 'कॉपी किया गया: $value';
-  }
 
   @override
   String get actionUseMyLocation => 'मेरा स्थान उपयोग करें';
@@ -324,47 +152,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get aboutVersion => 'संस्करण';
 
   @override
-  String get aboutBuild => 'बिल्ड';
-
-  @override
-  String get aboutMadeWith => 'द्वारा बनाया गया';
-
-  @override
   String get aboutBlurb =>
-      'CalcMaster एक ही ऐप में वो सारे कैलकुलेटर समेटे है जो लोग असल में काम में लाते हैं — यूनिट कन्वर्जन, प्रतिशत, वैज्ञानिक गणित, टैक्स + वित्त, इलेक्ट्रॉनिक्स, और एक नोट्स पैड।';
-
-  @override
-  String get aiChatHint => 'CalcMaster AI से पूछें...';
-
-  @override
-  String get aiChatTitle => 'CalcMaster AI';
-
-  @override
-  String get aiChatEmpty => 'गणना, रूपांतरण या वित्त के बारे में कुछ भी पूछें।';
-
-  @override
-  String get authTwoFactor => 'दो-कारक प्रमाणीकरण';
-
-  @override
-  String get authCancel => 'रद्द करें';
-
-  @override
-  String get authVerify => 'सत्यापित करें';
-
-  @override
-  String get authOtpHint => '000000';
+      'CalcMaster रूल्ड शीट पर असल ज़िंदगी के हिसाब करता है: अंकगणित, प्रतिशत, इकाइयाँ, और आपके बताए दिन की यूरोपीय सेंट्रल बैंक संदर्भ दर पर मुद्राएँ। तीस टूल अपने नतीजे आपकी शीट में जोड़ते हैं। शीटें आपके डिवाइस पर ही रहती हैं; कोई खाता नहीं है।';
 
   @override
   String get privacyAtGlance => 'गोपनीयता एक नज़र में';
-
-  @override
-  String get deleteNoteTitle => 'यह नोट हटाएं?';
-
-  @override
-  String get deleteNoteCancel => 'रद्द करें';
-
-  @override
-  String get deleteNoteConfirm => 'हटाएं';
 
   @override
   String get labelFilingStatus => 'दाखिल करने की स्थिति';
@@ -389,4 +181,125 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get labelPctChangeXtoY => 'X से Y तक % परिवर्तन';
+
+  @override
+  String get toolsTitle => 'टूल';
+
+  @override
+  String get toolsSubtitle =>
+      'BMI को छोड़कर हर नतीजा आपकी शीट में जोड़ा जा सकता है।';
+
+  @override
+  String get toolsGroupMoney => 'पैसा';
+
+  @override
+  String get toolsGroupMeasure => 'माप';
+
+  @override
+  String get toolsGroupTime => 'समय';
+
+  @override
+  String get toolsGroupMaths => 'गणित';
+
+  @override
+  String get toolsGroupEngineering => 'इंजीनियरिंग';
+
+  @override
+  String get toolsGroupBody => 'शरीर';
+
+  @override
+  String get toolSalesTax => 'बिक्री कर / VAT';
+
+  @override
+  String get toolIncomeTax => 'आयकर अनुमान';
+
+  @override
+  String get toolCalendar => 'कैलेंडर';
+
+  @override
+  String get settingsHomeCurrency => 'मुख्य मुद्रा और क्षेत्र';
+
+  @override
+  String get settingsHomeCurrencyHint =>
+      'टूल जिस मुद्रा और जिन कर तालिकाओं का उपयोग करते हैं।';
+
+  @override
+  String get settingsAppearance => 'दिखावट';
+
+  @override
+  String get appearanceSystem => 'सिस्टम';
+
+  @override
+  String get appearanceLedger => 'लेजर (हल्का)';
+
+  @override
+  String get appearanceNight => 'रात्रि लेजर';
+
+  @override
+  String get settingsRates => 'दरें';
+
+  @override
+  String settingsRatesBody(int count) {
+    return 'यूरोपीय सेंट्रल बैंक की संदर्भ दरें। सहेजी गई दरें: $count';
+  }
+
+  @override
+  String get settingsClearRateCache => 'कैश साफ़ करें';
+
+  @override
+  String get helpHowLinesWork => 'लाइनें कैसे काम करती हैं';
+
+  @override
+  String get aboutTagline => 'रूल्ड शीट पर हिसाब, उसी दिन की ECB दरों के साथ';
+
+  @override
+  String get sheetsTitle => 'शीटें';
+
+  @override
+  String get sheetsSearchHint => 'शीर्षक और लाइनें खोजें';
+
+  @override
+  String get sheetsNew => 'नई';
+
+  @override
+  String get sheetsEmpty =>
+      'अभी कोई शीट नहीं। एक शुरू करें — हर लाइन टाइप करते ही हल हो जाती है।';
+
+  @override
+  String get sheetNewSheet => 'नई शीट';
+
+  @override
+  String get sheetShareText => 'टेक्स्ट के रूप में साझा करें';
+
+  @override
+  String get sheetExportCsv => 'CSV निर्यात करें';
+
+  @override
+  String get sheetCopy => 'क्लिपबोर्ड पर कॉपी करें';
+
+  @override
+  String get sheetReprice => 'फिर से दाम लगाएँ';
+
+  @override
+  String sheetRatesAsOf(String date) {
+    return '$date की दरें';
+  }
+
+  @override
+  String get sheetTotal => 'कुल';
+
+  @override
+  String get sheetAddToSheet => 'शीट में जोड़ें';
+
+  @override
+  String get sheetRename => 'नाम बदलें';
+
+  @override
+  String get sheetDuplicate => 'डुप्लिकेट';
+
+  @override
+  String get sheetDelete => 'हटाएँ';
+
+  @override
+  String get sheetUndo => 'पूर्ववत करें';
 }

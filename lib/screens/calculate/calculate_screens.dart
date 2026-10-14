@@ -14,121 +14,6 @@ import '../../widgets/number_input.dart';
 import '../../widgets/pressable_scale.dart';
 import '../../widgets/result_row.dart';
 
-// =================== STANDARD ===================
-
-class StandardCalc extends StatefulWidget {
-  const StandardCalc({super.key});
-  @override
-  State<StandardCalc> createState() => _StandardCalcState();
-}
-
-class _StandardCalcState extends KeypadCalcState<StandardCalc> {
-  @override
-  Widget build(BuildContext context) {
-    return InnerScaffold(
-      title: AppLocalizations.of(context)!.calcStandard,
-      subtitle: 'Swipe the display to delete · live result',
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          const gap = 12.0;
-          final size = ((constraints.maxWidth - gap * 3) / 4).clamp(56.0, 88.0);
-          final keypadWidth = size * 4 + gap * 3;
-
-          CalcKey k(
-            String label,
-            CalcKeyKind kind,
-            VoidCallback onTap, {
-            double widthFactor = 1,
-            bool active = false,
-            IconData? icon,
-          }) =>
-              CalcKey(
-                label: icon == null ? label : null,
-                icon: icon,
-                kind: kind,
-                size: size,
-                gap: gap,
-                widthFactor: widthFactor,
-                active: active,
-                onTap: onTap,
-                haptic: label == '='
-                    ? HapticFeedbackKind.medium
-                    : HapticFeedbackKind.selection,
-                // Icon-only keys (backspace) drop `label`, so hand the glyph
-                // to the semantics layer separately.
-                semanticLabel: label,
-              );
-
-          return Column(
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.only(top: Spacing.xl, bottom: Spacing.xl),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 110),
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: CalcDisplay(
-                      expression: displayExpression,
-                      value: displayValue,
-                      idle: isIdle,
-                      maxWidth: keypadWidth,
-                      onSwipe: backspace,
-                    ),
-                  ),
-                ),
-              ),
-              CalcKeypad(
-                gap: gap,
-                rows: [
-                  [
-                    // The clear key becomes a backspace once there is
-                    // something to delete, as in the reference design.
-                    isIdle
-                        ? k('AC', CalcKeyKind.function, clear)
-                        : k('⌫', CalcKeyKind.function, backspace,
-                            icon: Icons.backspace_outlined),
-                    k('+/−', CalcKeyKind.function, toggleSign),
-                    k('%', CalcKeyKind.function, percent),
-                    k('÷', CalcKeyKind.operator, () => input('/'),
-                        active: isPendingOperator('÷')),
-                  ],
-                  [
-                    k('7', CalcKeyKind.digit, () => input('7')),
-                    k('8', CalcKeyKind.digit, () => input('8')),
-                    k('9', CalcKeyKind.digit, () => input('9')),
-                    k('×', CalcKeyKind.operator, () => input('*'),
-                        active: isPendingOperator('×')),
-                  ],
-                  [
-                    k('4', CalcKeyKind.digit, () => input('4')),
-                    k('5', CalcKeyKind.digit, () => input('5')),
-                    k('6', CalcKeyKind.digit, () => input('6')),
-                    k('−', CalcKeyKind.operator, () => input('-'),
-                        active: isPendingOperator('−')),
-                  ],
-                  [
-                    k('1', CalcKeyKind.digit, () => input('1')),
-                    k('2', CalcKeyKind.digit, () => input('2')),
-                    k('3', CalcKeyKind.digit, () => input('3')),
-                    k('+', CalcKeyKind.operator, () => input('+'),
-                        active: isPendingOperator('+')),
-                  ],
-                  [
-                    k('0', CalcKeyKind.digit, () => input('0'), widthFactor: 2),
-                    k('.', CalcKeyKind.digit, () => input('.')),
-                    k('=', CalcKeyKind.operator, equals),
-                  ],
-                ],
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
 // =================== SCIENTIFIC ===================
 
 class ScientificCalc extends StatefulWidget {
@@ -174,6 +59,15 @@ class _ScientificCalcState extends KeypadCalcState<ScientificCalc> {
   Widget build(BuildContext context) {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.calcScientific,
+      tool: 'scientific',
+      addInHeader: true,
+      sheetLine: () {
+        final v = liveValue;
+        if (v == null || (expr.isEmpty && committed == null)) return null;
+        final shown = committed ?? pretty(expr);
+        final unit = angle == AngleUnit.deg ? ', degrees' : '';
+        return 'Scientific ($shown$unit): ${plainNumber(v, maxDigits: 10)}';
+      },
       subtitle:
           'Trig, logs, powers, memory · ${angle == AngleUnit.deg ? 'Deg' : 'Rad'}'
           '${memory != 0 ? ' · M' : ''}',
@@ -237,7 +131,7 @@ class _ScientificCalcState extends KeypadCalcState<ScientificCalc> {
             children: [
               Padding(
                 padding:
-                    const EdgeInsets.only(top: Spacing.md, bottom: Spacing.lg),
+                    EdgeInsets.only(top: Spacing.md, bottom: Spacing.lg),
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: CalcDisplay(
@@ -303,7 +197,7 @@ class _ScientificCalcState extends KeypadCalcState<ScientificCalc> {
                   ],
                 ],
               ),
-              const SizedBox(height: gap),
+              SizedBox(height: gap),
               CalcKeypad(
                 gap: gap,
                 rows: [
@@ -389,41 +283,45 @@ class _PercentageCalcState extends State<PercentageCalc> {
     final change = A == 0 ? double.nan : (B - A) / A;
     return InnerScaffold(
       title: AppLocalizations.of(context)!.calcPercentage,
+      tool: 'percentage',
+      sheetLine: () => aC.text.isEmpty || bC.text.isEmpty
+          ? null
+          : '${plainNumber(A)}% of ${plainNumber(B)}: ${plainNumber(pctOf)}',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Expanded(child: NumberInput(label: 'X', controller: aC)),
-          const SizedBox(width: Spacing.md),
+          SizedBox(width: Spacing.md),
           Expanded(child: NumberInput(label: 'Y', controller: bC)),
         ]),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         Text(AppLocalizations.of(context)!.labelXofY,
-            style: const TextStyle(
-                color: AppColors.textMuted,
+            style: TextStyle(
+                color: context.ledger.inkSoft,
                 fontSize: 13,
                 fontWeight: FontWeight.w500)),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         ResultRow(
             label:
                 '${aC.text.isEmpty ? '0' : aC.text}% of ${bC.text.isEmpty ? '0' : bC.text}',
             value: formatNumber(pctOf)),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         Text(AppLocalizations.of(context)!.labelXisWhatPctOfY,
-            style: const TextStyle(
-                color: AppColors.textMuted,
+            style: TextStyle(
+                color: context.ledger.inkSoft,
                 fontSize: 13,
                 fontWeight: FontWeight.w500)),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         ResultRow(
             label:
                 '${aC.text.isEmpty ? '0' : aC.text} of ${bC.text.isEmpty ? '0' : bC.text}',
             value: isPct.isFinite ? formatPercent(isPct) : '—'),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         Text(AppLocalizations.of(context)!.labelPctChangeXtoY,
-            style: const TextStyle(
-                color: AppColors.textMuted,
+            style: TextStyle(
+                color: context.ledger.inkSoft,
                 fontSize: 13,
                 fontWeight: FontWeight.w500)),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         ResultRow(
             label: 'Change',
             value: change.isFinite ? formatPercent(change) : '—',
@@ -474,12 +372,19 @@ class _BaseCalcState extends State<BaseCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.calcBase,
       subtitle: 'Bin · Oct · Dec · Hex',
+      tool: 'base',
+      sheetLine: () {
+        final v = _parsed();
+        if (v == null) return null;
+        return '${base.toUpperCase()} ${controller.text.trim().toUpperCase()} '
+            'in decimal: $v';
+      },
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(AppLocalizations.of(context)!.labelInputBase,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
-        const SizedBox(height: Spacing.sm),
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
+        SizedBox(height: Spacing.sm),
         ChipPicker<String>(
-          options: const [
+          options: [
             (id: 'bin', label: 'BIN'),
             (id: 'oct', label: 'OCT'),
             (id: 'dec', label: 'DEC'),
@@ -490,8 +395,8 @@ class _BaseCalcState extends State<BaseCalc> {
         ),
         NumberInput(
             controller: controller,
-            keyboardType: const TextInputType.numberWithOptions()),
-        const SizedBox(height: Spacing.md),
+            keyboardType: TextInputType.numberWithOptions()),
+        SizedBox(height: Spacing.md),
         ResultRow(label: 'Binary', caption: 'base 2', value: _rep('bin')),
         ResultRow(label: 'Octal', caption: 'base 8', value: _rep('oct')),
         ResultRow(
@@ -572,6 +477,11 @@ class _FractionCalcState extends State<FractionCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.calcFraction,
       subtitle: 'Add, subtract, multiply, divide',
+      tool: 'fraction',
+      sheetLine: () => r.d == 0
+          ? null
+          : 'Fraction (${n1.text}/${d1.text} $op ${n2.text}/${d2.text} = '
+              '${r.n}/${r.d}): ${plainNumber(dec, maxDigits: 8)}',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Expanded(
@@ -580,7 +490,7 @@ class _FractionCalcState extends State<FractionCalc> {
               NumberInput(label: 'Denominator A', controller: d1),
             ]),
           ),
-          const SizedBox(width: Spacing.md),
+          SizedBox(width: Spacing.md),
           Expanded(
             child: Column(children: [
               NumberInput(label: 'Numerator B', controller: n2),
@@ -588,12 +498,12 @@ class _FractionCalcState extends State<FractionCalc> {
             ]),
           ),
         ]),
-        const SizedBox(height: Spacing.md),
+        SizedBox(height: Spacing.md),
         Text(AppLocalizations.of(context)!.labelOperator,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
-        const SizedBox(height: Spacing.sm),
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
+        SizedBox(height: Spacing.sm),
         ChipPicker<String>(
-          options: const [
+          options: [
             (id: '+', label: '+'),
             (id: '-', label: '−'),
             (id: '×', label: '×'),
@@ -602,7 +512,7 @@ class _FractionCalcState extends State<FractionCalc> {
           value: op,
           onChange: (v) => setState(() => op = v),
         ),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         ResultRow(
             label: 'Simplified',
             value: r.d == 0 ? '—' : '${r.n}/${r.d}',

@@ -1,25 +1,18 @@
 import 'package:agl_observability/agl_observability.dart';
 import 'package:agl_i18n/agl_i18n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'app_env.dart';
 import 'app_router.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'monetization/ad_service.dart';
 import 'monetization/analytics_service.dart';
-import 'monetization/premium_provider.dart';
 import 'monetization/tracking_service.dart';
-import 'services/supabase_config.dart';
-import 'state/auth_provider.dart';
-import 'state/notes_provider.dart';
+import 'services/error_reporter.dart';
+import 'sheet/sheets_controller.dart';
+import 'state/appearance_provider.dart';
 import 'state/region_provider.dart';
 import 'theme/app_theme.dart';
-import 'theme/tokens.dart';
-import 'services/error_reporter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,33 +28,19 @@ Future<void> main() async {
   // Capture framework and uncaught async errors. No-op sink by
   // default - see services/error_reporter.dart to attach a crash service.
   ErrorReporter.install();
-  // Fail loudly in dev if this binary was built without (or with the
-  // wrong) --dart-define-from-file=env/<env>.json. Release only reports.
-  AppEnv.validate(urls: const {'SUPABASE_URL': SupabaseConfig.url});
 
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-    statusBarBrightness: Brightness.dark,
-  ));
-  // Supabase handles auth + session persistence. Guarded so a missing/invalid
-  // config never hard-blocks app startup (login simply won't be available).
-  try {
-    await Supabase.initialize(
-      url: SupabaseConfig.url,
-      publishableKey: SupabaseConfig.publishableKey,
-    );
-  } catch (e) {
-    debugPrint('Supabase init failed: $e');
-  }
-  // Fire-and-forget bootstrap. Each service no-ops gracefully when its
-  // credentials are missing, so this never blocks startup.
   AnalyticsService.instance.bootstrap();
   // Loaded before the first frame so a returning user never sees a flash of
   // the wrong language.
   final locale = AglLocaleController();
   await locale.load();
-  runApp(CalcMasterApp(localeController: locale));
+  // The last sheet is loaded before the first frame too: the app opens
+  // straight onto it — no splash, no sign-in, no carousel.
+  final region = RegionProvider();
+  final sheets = SheetsController(rates: region);
+  await sheets.init();
+  runApp(CalcMasterApp(
+      localeController: locale, region: region, sheets: sheets));
   // The ATT prompt goes up once the first screen has rendered and the app is
   // active (iOS drops a request made any earlier), and the ads SDK — consent,
   // initialisation, every ad request — only starts after it is answered.
@@ -70,45 +49,72 @@ Future<void> main() async {
       .whenComplete(AdService.instance.bootstrap);
 }
 
-class CalcMasterApp extends StatelessWidget {
-  final AglLocaleController localeController;
-  CalcMasterApp({super.key, AglLocaleController? localeController})
-      : localeController = localeController ?? AglLocaleController();
+class CalcMasterApp extends StatefulWidget {
+  final AglLocaleController? localeController;
+  final RegionProvider? region;
+  final SheetsController? sheets;
+
+  const CalcMasterApp({
+    super.key,
+    this.localeController,
+    this.region,
+    this.sheets,
+  });
+
+  @override
+  State<CalcMasterApp> createState() => _CalcMasterAppState();
+}
+
+class _CalcMasterAppState extends State<CalcMasterApp> {
+  late final AglLocaleController _locale;
+  late final RegionProvider _region;
+  late final SheetsController _sheets;
+  final _appearance = AppearanceProvider();
+  bool _ownsRegion = false;
+  bool _ownsSheets = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _locale = widget.localeController ?? AglLocaleController();
+    _ownsRegion = widget.region == null;
+    _region = widget.region ?? RegionProvider();
+    _ownsSheets = widget.sheets == null;
+    _sheets = widget.sheets ?? SheetsController(rates: _region);
+    if (_ownsSheets) _sheets.init();
+  }
+
+  @override
+  void dispose() {
+    if (_ownsSheets) _sheets.dispose();
+    if (_ownsRegion) _region.dispose();
+    _appearance.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final base = buildAppTheme();
-    final theme = base.copyWith(
-      textTheme: GoogleFonts.interTextTheme(base.textTheme).apply(
-        bodyColor: AppColors.text,
-        displayColor: AppColors.text,
-      ),
-    );
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AglLocaleController>.value(
-            value: localeController),
-        ChangeNotifierProvider(create: (_) => RegionProvider()),
-        ChangeNotifierProvider(create: (_) => NotesProvider()),
-        ChangeNotifierProvider(create: (_) => PremiumProvider()),
-        ChangeNotifierProvider(create: (_) {
-          final auth = AuthProvider();
-          auth.init();
-          return auth;
-        }),
+        ChangeNotifierProvider<AglLocaleController>.value(value: _locale),
+        ChangeNotifierProvider<RegionProvider>.value(value: _region),
+        ChangeNotifierProvider<SheetsController>.value(value: _sheets),
+        ChangeNotifierProvider<AppearanceProvider>.value(value: _appearance),
       ],
       child: ListenableBuilder(
-        listenable: localeController,
+        listenable: Listenable.merge([_locale, _appearance]),
         builder: (context, _) => MaterialApp.router(
           onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
-          theme: theme,
+          theme: buildAppTheme(),
+          darkTheme: buildNightTheme(),
+          themeMode: _appearance.mode,
           debugShowCheckedModeBanner: false,
           routerConfig: appRouter,
           // Locale, picker and shared vocabulary come from agl_i18n. A null
           // locale means "follow the device", which Flutter resolves against
           // supportedLocales; an explicit choice overrides it and persists.
-          locale: localeController.locale,
-          supportedLocales: localeController.supportedLocales,
+          locale: _locale.locale,
+          supportedLocales: _locale.supportedLocales,
           localizationsDelegates:
               aglLocalizationsDelegates(AppLocalizations.delegate),
         ),

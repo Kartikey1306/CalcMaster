@@ -12,73 +12,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get appTitle => 'CalcMaster';
 
   @override
-  String get appTagline => 'Мировой калькулятор и конвертер';
-
-  @override
-  String get tabConvert => 'Конвертер';
-
-  @override
-  String get tabCalculate => 'Калькулятор';
-
-  @override
-  String get tabFinance => 'Финансы';
-
-  @override
-  String get tabTools => 'Инструменты';
-
-  @override
-  String get tabNotes => 'Заметки';
-
-  @override
-  String get pillUnitConversion => 'Конверсия единиц';
-
-  @override
-  String get pillCalculators => 'Калькуляторы';
-
-  @override
-  String get pillFinanceTools => 'Финансовые инструменты';
-
-  @override
-  String get pillUtilityTools => 'Утилиты';
-
-  @override
-  String get pillSavedNotes => 'Сохранённые заметки';
-
-  @override
-  String get convertHubHeading => 'Конвертер';
-
-  @override
-  String get convertHubSubheading =>
-      'Нажмите на единицу для мгновенной конверсии';
-
-  @override
-  String get calculateHubHeading => 'Калькулятор';
-
-  @override
-  String get calculateHubSubheading =>
-      'Стандартный · Научный · Процент · Системы счисления · Дробь';
-
-  @override
-  String get financeHubHeading => 'Финансы';
-
-  @override
-  String get financeHubSubheading =>
-      'Налог · Чаевые · Скидка · Сложный процент · Кредит · Валюта · Цена за единицу';
-
-  @override
-  String get toolsHubHeading => 'Инструменты';
-
-  @override
-  String get toolsHubSubheading =>
-      'GPS · Закон Ома · ИМТ · Разница дат · Часовые пояса · АЦП/ЦАП · Возраст · Соотношение сторон';
-
-  @override
-  String get notesHubHeading => 'Заметки';
-
-  @override
-  String get notesHubSubheading => 'Сохраняйте расчёты, формулы и напоминания';
-
-  @override
   String get categoryDistance => 'Расстояние';
 
   @override
@@ -121,9 +54,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String labelUnitsAvailable(int count) {
     return '$count единиц доступно';
   }
-
-  @override
-  String get calcStandard => 'Стандартный';
 
   @override
   String get calcScientific => 'Научный';
@@ -189,21 +119,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsTitle => 'Настройки';
 
   @override
-  String get settingsSubscription => 'Подписка';
-
-  @override
-  String get settingsSubscribePro => 'Подписаться на Pro';
-
-  @override
-  String get settingsCalcMasterPro => 'CalcMaster Pro';
-
-  @override
-  String get settingsRestorePurchases => 'Восстановить покупки';
-
-  @override
-  String get settingsPreferences => 'Параметры';
-
-  @override
   String get settingsNotifications => 'Уведомления';
 
   @override
@@ -222,93 +137,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsAbout => 'О CalcMaster';
 
   @override
-  String get paywallTitle => 'Откройте CalcMaster Pro';
-
-  @override
-  String get paywallSubtitle =>
-      'Разбивка кредитов и вложений по годам и поддержка независимой разработки.';
-
-  @override
-  String get paywallBenefitAdFree => 'Без рекламы';
-
-  @override
-  String get paywallBenefitAdvanced => 'Разбивка кредитов и вложений по годам';
-
-  @override
-  String get paywallBenefitRealtime => 'Курсы валют в реальном времени';
-
-  @override
-  String get paywallBenefitSupport => 'Приоритетная поддержка';
-
-  @override
-  String get paywallTierMonthly => 'Ежемесячно';
-
-  @override
-  String get paywallTierAnnual => 'Ежегодно';
-
-  @override
-  String get paywallTierLifetime => 'Навсегда';
-
-  @override
-  String get paywallBadgeBestValue => 'ЛУЧШИЙ ВЫБОР';
-
-  @override
-  String get paywallContinue => 'Продолжить';
-
-  @override
-  String get paywallProcessing => 'Обработка…';
-
-  @override
-  String get paywallRestore => 'Восстановить покупки';
-
-  @override
-  String get paywallTermsFooter =>
-      'Продолжая, вы соглашаетесь с нашими Условиями и Политикой конфиденциальности.';
-
-  @override
-  String get paywallTermsOfUse => 'Условия использования';
-
-  @override
-  String get paywallSubscriptionsDisabled =>
-      'Подписки ещё не включены в этой сборке.';
-
-  @override
-  String get paywallCancelAnytime => 'Отмена в любое время';
-
-  @override
-  String get paywallLifetimeForever => 'Заплатите один раз, владейте навсегда';
-
-  @override
   String get regionPickerTitle => 'Выберите регион';
-
-  @override
-  String get notesAddNote => 'Добавить заметку';
-
-  @override
-  String get notesSaveChanges => 'Сохранить изменения';
-
-  @override
-  String get notesSearch => 'Поиск заметок';
-
-  @override
-  String get notesEmpty => 'Заметок пока нет. Добавьте первую выше.';
-
-  @override
-  String get notesDeleteHint => 'Совет: удерживайте заметку для удаления.';
-
-  @override
-  String get notesNewTitleHint => 'Заголовок новой заметки';
-
-  @override
-  String get notesTitleHint => 'Заголовок';
-
-  @override
-  String get notesBodyHint => 'Содержание';
-
-  @override
-  String actionCopy(String value) {
-    return 'Скопировано: $value';
-  }
 
   @override
   String get actionUseMyLocation => 'Использовать моё местоположение';
@@ -323,48 +152,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aboutVersion => 'Версия';
 
   @override
-  String get aboutBuild => 'Сборка';
-
-  @override
-  String get aboutMadeWith => 'Сделано с';
-
-  @override
   String get aboutBlurb =>
-      'CalcMaster объединяет калькуляторы, которыми люди реально пользуются — конверсии единиц, проценты, научная математика, налоги и финансы, электроника, блокнот — в одном изящном приложении, уважающем вашу приватность и батарею.';
-
-  @override
-  String get aiChatHint => 'Спросите CalcMaster AI...';
-
-  @override
-  String get aiChatTitle => 'CalcMaster AI';
-
-  @override
-  String get aiChatEmpty =>
-      'Спросите меня о вычислениях, конвертации или финансах.';
-
-  @override
-  String get authTwoFactor => 'Двухфакторная аутентификация';
-
-  @override
-  String get authCancel => 'Отмена';
-
-  @override
-  String get authVerify => 'Подтвердить';
-
-  @override
-  String get authOtpHint => '000000';
+      'CalcMaster считает житейские суммы на листах в линейку: арифметика, проценты, единицы и валюты по справочному курсу Европейского центрального банка на указанный вами день. Тридцать инструментов добавляют результаты на ваш лист. Листы хранятся только на устройстве; учётной записи нет.';
 
   @override
   String get privacyAtGlance => 'Конфиденциальность вкратце';
-
-  @override
-  String get deleteNoteTitle => 'Удалить эту заметку?';
-
-  @override
-  String get deleteNoteCancel => 'Отмена';
-
-  @override
-  String get deleteNoteConfirm => 'Удалить';
 
   @override
   String get labelFilingStatus => 'Статус подачи';
@@ -389,4 +181,126 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get labelPctChangeXtoY => '% изменения от X до Y';
+
+  @override
+  String get toolsTitle => 'Инструменты';
+
+  @override
+  String get toolsSubtitle =>
+      'Любой результат можно добавить на лист — кроме ИМТ.';
+
+  @override
+  String get toolsGroupMoney => 'Деньги';
+
+  @override
+  String get toolsGroupMeasure => 'Измерения';
+
+  @override
+  String get toolsGroupTime => 'Время';
+
+  @override
+  String get toolsGroupMaths => 'Математика';
+
+  @override
+  String get toolsGroupEngineering => 'Инженерия';
+
+  @override
+  String get toolsGroupBody => 'Тело';
+
+  @override
+  String get toolSalesTax => 'Налог с продаж / НДС';
+
+  @override
+  String get toolIncomeTax => 'Оценка подоходного налога';
+
+  @override
+  String get toolCalendar => 'Календарь';
+
+  @override
+  String get settingsHomeCurrency => 'Основная валюта и регион';
+
+  @override
+  String get settingsHomeCurrencyHint =>
+      'Валюта инструментов и налоговые таблицы, которые они применяют.';
+
+  @override
+  String get settingsAppearance => 'Оформление';
+
+  @override
+  String get appearanceSystem => 'Как в системе';
+
+  @override
+  String get appearanceLedger => 'Гроссбух (светлая)';
+
+  @override
+  String get appearanceNight => 'Ночной гроссбух';
+
+  @override
+  String get settingsRates => 'Курсы';
+
+  @override
+  String settingsRatesBody(int count) {
+    return 'Справочные курсы Европейского центрального банка. Сохранено курсов: $count';
+  }
+
+  @override
+  String get settingsClearRateCache => 'Очистить кэш';
+
+  @override
+  String get helpHowLinesWork => 'Как работают строки';
+
+  @override
+  String get aboutTagline =>
+      'Расчёты на листах в линейку, по курсам ЕЦБ на нужный день';
+
+  @override
+  String get sheetsTitle => 'Листы';
+
+  @override
+  String get sheetsSearchHint => 'Поиск по названиям и строкам';
+
+  @override
+  String get sheetsNew => 'Новый';
+
+  @override
+  String get sheetsEmpty =>
+      'Листов пока нет. Начните новый — каждая строка считается по мере ввода.';
+
+  @override
+  String get sheetNewSheet => 'Новый лист';
+
+  @override
+  String get sheetShareText => 'Поделиться текстом';
+
+  @override
+  String get sheetExportCsv => 'Экспорт CSV';
+
+  @override
+  String get sheetCopy => 'Скопировать в буфер обмена';
+
+  @override
+  String get sheetReprice => 'Пересчитать';
+
+  @override
+  String sheetRatesAsOf(String date) {
+    return 'Курсы на $date';
+  }
+
+  @override
+  String get sheetTotal => 'Итого';
+
+  @override
+  String get sheetAddToSheet => 'Добавить на лист';
+
+  @override
+  String get sheetRename => 'Переименовать';
+
+  @override
+  String get sheetDuplicate => 'Дублировать';
+
+  @override
+  String get sheetDelete => 'Удалить';
+
+  @override
+  String get sheetUndo => 'Отменить';
 }

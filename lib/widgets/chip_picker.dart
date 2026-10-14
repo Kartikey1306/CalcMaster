@@ -18,12 +18,12 @@ class ChipPicker<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
+      padding: EdgeInsets.symmetric(vertical: Spacing.xs),
       child: Row(
         children: [
           for (final opt in options)
             Padding(
-              padding: const EdgeInsets.only(right: Spacing.sm),
+              padding: EdgeInsets.only(right: Spacing.sm),
               child: _Chip(
                 label: opt.label,
                 active: opt.id == value,
@@ -46,39 +46,27 @@ class _Chip extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(Radii.pill),
-        boxShadow: active
-            ? [
-                BoxShadow(
-                  color: AppColors.accentPrimary.withValues(alpha: 0.4),
-                  blurRadius: 12,
-                  spreadRadius: -2,
-                ),
-              ]
-            : null,
-      ),
       child: Material(
-        color: active ? AppColors.accentPrimary : AppColors.surface,
-        borderRadius: BorderRadius.circular(Radii.pill),
+        color: active ? context.ledger.primary : context.ledger.surface,
+        borderRadius: BorderRadius.circular(Radii.chip),
         child: InkWell(
-          borderRadius: BorderRadius.circular(Radii.pill),
+          borderRadius: BorderRadius.circular(Radii.chip),
           onTap: () {
             HapticFeedback.selectionClick();
             onTap();
           },
           child: Container(
             padding:
-                const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: 9),
+                EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: 9),
             decoration: BoxDecoration(
               border: Border.all(
-                  color: active ? AppColors.accentPrimary : AppColors.border),
-              borderRadius: BorderRadius.circular(Radii.pill),
+                  color: active ? context.ledger.primary : context.ledger.rule),
+              borderRadius: BorderRadius.circular(Radii.chip),
             ),
             child: Text(
               label,
               style: TextStyle(
-                color: active ? Colors.white : AppColors.text,
+                color: active ? context.ledger.onPrimary : context.ledger.ink,
                 fontWeight: active ? FontWeight.w700 : FontWeight.w500,
                 fontSize: 14,
               ),

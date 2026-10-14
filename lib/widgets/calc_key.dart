@@ -3,22 +3,22 @@ import 'package:flutter/material.dart';
 import '../theme/tokens.dart';
 import 'pressable_scale.dart';
 
-/// Which palette slot a keypad key belongs to (iOS Calculator convention).
+/// Which palette slot a keypad key belongs to.
 enum CalcKeyKind {
-  /// AC / ⌫ / +/− / % / SWAP — light gray.
+  /// AC / ⌫ / +/− / % / SWAP — a faint ink wash.
   function,
 
-  /// Digits and the decimal point — dark gray.
+  /// Digits and the decimal point — plain paper.
   digit,
 
-  /// ÷ × − + = — amber, inverts while latched.
+  /// ÷ × − + = — bottle green, copper while latched.
   operator,
 
   /// Scientific function keys — the darkest, most recessive slot.
   secondary,
 }
 
-/// A single round keypad key.
+/// A single keypad key: a ruled rectangle with 4 px corners.
 ///
 /// [size] is the key's diameter; a key that spans several columns passes
 /// [widthFactor] > 1 and the [gap] it bridges so it lines up with the grid.
@@ -95,30 +95,30 @@ class CalcKey extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.ledger;
     Color bg;
     Color fg;
     switch (kind) {
       case CalcKeyKind.function:
-        bg = active ? AppColors.accentPrimary : KeyColors.function;
-        fg = active ? Colors.black : KeyColors.functionText;
+        bg = active ? c.primary : c.ink.withValues(alpha: 0.08);
+        fg = active ? c.onPrimary : c.ink;
         break;
       case CalcKeyKind.digit:
-        bg = KeyColors.digit;
-        fg = KeyColors.digitText;
+        bg = c.paper;
+        fg = c.ink;
         break;
       case CalcKeyKind.secondary:
-        bg = active ? AppColors.accentPrimary : KeyColors.secondary;
-        fg = active ? Colors.black : KeyColors.digitText;
+        bg = active ? c.primary : c.ink.withValues(alpha: 0.05);
+        fg = active ? c.onPrimary : c.ink;
         break;
       case CalcKeyKind.operator:
-        bg = active ? KeyColors.operatorActive : KeyColors.operator;
-        fg = active ? KeyColors.operator : KeyColors.operatorText;
+        bg = active ? c.result : c.primary;
+        fg = active ? c.paper : c.onPrimary;
         break;
     }
 
     // A wide key spans N columns plus the gaps it bridges.
     final width = size * widthFactor + gap * (widthFactor - 1);
-    final wide = widthFactor > 1;
 
     return Semantics(
       container: true,
@@ -133,22 +133,11 @@ class CalcKey extends StatelessWidget {
         child: Container(
           width: width,
           height: size,
-          // Wide keys keep their glyph over the first column, like iOS's `0`.
-          alignment: wide ? Alignment.centerLeft : Alignment.center,
-          padding: wide ? EdgeInsets.only(left: size * 0.36) : EdgeInsets.zero,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: bg,
-            borderRadius: BorderRadius.circular(size / 2),
-            boxShadow: kind == CalcKeyKind.operator && !active
-                ? [
-                    BoxShadow(
-                      color: KeyColors.operator.withValues(alpha: 0.35),
-                      blurRadius: 14,
-                      spreadRadius: -5,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : null,
+            borderRadius: BorderRadius.circular(Radii.button),
+            border: Border.all(color: c.rule),
           ),
           child: icon != null
               ? Icon(icon, color: fg, size: size * 0.36)
@@ -156,8 +145,9 @@ class CalcKey extends StatelessWidget {
                   label!,
                   maxLines: 1,
                   style: TextStyle(
+                    fontFamily: Fonts.figures,
                     color: fg,
-                    fontSize: size * 0.4 * fontScale,
+                    fontSize: size * 0.36 * fontScale,
                     fontWeight: FontWeight.w500,
                     height: 1,
                   ),
@@ -253,15 +243,16 @@ class CalcDisplay extends StatelessWidget {
           children: [
             if (expression.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.only(bottom: 4),
+                padding: EdgeInsets.only(bottom: 4),
                 child: FittedBox(
                   alignment: Alignment.centerRight,
                   fit: BoxFit.scaleDown,
                   child: Text(
                     expression,
                     maxLines: 1,
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
+                    style: TextStyle(
+                      fontFamily: Fonts.figures,
+                      color: context.ledger.inkSoft,
                       fontSize: 22,
                       fontWeight: FontWeight.w400,
                     ),
@@ -275,11 +266,12 @@ class CalcDisplay extends StatelessWidget {
                 value,
                 maxLines: 1,
                 style: TextStyle(
-                  color: idle ? AppColors.textDim : AppColors.text,
-                  fontSize: 64,
-                  fontWeight: FontWeight.w300,
+                  fontFamily: Fonts.figures,
+                  color: idle ? context.ledger.inkSoft : context.ledger.result,
+                  fontSize: 56,
+                  fontWeight: FontWeight.w400,
                   height: 1.1,
-                  fontFeatures: const [FontFeature.tabularFigures()],
+                  fontFeatures: [FontFeature.tabularFigures()],
                 ),
               ),
             ),

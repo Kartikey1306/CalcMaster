@@ -9,8 +9,8 @@ import 'package:calcmaster/lib_finance.dart';
 import 'package:calcmaster/lib_tax.dart';
 import 'package:calcmaster/monetization/ad_service.dart';
 import 'package:calcmaster/monetization/monetization_config.dart';
-import 'package:calcmaster/monetization/premium_provider.dart';
 import 'package:calcmaster/screens/finance/finance_screens.dart';
+import 'package:calcmaster/sheet/sheets_controller.dart';
 import 'package:calcmaster/state/region_provider.dart';
 
 void main() {
@@ -122,6 +122,12 @@ void main() {
     });
   });
 
+  test('the tax tables carry their year', () {
+    expect(taxTableYear, 2025);
+    expect(taxYearNote,
+        "Estimate using 2025 brackets — check your current year's rules");
+  });
+
   test('ads SDK stays off without an ad unit for this platform', () async {
     // No ADMOB_* define and a host VM (neither Android nor iOS): no unit, so
     // no ad may be requested.
@@ -134,7 +140,9 @@ void main() {
     Widget host(Widget child) => MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => RegionProvider()),
-            ChangeNotifierProvider(create: (_) => PremiumProvider()),
+            ChangeNotifierProvider(
+                create: (c) =>
+                    SheetsController(rates: c.read<RegionProvider>())..init()),
           ],
           child: MaterialApp(
             home: child,
@@ -151,21 +159,10 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('free users see what the yearly breakdown is, not the table',
+    testWidgets('the yearly amortisation table is free for everyone',
         (tester) async {
+      // There is no Pro tier any more: nothing is locked behind a paywall.
       SharedPreferences.setMockInitialValues({});
-      await tester.pumpWidget(host(const EmiCalc()));
-      await tester.pumpAndSettle();
-      await fillEmi(tester);
-      await tester.scrollUntilVisible(find.text('See CalcMaster Pro'), 200,
-          scrollable: find.byType(Scrollable).first);
-      expect(find.text('Year-by-year breakdown'), findsOneWidget);
-      expect(find.text('Principal'), findsNothing);
-    });
-
-    testWidgets('Pro users get the yearly amortisation table',
-        (tester) async {
-      SharedPreferences.setMockInitialValues({'@calcmaster/is_pro': true});
       await tester.pumpWidget(host(const EmiCalc()));
       await tester.pumpAndSettle();
       await fillEmi(tester);
@@ -173,6 +170,7 @@ void main() {
           scrollable: find.byType(Scrollable).first);
       expect(find.textContaining('Year-by-year breakdown ('), findsOneWidget);
       expect(find.text('See CalcMaster Pro'), findsNothing);
+      expect(find.textContaining('Pro'), findsNothing);
     });
 
     testWidgets('tip defaults to the region custom (0% in Japan)',

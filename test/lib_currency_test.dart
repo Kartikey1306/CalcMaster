@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calcmaster/l10n/generated/app_localizations.dart';
 import 'package:calcmaster/lib_currency.dart';
 import 'package:calcmaster/screens/finance/finance_screens.dart';
+import 'package:calcmaster/sheet/sheets_controller.dart';
 import 'package:calcmaster/state/region_provider.dart';
 import 'package:calcmaster/widgets/result_row.dart';
 
@@ -61,6 +62,24 @@ void main() {
     });
   });
 
+  group('ECB currencies', () {
+    test('exactly the 30 codes Frankfurter lists; AED is not one', () {
+      expect(ecbCurrencies, hasLength(30));
+      expect(ecbCurrencies.toSet(), hasLength(30));
+      expect(isEcbCurrency('AED'), isFalse);
+      expect(isEcbCurrency('usd'), isTrue);
+      expect(nonEcbCurrencies.intersection(ecbCurrencies.toSet()), isEmpty);
+    });
+
+    test('a cross rate from the USD table keeps six significant digits', () {
+      final t = parseRatesResponse(_frankfurterBody, 1)!;
+      final r = crossRateFrom(t, 'EUR', 'GBP')!;
+      expect(r.rate, 0.847632); // 0.75641 / 0.89238
+      expect(r.ecbDate, '2026-10-09');
+      expect(crossRateFrom(t, 'EUR', 'AED'), isNull);
+    });
+  });
+
   group('convertCurrency', () {
     test('converts through the given rates', () {
       final rates = {'USD': 1.0, 'EUR': 0.5, 'GBP': 0.25};
@@ -81,9 +100,14 @@ void main() {
       'rates_cache': jsonEncode(cached.toJson()),
     });
     final region = RegionProvider();
+    final sheets = SheetsController(rates: region);
+    addTearDown(sheets.dispose);
     await tester.pumpWidget(
-      ChangeNotifierProvider.value(
-        value: region,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: region),
+          ChangeNotifierProvider.value(value: sheets),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -101,15 +125,20 @@ void main() {
   });
 
   testWidgets(
-      'currency screen with no rates shows the unavailable state and no '
+      'currency screen with no rates says it needs a connection and shows no '
       'invented numbers', (tester) async {
     // A saved region skips GPS detection; the test binding answers every HTTP
     // request with 400, so the fetch fails and nothing is cached.
     SharedPreferences.setMockInitialValues({'region': 'US'});
     final region = RegionProvider();
+    final sheets = SheetsController(rates: region);
+    addTearDown(sheets.dispose);
     await tester.pumpWidget(
-      ChangeNotifierProvider.value(
-        value: region,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: region),
+          ChangeNotifierProvider.value(value: sheets),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -122,10 +151,10 @@ void main() {
 
     expect(region.rates, isEmpty);
     expect(
-        find.text('Exchange rates unavailable. Connect to the internet and '
-            'tap refresh.'),
+        find.text("Needs a connection to get today's ECB rates. "
+            'Tap refresh when you are online.'),
         findsOneWidget);
-    expect(find.text('Rates unavailable'), findsOneWidget);
+    expect(find.text('No ECB rates yet — needs a connection'), findsOneWidget);
     // No conversion rows at all, so none of the former hard-coded values.
     expect(find.byType(ResultRow), findsNothing);
     for (final v in ['0.92', '83.4', '149.2', '1,310', '—']) {

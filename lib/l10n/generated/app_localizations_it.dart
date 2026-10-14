@@ -12,73 +12,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get appTitle => 'CalcMaster';
 
   @override
-  String get appTagline => 'Calcolatrice e convertitore mondiale';
-
-  @override
-  String get tabConvert => 'Converti';
-
-  @override
-  String get tabCalculate => 'Calcola';
-
-  @override
-  String get tabFinance => 'Finanza';
-
-  @override
-  String get tabTools => 'Strumenti';
-
-  @override
-  String get tabNotes => 'Note';
-
-  @override
-  String get pillUnitConversion => 'Conversione unità';
-
-  @override
-  String get pillCalculators => 'Calcolatrici';
-
-  @override
-  String get pillFinanceTools => 'Strumenti finanziari';
-
-  @override
-  String get pillUtilityTools => 'Utilità';
-
-  @override
-  String get pillSavedNotes => 'Note salvate';
-
-  @override
-  String get convertHubHeading => 'Converti';
-
-  @override
-  String get convertHubSubheading =>
-      'Tocca un\'unità per convertire all\'istante';
-
-  @override
-  String get calculateHubHeading => 'Calcola';
-
-  @override
-  String get calculateHubSubheading =>
-      'Standard · Scientifica · Percentuale · Base · Frazione';
-
-  @override
-  String get financeHubHeading => 'Finanza';
-
-  @override
-  String get financeHubSubheading =>
-      'Tasse · Mancia · Sconto · Interesse composto · Prestito · Valuta · Prezzo unitario';
-
-  @override
-  String get toolsHubHeading => 'Strumenti';
-
-  @override
-  String get toolsHubSubheading =>
-      'GPS · Legge di Ohm · IMC · Differenza date · Fusi orari · ADC/DAC · Età · Proporzioni';
-
-  @override
-  String get notesHubHeading => 'Note';
-
-  @override
-  String get notesHubSubheading => 'Salva calcoli, formule e promemoria';
-
-  @override
   String get categoryDistance => 'Distanza';
 
   @override
@@ -121,9 +54,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String labelUnitsAvailable(int count) {
     return '$count unità disponibili';
   }
-
-  @override
-  String get calcStandard => 'Standard';
 
   @override
   String get calcScientific => 'Scientifica';
@@ -189,21 +119,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsTitle => 'Impostazioni';
 
   @override
-  String get settingsSubscription => 'Abbonamento';
-
-  @override
-  String get settingsSubscribePro => 'Abbonati a Pro';
-
-  @override
-  String get settingsCalcMasterPro => 'CalcMaster Pro';
-
-  @override
-  String get settingsRestorePurchases => 'Ripristina acquisti';
-
-  @override
-  String get settingsPreferences => 'Preferenze';
-
-  @override
   String get settingsNotifications => 'Notifiche';
 
   @override
@@ -222,94 +137,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsAbout => 'Informazioni';
 
   @override
-  String get paywallTitle => 'Sblocca CalcMaster Pro';
-
-  @override
-  String get paywallSubtitle =>
-      'Dettaglio anno per anno di prestiti e investimenti, e supporto allo sviluppo indipendente.';
-
-  @override
-  String get paywallBenefitAdFree => 'Esperienza senza pubblicità';
-
-  @override
-  String get paywallBenefitAdvanced =>
-      'Dettaglio annuale di prestiti e investimenti';
-
-  @override
-  String get paywallBenefitRealtime => 'Valute in tempo reale';
-
-  @override
-  String get paywallBenefitSupport => 'Supporto email prioritario';
-
-  @override
-  String get paywallTierMonthly => 'Mensile';
-
-  @override
-  String get paywallTierAnnual => 'Annuale';
-
-  @override
-  String get paywallTierLifetime => 'A vita';
-
-  @override
-  String get paywallBadgeBestValue => 'MIGLIORE OFFERTA';
-
-  @override
-  String get paywallContinue => 'Continua';
-
-  @override
-  String get paywallProcessing => 'Elaborazione…';
-
-  @override
-  String get paywallRestore => 'Ripristina acquisti';
-
-  @override
-  String get paywallTermsFooter =>
-      'Continuando accetti i nostri Termini e la Privacy Policy.';
-
-  @override
-  String get paywallTermsOfUse => 'Termini di utilizzo';
-
-  @override
-  String get paywallSubscriptionsDisabled =>
-      'Gli abbonamenti non sono ancora attivi in questa versione.';
-
-  @override
-  String get paywallCancelAnytime => 'Annulla quando vuoi';
-
-  @override
-  String get paywallLifetimeForever => 'Paga una volta, è tuo per sempre';
-
-  @override
   String get regionPickerTitle => 'Seleziona regione';
-
-  @override
-  String get notesAddNote => 'Aggiungi nota';
-
-  @override
-  String get notesSaveChanges => 'Salva modifiche';
-
-  @override
-  String get notesSearch => 'Cerca note';
-
-  @override
-  String get notesEmpty => 'Nessuna nota. Aggiungi la prima sopra.';
-
-  @override
-  String get notesDeleteHint => 'Suggerimento: tieni premuto per eliminare.';
-
-  @override
-  String get notesNewTitleHint => 'Titolo nuova nota';
-
-  @override
-  String get notesTitleHint => 'Titolo';
-
-  @override
-  String get notesBodyHint => 'Contenuto';
-
-  @override
-  String actionCopy(String value) {
-    return 'Copiato: $value';
-  }
 
   @override
   String get actionUseMyLocation => 'Usa la mia posizione';
@@ -324,48 +152,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get aboutVersion => 'Versione';
 
   @override
-  String get aboutBuild => 'Build';
-
-  @override
-  String get aboutMadeWith => 'Creato con';
-
-  @override
   String get aboutBlurb =>
-      'CalcMaster raccoglie le calcolatrici che le persone usano davvero — conversioni di unità, percentuali, matematica scientifica, tasse e finanza, elettronica e un blocco note — in un\'unica app curata che rispetta la tua privacy e la tua batteria.';
-
-  @override
-  String get aiChatHint => 'Chiedi a CalcMaster AI...';
-
-  @override
-  String get aiChatTitle => 'CalcMaster AI';
-
-  @override
-  String get aiChatEmpty =>
-      'Chiedimi qualsiasi cosa su calcoli, conversioni o finanze.';
-
-  @override
-  String get authTwoFactor => 'Autenticazione a due fattori';
-
-  @override
-  String get authCancel => 'Annulla';
-
-  @override
-  String get authVerify => 'Verifica';
-
-  @override
-  String get authOtpHint => '000000';
+      'CalcMaster fa i conti di tutti i giorni su fogli a righe: aritmetica, percentuali, unità e valute al tasso di riferimento della Banca centrale europea del giorno che indichi. Trenta strumenti aggiungono i risultati al tuo foglio. I fogli restano sul tuo dispositivo; non c’è alcun account.';
 
   @override
   String get privacyAtGlance => 'Privacy in sintesi';
-
-  @override
-  String get deleteNoteTitle => 'Eliminare questa nota?';
-
-  @override
-  String get deleteNoteCancel => 'Annulla';
-
-  @override
-  String get deleteNoteConfirm => 'Elimina';
 
   @override
   String get labelFilingStatus => 'Stato dichiarazione';
@@ -390,4 +181,126 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get labelPctChangeXtoY => '% di variazione da X a Y';
+
+  @override
+  String get toolsTitle => 'Strumenti';
+
+  @override
+  String get toolsSubtitle =>
+      'Ogni risultato può finire sul tuo foglio, tranne il BMI.';
+
+  @override
+  String get toolsGroupMoney => 'Denaro';
+
+  @override
+  String get toolsGroupMeasure => 'Misure';
+
+  @override
+  String get toolsGroupTime => 'Tempo';
+
+  @override
+  String get toolsGroupMaths => 'Matematica';
+
+  @override
+  String get toolsGroupEngineering => 'Ingegneria';
+
+  @override
+  String get toolsGroupBody => 'Corpo';
+
+  @override
+  String get toolSalesTax => 'Imposta sulle vendite / IVA';
+
+  @override
+  String get toolIncomeTax => 'Stima dell’imposta sul reddito';
+
+  @override
+  String get toolCalendar => 'Calendario';
+
+  @override
+  String get settingsHomeCurrency => 'Valuta e regione';
+
+  @override
+  String get settingsHomeCurrencyHint =>
+      'La valuta usata dagli strumenti e le tabelle fiscali che applicano.';
+
+  @override
+  String get settingsAppearance => 'Aspetto';
+
+  @override
+  String get appearanceSystem => 'Sistema';
+
+  @override
+  String get appearanceLedger => 'Registro (chiaro)';
+
+  @override
+  String get appearanceNight => 'Registro notturno';
+
+  @override
+  String get settingsRates => 'Tassi';
+
+  @override
+  String settingsRatesBody(int count) {
+    return 'Tassi di riferimento della Banca centrale europea. Tassi salvati: $count';
+  }
+
+  @override
+  String get settingsClearRateCache => 'Svuota cache';
+
+  @override
+  String get helpHowLinesWork => 'Come funzionano le righe';
+
+  @override
+  String get aboutTagline =>
+      'Conti su fogli a righe, con i tassi BCE del giorno';
+
+  @override
+  String get sheetsTitle => 'Fogli';
+
+  @override
+  String get sheetsSearchHint => 'Cerca titoli e righe';
+
+  @override
+  String get sheetsNew => 'Nuovo';
+
+  @override
+  String get sheetsEmpty =>
+      'Ancora nessun foglio. Iniziane uno: ogni riga si calcola mentre scrivi.';
+
+  @override
+  String get sheetNewSheet => 'Nuovo foglio';
+
+  @override
+  String get sheetShareText => 'Condividi come testo';
+
+  @override
+  String get sheetExportCsv => 'Esporta CSV';
+
+  @override
+  String get sheetCopy => 'Copia negli appunti';
+
+  @override
+  String get sheetReprice => 'Ricalcola';
+
+  @override
+  String sheetRatesAsOf(String date) {
+    return 'Tassi al $date';
+  }
+
+  @override
+  String get sheetTotal => 'Totale';
+
+  @override
+  String get sheetAddToSheet => 'Aggiungi al foglio';
+
+  @override
+  String get sheetRename => 'Rinomina';
+
+  @override
+  String get sheetDuplicate => 'Duplica';
+
+  @override
+  String get sheetDelete => 'Elimina';
+
+  @override
+  String get sheetUndo => 'Annulla';
 }

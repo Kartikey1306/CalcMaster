@@ -45,7 +45,7 @@ class AdService {
     if (kIsWeb || _initialized) return;
     if (_isInTest()) return;
     if (!enabled) {
-      // No real ad units in this build, so no ad can ever be requested: do
+      // No real ad units were compiled in, so no ad can ever be requested: do
       // not show the UMP consent form or start the ads SDK for nothing.
       // `ready` still completes so a banner slot waiting on it settles.
       if (!_ready.isCompleted) _ready.complete();

@@ -1,107 +1,66 @@
 # AGENTS.md — CalcMaster
 
-**What:** Flutter world calculator + converter (10 unit categories, 5 calculators, 8 finance tools, 9 utility tools, notes) — 12 locales, 11 regions, offline-first.
+**What:** a sheet calculator. Each line of a ruled sheet works out as you type —
+arithmetic, `#n`/`prev` references, percentages, unit conversions, and currency
+conversions at the European Central Bank reference rate, optionally for a named
+date ("Rate on the day"). Sheets are saved on the device, searchable, and
+shareable as text or CSV with every rate, its date and its source. Thirty tools
+(tip, tax, loan, units, dates, maths, engineering, BMI) live in a Tools drawer;
+every tool except BMI can add its result to the sheet. 12 locales, 11 regions.
+No account, nothing for sale.
 
 ## Run commands
 ```bash
 FLUTTER=/Users/spatchava/agl/.flutter-sdk/bin/flutter   # pinned SDK
 $FLUTTER pub get
-$FLUTTER run -d chrome            # or an iOS sim / Android emu id
-$FLUTTER analyze                  # lint (info-level lints are pre-existing)
+$FLUTTER analyze
 $FLUTTER test                     # unit + widget tests
+$FLUTTER test --run-skipped --update-goldens --tags design   # review PNGs
 $FLUTTER gen-l10n                 # regenerate lib/l10n/generated from ARB
-dart run tools/gen_icon.dart      # regenerate icon/splash masters
+dart run tools/gen_icon.dart      # regenerate the "=" icon and splash marks
 ```
-Optional dart-defines: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `API_BASE_URL`.
 
 ## Architecture
-Single Flutter client (iOS/Android/Web). Provider (ChangeNotifier) state + go_router nav; pure-Dart calc/convert libs run offline; thin external services (Supabase auth, Frankfurter FX, AdMob/RevenueCat/Firebase all flag-gated).
+Single Flutter client (iOS/Android/Web). Provider (ChangeNotifier) state +
+go_router (one stack, no tab bar). The sheet grammar, export and rate client are
+pure Dart and run offline. The only network call is Frankfurter
+(`api.frankfurter.dev`, keyless ECB rates).
 
 ## File map
 | Path | Responsibility |
 | --- | --- |
-| `lib/main.dart` | Entry: Supabase init, MultiProvider, `MaterialApp.router`, i18n setup |
-| `lib/app_router.dart` | go_router: `/splash` → 5-branch `StatefulShellRoute` (tabs) + modal routes |
-| `lib/theme/tokens.dart` | `AppColors`, `KeyColors`, `CategoryAccent`, `Radii`, `Spacing` — design tokens (near-black canvas + amber accent) |
-| `lib/theme/app_theme.dart` | `buildAppTheme()` ThemeData (dark) |
-| `lib/lib_units.dart` | `Unit`/`Category` models + 10 conversion categories (to/from base fns) |
-| `lib/lib_currency.dart` | `RegionId` enum, 11 `Region`s, `staticRates`, Frankfurter fetcher |
-| `lib/lib_tax.dart` | 2025-26 income-tax brackets per region |
-| `lib/lib_payroll.dart` | Paycheck model: pay frequencies, US state / CA province rates, per-region social contributions, `computePaycheck` |
-| `lib/lib_calc.dart` | Shunting-yard expression parser/evaluator |
-| `lib/lib_format.dart` | Locale-aware number/currency/percent formatting (intl) |
-| `lib/i18n_helpers.dart` | category id → localized label mapping |
-| `lib/l10n/` | `app_*.arb` (12 locales) + `generated/` (gen-l10n output) |
-| `lib/state/region_provider.dart` | Selected region, live FX rates, GPS auto-detect |
-| `lib/state/notes_provider.dart` | `Note` model + CRUD, persisted to SharedPreferences (JSON) |
-| `lib/state/auth_provider.dart` | Supabase auth status, demo mode |
-| `lib/state/ai_chat_provider.dart` | `ChatMessage` list, calls `ApiClient.sendAiMessage` |
-| `lib/monetization/monetization_config.dart` | ⭐ ALL credentials + 5 master feature flags (default off) |
-| `lib/monetization/*_service.dart` | ad / analytics / affiliate / notification / tracking singletons (no-op until flag on) |
-| `lib/monetization/premium_provider.dart` + `premium_gate.dart` | Pro entitlement state + gating |
-| `lib/services/supabase_config.dart` | Supabase URL/anon key (env-overridable) |
-| `lib/screens/` | Feature screens grouped: `calculate/`, `finance/`, `tools/`, `auth/` + top-level |
-| `lib/widgets/` | Reusable UI: `tab_scaffold`, `glass_card`, `hub_tile`, `number_input`, `banner_ad_slot`, etc. |
-| `lib/widgets/calc_key.dart` | `CalcKey` / `CalcKeypad` / `CalcDisplay` — the round-key keypad UI shared by Standard, Scientific and Convert |
-| `lib/widgets/keypad_calc_state.dart` | `KeypadCalcState` — expression state behind every keypad screen (live result, `=` commit, backspace, +/−, %) |
-| `assets/icons/` | 32 line-art SVG category icons |
-| `assets/logo/` | Brand logo master (`calcmaster_icon/logo.svg` + `.png`) |
-| `assets/icon/`, `assets/splash/` | flutter_launcher_icons / native_splash source PNGs |
-| `tools/` | `gen_icon.dart`, `release_all.sh`, marketing capture scripts |
-| `docs/DESIGN.md` | Full architecture/design doc |
+| `lib/main.dart` | Entry: crash reporting, loads the last sheet, `CalcMasterApp` (providers, Ledger / Night ledger themes) |
+| `lib/app_router.dart` | `/` sheet (home) · `/sheets` · `/tools` drawer + `/tools/<tool>` · `/settings` `/help` `/privacy` `/about` |
+| `lib/sheet/sheet_engine.dart` | Pure-Dart line grammar, totals, rate captions (no Flutter import) |
+| `lib/sheet/sheet_model.dart` | `Sheet`, `SheetLine`, `RatePin` (JSON under `sheets_v1`) |
+| `lib/sheet/sheet_store.dart` | SharedPreferences persistence, dated-rate cache (`ecb_rates_v1`), one-time Notes → sheets migration (`notes_migrated_v1`; the old `notes` key is left untouched) |
+| `lib/sheet/sheets_controller.dart` | Editing, autosave (~500 ms + on pause), list ops (search/rename/duplicate/delete+undo), fetching needed rates, Re-price |
+| `lib/sheet/sheet_export.dart` | Share-as-text and CSV (`line,label,input,result,unit_or_currency,ecb_rate,ecb_date`) |
+| `lib/sheet/sheet_share.dart` | share_plus hand-off, export preview, clipboard fallback |
+| `lib/sheet/add_to_sheet.dart` | "Add to sheet" from any tool |
+| `lib/lib_currency.dart` | Regions, the 30 ECB codes, latest table, `RateClient.fetchRateOn` (typed failures, permanent dated cache) |
+| `lib/lib_units.dart` | Units + conversion factors (pure Dart) and the sheet's unit aliases |
+| `lib/lib_calc.dart` | Shunting-yard evaluator used by every line |
+| `lib/lib_tax.dart`, `lib/lib_payroll.dart` | Income-tax and paycheck tables (`taxTableYear` = 2025, shown on screen) |
+| `lib/theme/tokens.dart` | `LedgerColors` (Ledger / Night ledger), `Fonts` (Golos Text UI, Reddit Mono figures), `Radii` (4/8/0), `Spacing` |
+| `lib/screens/sheet/` | Sheet editor (ruled paper, key row, footer total), Sheets list / pane |
+| `lib/screens/tools/tools_drawer.dart` | The grouped Tools drawer |
+| `lib/screens/{finance,calculate,tools}/`, `convert_detail.dart` | The tools themselves |
+| `lib/state/region_provider.dart` | Region, latest ECB table (also the sheet's `LatestRatesSource`) |
+| `lib/state/appearance_provider.dart` | System / Ledger / Night ledger |
+| `lib/monetization/` | AdMob banner (Sheets list and Tools only — never the editor), ATT, UMP consent, analytics/notification seams |
+| `assets/fonts/` | Golos Text and Reddit Mono static instances + OFL licences |
 
-## Flow
-`main()` → `/splash` (2s animated) → `TabScaffold` (bottom nav / desktop rail) with 5 branches: **Convert** (`/convert` → `/convert/:id`) · **Calculate** (`/calculate/{standard,scientific,percentage,base,fraction}`) · **Finance** (`/finance/{tax,paycheck,tip,discount,compound,emi,currency,unit-price}`) · **Tools** (`/tools/{gps,ohm,bmi,date-diff,time-zones,adc-dac,age,aspect-ratio,calendar}`) · **Notes**. Modal routes over the shell: `/settings /paywall /privacy /about /login`.
-
-## State management
-Provider / ChangeNotifier via `MultiProvider` in `main.dart`: `RegionProvider`, `NotesProvider`, `PremiumProvider`, `AuthProvider`. Persistence = SharedPreferences (region, notes) + Supabase (session). No backend DB owned by this repo.
-
-## Where to change X
-| Task | Location |
-| --- | --- |
-| Add a conversion category / unit | `lib/lib_units.dart` (+ SVG in `assets/icons/`, label in `i18n_helpers.dart` + ARB) |
-| Add a calculator/finance/tool screen | add screen in `lib/screens/<group>/`, register `GoRoute` in `app_router.dart`, tile in that group's `*_home.dart` |
-| Add/change a region or currency | `lib/lib_currency.dart` (and `lib/lib_tax.dart` for tax) |
-| Change colors/spacing/typography | `lib/theme/tokens.dart` / `app_theme.dart` |
-| Add/restyle a calculator key | `lib/widgets/calc_key.dart` (visuals) + the screen's keypad rows; key behaviour lives in `lib/widgets/keypad_calc_state.dart` |
-| Add/translate UI strings | `lib/l10n/app_en.arb` (source) + other `app_*.arb`, then `flutter gen-l10n` |
-| Monetization keys / toggle ads-subs-affiliates-analytics-fcm | `lib/monetization/monetization_config.dart` |
-| App icon / splash | edit `assets/logo/*.svg`, re-render, run `dart run tools/gen_icon.dart` then `flutter_launcher_icons`/`native_splash` |
-| Auth backend endpoints | `lib/services/supabase_config.dart` |
+## Rules that matter
+- **Real rates only.** ECB reference rates via Frankfurter; 30 currencies; never estimate a rate, never add a second source. A dated rate shows the ECB date actually used. Undated lines are pinned; re-pricing is an explicit tap.
+- **No account, no paywall.** The Supabase sign-in, demo session and Pro paywall were removed; do not reintroduce them.
+- **5.6:** one build for everyone — no remote switches, reviewer detection, hidden gestures or demo logins.
 
 ## Gotchas
-- **Pinned Flutter SDK** at `/Users/spatchava/agl/.flutter-sdk/bin/flutter` — use it, not a global `flutter`.
-- **`archive` pinned to ^3.6.1** via `dependency_overrides` (image pkg needs it for icon/splash tooling).
-- **CocoaPods forced** (`enable-swift-package-manager: false`) — google_mobile_ads vs SPM collision.
-- **Monetization flags default `false`**; services no-op and defaults are Google TEST ad IDs / dummy keys — safe to ship, replace before production (see README "TEMPORARY VALUES").
-- **RegionId enum values are UPPERCASE** (`US`, `UK`…) and persisted by `.name` in SharedPreferences — do NOT rename (the `constant_identifier_names` lint here is intentional/ignore).
-- **`flutter analyze` reports ~info-level lints** (enum names, curly braces) that are pre-existing and intentional; only the previously-unreferenced `_white` warning was cleaned up.
-- **Bundle/app id** is `com.americangroupllc.calcmaster` (Supabase OAuth redirect scheme depends on it) — leave it.
-- **Web** uses a desktop layout above 840px width (side rail, max content 1120px) in `tab_scaffold.dart`.
+- **Pinned Flutter SDK** at `/Users/spatchava/agl/.flutter-sdk/bin/flutter`.
+- **`archive` pinned to ^3.6.1** via `dependency_overrides` (icon/splash tooling).
+- **CocoaPods forced** (`enable-swift-package-manager: false`) — google_mobile_ads vs SPM.
+- **RegionId enum values are UPPERCASE** and persisted by `.name` — do not rename.
+- **Bundle/app id** is `com.americangroupllc.calcmaster` — leave it.
+- **Wide windows** (≥ 840 dp) show the Sheets list as a left pane beside the sheet.
 - Generated l10n (`lib/l10n/generated/`) is committed but regenerable — edit ARB, not the generated files.
-
-## Authentication (login is OPTIONAL)
-
-CalcMaster does **not** require an account. The app opens directly to the
-calculator home as a **guest** — there is no forced login gate.
-
-- **Startup**: `lib/screens/splash_screen.dart` always routes to `/calculate`
-  after the splash animation. It never sends unauthenticated users to `/login`.
-- **Guest choice is persisted** via `shared_preferences`
-  (`lib/services/auth_service.dart`, key `guest_mode`), so relaunches never
-  re-prompt for sign-in.
-- **Optional sign-in** is reachable only on demand — `Settings → Sign in`
-  (`context.push('/login')`) — and only unlocks optional cloud features.
-- **Login screen** (`lib/screens/auth/login_screen.dart`) offers email/password
-  and Google sign-in, a prominent **"Continue without account"** button, a
-  **"Skip for now"** link, and a **"Use test account"** button
-  (`SupabaseConfig.qaEmail` / `qaPassword`).
-- **Supabase** is initialised in `main()` inside a try/catch with
-  `Supabase.initialize(url: SupabaseConfig.url, anonKey: SupabaseConfig.anonKey)`.
-  Sign-in uses `Supabase.instance.client.auth.signInWithPassword(...)`.
-- **Offline fallback**: if sign-in fails with a network/socket error AND the
-  entered credentials match a `SupabaseConfig` test account (QA/Dev), the app
-  falls back to a persisted local demo session. A real `AuthException` (wrong
-  password, unconfirmed email) never falls back.
-- **Sign-out** (`AuthProvider.logout`) clears both the Supabase session and the
-  offline demo session and returns to the guest home — it never forces `/login`.

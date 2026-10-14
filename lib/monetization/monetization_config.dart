@@ -10,12 +10,9 @@
 //   2. Paste the real value
 //   3. Flip the matching master switch at the top of the class to `true`
 //
-// Defaults are SAFE to ship today: ad unit IDs come from build-time
-// --dart-define (release builds without them request no ads), RevenueCat
-// keys are dummy strings, affiliate tags are dummies.
-// Until the master switches are flipped to `true`, every service in
-// `lib/monetization/` short-circuits cleanly and the app behaves as if
-// monetization were absent.
+// Ad unit IDs come from build-time --dart-define (release builds without
+// them request no ads). CalcMaster sells nothing: there are no in-app
+// purchases, subscriptions or partner links in this app.
 // =====================================================================
 
 import 'dart:io' show Platform;
@@ -30,14 +27,6 @@ class MonetizationConfig {
   /// Show banner / interstitial / native ads in the app.
   /// Requires real AdMob unit IDs (see ADMOB section).
   static const bool adsEnabled = true;
-
-  /// Show paywall + accept real in-app purchases via RevenueCat.
-  /// Requires real RevenueCat key + IAP products in App Store Connect / Play Console.
-  static const bool subscriptionsEnabled = true;
-
-  /// Render affiliate CTA buttons inside detail screens + tag URLs.
-  /// Requires real Amazon Associates (or other) tag.
-  static const bool affiliatesEnabled = false;
 
   /// Forward in-app events to Firebase Analytics.
   /// Until then, every event is logged via debugPrint for inspection.
@@ -93,91 +82,6 @@ class MonetizationConfig {
   static const bool screenshotMode = bool.fromEnvironment('SCREENSHOT');
 
   // ───────────────────────────────────────────────────────────────────
-  //  REVENUECAT · subscriptions
-  // ───────────────────────────────────────────────────────────────────
-  // REPLACE: app.revenuecat.com → Project → Apps → Public API key
-  // Use the platform-specific key — RevenueCat's Flutter SDK requires both.
-  static const String revenueCatIosKey =
-      'appl_DUMMY_REPLACE_BEFORE_LAUNCH'; // REPLACE
-  static const String revenueCatAndroidKey =
-      'goog_DUMMY_REPLACE_BEFORE_LAUNCH'; // REPLACE
-
-  // REPLACE: App Store Connect → My Apps → CalcMaster → In-App Purchases  AND
-  //          Google Play Console → CalcMaster → Monetize → Products → Subscriptions
-  // Both stores must use the SAME identifier strings as below.
-  static const String productMonthly =
-      'calcmaster_pro_monthly'; // REPLACE if different
-  static const String productAnnual =
-      'calcmaster_pro_annual'; // REPLACE if different
-  static const String productLifetime =
-      'calcmaster_pro_lifetime'; // REPLACE if different
-
-  // REPLACE: the HTTPS endpoint of the backend that validates a store receipt
-  // with Apple / Google and answers `{"entitled": true|false}`.
-  // While this is empty, `PremiumProvider` trusts the store callback directly,
-  // which a jailbroken/rooted device can forge. Set it (or pass `--dart-define
-  // RECEIPT_VERIFICATION_URL=...` at build time) before taking real money.
-  static const String receiptVerificationUrl = String.fromEnvironment(
-    'RECEIPT_VERIFICATION_URL',
-    defaultValue: '',
-  );
-
-  /// True when store receipts are checked by a trusted backend before Pro is
-  /// granted. Surfaced in the diagnostics screen / release checks.
-  static bool get receiptVerificationReady =>
-      receiptVerificationUrl.startsWith('https://');
-
-  // Prices are not configured here: the paywall shows the store's localized
-  // price (`PremiumProvider.productFor(tier)?.price`) or "Price unavailable".
-
-  // ───────────────────────────────────────────────────────────────────
-  //  FIREBASE · analytics, crashlytics, FCM (re-engagement)
-  // ───────────────────────────────────────────────────────────────────
-  // REPLACE: console.firebase.google.com → CalcMaster project → Project settings
-  // The real config travels in `ios/Runner/GoogleService-Info.plist` and
-  // `android/app/google-services.json` — these dummies are for sanity-check
-  // logs only.
-  static const String firebaseProjectId = 'calcmaster-DUMMY-12345'; // REPLACE
-  static const String firebaseSenderId = '0123456789'; // REPLACE
-
-  // FCM topics the app subscribes to once the user opts in to notifications.
-  static const List<String> fcmTopics = [
-    'daily_tip',
-    'rate_alerts',
-    'reengagement'
-  ];
-
-  // ───────────────────────────────────────────────────────────────────
-  //  AFFILIATE PARTNERS
-  // ───────────────────────────────────────────────────────────────────
-  // REPLACE: affiliate-program.amazon.com → tag (e.g. "myname-20")
-  // One tag per region; falls back to US tag when a region-specific tag
-  // is empty.
-  static const String amazonAssociatesTagUS = 'calcmaster-20'; // REPLACE
-  static const String amazonAssociatesTagUK = 'calcmaster-21'; // REPLACE
-  static const String amazonAssociatesTagIN = 'calcmaster-21'; // REPLACE
-
-  // Optional: meal-delivery / wellness affiliate URLs. Replace with real
-  // tracking URLs from your partner dashboards.
-  static const String mealKitAffiliateUrl =
-      ''; // REPLACE: set real meal-kit affiliate URL
-  static const String wellnessSubscriptionUrl =
-      ''; // REPLACE: set real wellness affiliate URL
-
-  // Per-slot Amazon search URLs — used by `AffiliateService.urlFor()`.
-  // The `?tag=...` query param is appended automatically based on region.
-  // REPLACE with concrete product detail page URLs to maximise conversion.
-  static const Map<String, String> affiliateSlots = {
-    'volume_buy_measuring_set': 'https://www.amazon.com/s?k=measuring+cup+set',
-    'bmi_smart_scale': 'https://www.amazon.com/s?k=smart+scale',
-    'compound_savings_account':
-        'https://www.amazon.com/s?k=high+yield+savings+book',
-    'tax_book': 'https://www.amazon.com/s?k=tax+guide',
-    'cooking_scale': 'https://www.amazon.com/s?k=kitchen+scale',
-    '_fallback': 'https://www.amazon.com/',
-  };
-
-  // ───────────────────────────────────────────────────────────────────
   //  LEGAL / SUPPORT
   // ───────────────────────────────────────────────────────────────────
   // Served from marketing/site/ by .github/workflows/pages.yml. These MUST be
@@ -202,12 +106,6 @@ class MonetizationConfig {
 
   /// Show an interstitial after every Nth use of any tool/calculator.
   static const int interstitialEveryNUses = 5;
-
-  /// Currency rates auto-refresh interval for free-tier users.
-  static const Duration freeRateRefreshInterval = Duration(hours: 24);
-
-  /// Currency rates auto-refresh interval for Pro subscribers.
-  static const Duration proRateRefreshInterval = Duration(minutes: 15);
 
   /// Maximum notification frequency to avoid annoying users.
   static const int maxPushNotificationsPerDay = 2;
@@ -266,7 +164,8 @@ class MonetizationConfig {
 
   /// True when this build was given a live (non-test) banner unit for at least
   /// one platform. Banner is the only format the app renders (`BannerAdSlot`
-  /// in `tab_scaffold.dart`); interstitial/native have no call sites.
+  /// at the foot of the Sheets list and the Tools drawer — never on the sheet
+  /// editor); interstitial/native have no call sites.
   static bool get adUnitsAreReal => [admobIosBanner, admobAndroidBanner]
       .any((id) => id.isNotEmpty && !id.startsWith(_testAdPublisher));
 
@@ -279,15 +178,4 @@ class MonetizationConfig {
       admobAppIdIos.isNotEmpty &&
       admobAppIdAndroid.isNotEmpty &&
       bannerUnit != null;
-
-  /// True only when subscriptions are enabled AND a real RevenueCat key is in
-  /// place (i.e. the dummy `_DUMMY_` marker has been removed).
-  static bool get subscriptionsReady =>
-      subscriptionsEnabled &&
-      !revenueCatIosKey.contains('DUMMY') &&
-      !revenueCatAndroidKey.contains('DUMMY');
-
-  /// True when at least one affiliate tag has been replaced from the dummy.
-  static bool get affiliatesReady =>
-      affiliatesEnabled && !amazonAssociatesTagUS.contains('DUMMY');
 }

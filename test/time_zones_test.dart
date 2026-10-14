@@ -22,7 +22,7 @@ void main() {
       expect(utcOffsetHours(-5, DstRule.us, u(2026, 11, 1, 6)), -5);
     });
 
-    test('Cupertino switches at 02:00 Pacific', () {
+    test('San Francisco switches at 02:00 Pacific', () {
       expect(utcOffsetHours(-8, DstRule.us, u(2026, 3, 8, 9, 59)), -8);
       expect(utcOffsetHours(-8, DstRule.us, u(2026, 3, 8, 10)), -7);
     });

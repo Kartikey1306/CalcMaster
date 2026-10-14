@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -8,26 +7,29 @@ import '../../lib_finance.dart';
 import '../../lib_format.dart';
 import '../../lib_payroll.dart';
 import '../../lib_tax.dart';
-import '../../monetization/analytics_service.dart';
-import '../../monetization/premium_gate.dart';
 import '../../state/region_provider.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/chip_picker.dart';
 import '../../widgets/inner_scaffold.dart';
 import '../../widgets/number_input.dart';
 import '../../widgets/result_row.dart';
+import '../../sheet/sheet_engine.dart' show dayMonth, dayMonthYear, formatRate, noEcbRateMessage, weekdayDayMonth;
+import '../../sheet/add_to_sheet.dart';
+import '../../sheet/sheets_controller.dart';
 import 'package:agl_i18n/agl_i18n.dart';
 
 // =================== TAX ===================
 
 class TaxCalc extends StatefulWidget {
-  const TaxCalc({super.key});
+  /// `income` (income-tax estimate) or `sales` (sales tax / VAT).
+  final String initialMode;
+  const TaxCalc({super.key, this.initialMode = 'income'});
   @override
   State<TaxCalc> createState() => _TaxCalcState();
 }
 
 class _TaxCalcState extends State<TaxCalc> {
-  String mode = 'income';
+  late String mode = widget.initialMode;
   final income = TextEditingController();
   final stateRate = TextEditingController(text: '0');
   final salePrice = TextEditingController();
@@ -72,6 +74,20 @@ class _TaxCalcState extends State<TaxCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeTax,
       subtitle: '${region.flag} ${region.label} · ${region.currency}',
+      tool: 'tax',
+      sheetLine: () {
+        if (mode == 'income') {
+          final gross = safeNumber(income.text);
+          if (gross <= 0) return null;
+          return 'Income tax ($taxTableYear brackets, ${region.label}, gross '
+              '${plainNumber(gross)}${nonEcbNote(region.currency)}): '
+              '${sheetMoney(result.taxOwed, region.currency)}';
+        }
+        if (p <= 0) return null;
+        return 'Total with ${plainNumber(r * 100)}% tax (price '
+            '${plainNumber(p)}${nonEcbNote(region.currency)}): '
+            '${sheetMoney(salesTotal, region.currency)}';
+      },
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Expanded(
@@ -79,7 +95,7 @@ class _TaxCalcState extends State<TaxCalc> {
                   label: 'Income',
                   active: mode == 'income',
                   onTap: () => setState(() => mode = 'income'))),
-          const SizedBox(width: Spacing.sm),
+          SizedBox(width: Spacing.sm),
           Expanded(
               child: _ModePill(
                   label: 'Sales / VAT',
@@ -89,12 +105,12 @@ class _TaxCalcState extends State<TaxCalc> {
         if (mode == 'income') ...[
           NumberInput(
               label: 'Annual gross (${region.currency})', controller: income),
-          const SizedBox(height: Spacing.md),
+          SizedBox(height: Spacing.md),
           Text(AppLocalizations.of(context)!.labelFilingStatus,
-              style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
-          const SizedBox(height: Spacing.sm),
+              style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
+          SizedBox(height: Spacing.sm),
           ChipPicker<FilingStatus>(
-            options: const [
+            options: [
               (id: FilingStatus.single, label: 'Single'),
               (id: FilingStatus.joint, label: 'Joint'),
               (id: FilingStatus.head, label: 'Head'),
@@ -103,7 +119,7 @@ class _TaxCalcState extends State<TaxCalc> {
             onChange: (v) => setState(() => filing = v),
           ),
           NumberInput(label: 'State / local rate (%)', controller: stateRate),
-          const SizedBox(height: Spacing.lg),
+          SizedBox(height: Spacing.lg),
           ResultRow(label: 'Taxable income', value: cur(result.taxableIncome)),
           ResultRow(
               label: 'Tax owed', value: cur(result.taxOwed), highlight: true),
@@ -119,11 +135,14 @@ class _TaxCalcState extends State<TaxCalc> {
               highlight: true),
           ResultRow(
               label: 'Take-home (month)', value: cur(result.takeHomeMonthly)),
+          const SizedBox(height: Spacing.md),
+          Text(taxYearNote,
+              style: TextStyle(color: context.ledger.inkSoft, fontSize: 12)),
         ] else ...[
           NumberInput(
               label: 'Sale price (${region.currency})', controller: salePrice),
           NumberInput(label: 'Tax rate (%)', controller: salesRate),
-          const SizedBox(height: Spacing.lg),
+          SizedBox(height: Spacing.lg),
           ResultRow(label: 'Tax amount', value: cur(salesTax)),
           ResultRow(
               label: 'Total with tax', value: cur(salesTotal), highlight: true),
@@ -142,21 +161,21 @@ class _ModePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: active ? AppColors.text : AppColors.surface,
+      color: active ? context.ledger.ink : context.ledger.surface,
       borderRadius: BorderRadius.circular(Radii.button),
       child: InkWell(
         borderRadius: BorderRadius.circular(Radii.button),
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: EdgeInsets.symmetric(vertical: 12),
           alignment: Alignment.center,
           decoration: BoxDecoration(
               border:
-                  Border.all(color: active ? AppColors.text : AppColors.border),
+                  Border.all(color: active ? context.ledger.ink : context.ledger.rule),
               borderRadius: BorderRadius.circular(Radii.button)),
           child: Text(label,
               style: TextStyle(
-                  color: active ? AppColors.bg : AppColors.text,
+                  color: active ? context.ledger.paper : context.ledger.ink,
                   fontSize: 14,
                   fontWeight: FontWeight.w600)),
         ),
@@ -257,6 +276,12 @@ class _PaycheckCalcState extends State<PaycheckCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financePaycheck,
       subtitle: '${region.flag} ${region.label} · ${region.currency}',
+      tool: 'paycheck',
+      sheetLine: () => gross <= 0
+          ? null
+          : 'Take-home per paycheck (${frequency.label}, $taxTableYear '
+              'tables${nonEcbNote(region.currency)}): '
+              '${sheetMoney(result.perPeriod(result.netAnnual), region.currency)}',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Expanded(
@@ -264,7 +289,7 @@ class _PaycheckCalcState extends State<PaycheckCalc> {
                   label: 'Salary',
                   active: mode == 'salary',
                   onTap: () => setState(() => mode = 'salary'))),
-          const SizedBox(width: Spacing.sm),
+          SizedBox(width: Spacing.sm),
           Expanded(
               child: _ModePill(
                   label: 'Hourly',
@@ -279,10 +304,10 @@ class _PaycheckCalcState extends State<PaycheckCalc> {
               label: 'Hourly rate (${region.currency})', controller: hourly),
           NumberInput(label: 'Hours per week', controller: hours),
         ],
-        const SizedBox(height: Spacing.md),
-        const Text('Pay frequency',
-            style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
-        const SizedBox(height: Spacing.sm),
+        SizedBox(height: Spacing.md),
+        Text('Pay frequency',
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
+        SizedBox(height: Spacing.sm),
         ChipPicker<PayFrequency>(
           options: [
             for (final f in PayFrequency.values) (id: f, label: f.label)
@@ -290,12 +315,12 @@ class _PaycheckCalcState extends State<PaycheckCalc> {
           value: frequency,
           onChange: (v) => setState(() => frequency = v),
         ),
-        const SizedBox(height: Spacing.md),
+        SizedBox(height: Spacing.md),
         Text(AppLocalizations.of(context)!.labelFilingStatus,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
-        const SizedBox(height: Spacing.sm),
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
+        SizedBox(height: Spacing.sm),
         ChipPicker<FilingStatus>(
-          options: const [
+          options: [
             (id: FilingStatus.single, label: 'Single'),
             (id: FilingStatus.joint, label: 'Joint'),
             (id: FilingStatus.head, label: 'Head'),
@@ -304,10 +329,10 @@ class _PaycheckCalcState extends State<PaycheckCalc> {
           onChange: (v) => setState(() => filing = v),
         ),
         if (subs != null) ...[
-          const SizedBox(height: Spacing.md),
+          SizedBox(height: Spacing.md),
           Text(subLabel,
-              style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
-          const SizedBox(height: Spacing.sm),
+              style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
+          SizedBox(height: Spacing.sm),
           ChipPicker<String?>(
             options: [
               for (final s in subs) (id: s.code, label: s.name),
@@ -323,9 +348,9 @@ class _PaycheckCalcState extends State<PaycheckCalc> {
         NumberInput(label: '$localLabel rate (%)', controller: localRate),
         NumberInput(
             label: 'Pre-tax retirement (% of gross)', controller: preTax),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         Text('Per paycheck · ${frequency.label}',
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
         line('Gross pay', result.grossAnnual),
         if (result.preTaxAnnual > 0)
           line('Pre-tax retirement', result.preTaxAnnual),
@@ -338,11 +363,11 @@ class _PaycheckCalcState extends State<PaycheckCalc> {
         ResultRow(
             label: 'Total deductions',
             value: formatPercent(result.deductionRate)),
-        const SizedBox(height: Spacing.md),
+        SizedBox(height: Spacing.md),
         Text(
-            'Estimates using simplified 2025 rates. $localLabel rates are '
-            'approximate and editable; your payslip may differ.',
-            style: const TextStyle(color: AppColors.textDim, fontSize: 12)),
+            '$taxYearNote. $localLabel rates are approximate and editable; '
+            'your payslip may differ.',
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 12)),
       ]),
     );
   }
@@ -417,16 +442,23 @@ class _TipCalcState extends State<TipCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeTip,
       subtitle: '${region.flag} ${region.currency}',
+      tool: 'tip',
+      sheetLine: () => b <= 0
+          ? null
+          : 'Per person (bill ${plainNumber(b)} + ${plainNumber(t * 100)}% '
+              'tip, $p ${p == 1 ? 'person' : 'people'}'
+              '${nonEcbNote(region.currency)}): '
+              '${sheetMoney(total / p, region.currency)}',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         NumberInput(label: 'Bill (${region.currency})', controller: bill),
         NumberInput(label: 'Tip %', controller: tipPct),
         Text('Customary tip in ${region.label}: ${formatNumber(customary)}%',
-            style: const TextStyle(color: AppColors.textDim, fontSize: 12)),
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 12)),
         NumberInput(
             label: 'People',
             controller: people,
             keyboardType: TextInputType.number),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         ResultRow(label: 'Tip', value: cur(tip)),
         ResultRow(label: (AglL10n.of(context)?.miscTotal ?? 'Total'), value: cur(total), highlight: true),
         ResultRow(label: 'Per person', value: cur(total / p), highlight: true),
@@ -473,11 +505,17 @@ class _DiscountCalcState extends State<DiscountCalc> {
     final fin = o - savings;
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeDiscount,
+      tool: 'discount',
+      sheetLine: () => o <= 0
+          ? null
+          : 'Final price (${plainNumber(o)} less ${plainNumber(p * 100)}%'
+              '${nonEcbNote(region.currency)}): '
+              '${sheetMoney(fin, region.currency)}',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         NumberInput(
             label: 'Original (${region.currency})', controller: original),
         NumberInput(label: 'Discount %', controller: pct),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         ResultRow(label: 'You save', value: cur(savings)),
         ResultRow(label: 'Final price', value: cur(fin), highlight: true),
       ]),
@@ -543,6 +581,13 @@ class _CompoundCalcState extends State<CompoundCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeCompound,
       subtitle: 'Future value of an investment',
+      tool: 'compound',
+      sheetLine: () => (P <= 0 && payment <= 0) || t <= 0
+          ? null
+          : 'Future value (${plainNumber(P)} at ${plainNumber(ratePctValue)}%'
+              '${payment > 0 ? ' + ${plainNumber(payment)}/month' : ''}, '
+              '${plainNumber(t)} y${nonEcbNote(region.currency)}): '
+              '${sheetMoney(future, region.currency)}',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         NumberInput(
             label: 'Principal (${region.currency})', controller: principal),
@@ -551,28 +596,28 @@ class _CompoundCalcState extends State<CompoundCalc> {
         NumberInput(
             label: 'Monthly contribution (optional, ${region.currency})',
             controller: pmt),
-        const SizedBox(height: Spacing.md),
+        SizedBox(height: Spacing.md),
         Text(AppLocalizations.of(context)!.labelCompoundFreq,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
-        const SizedBox(height: Spacing.sm),
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
+        SizedBox(height: Spacing.sm),
         ChipPicker<String>(
           options: [
             (id: '1', label: 'Annually'),
             (id: '4', label: 'Quarterly'),
-            (id: '12', label: (AppLocalizations.of(context)?.paywallTierMonthly ?? 'Monthly')),
+            (id: '12', label: 'Monthly'),
             (id: '365', label: 'Daily')
           ],
           value: freq,
           onChange: (v) => setState(() => freq = v),
         ),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         ResultRow(label: 'Future value', value: cur(future), highlight: true),
         ResultRow(label: 'Total contributed', value: cur(contributed)),
         ResultRow(label: 'Interest earned', value: cur(interest)),
         if (schedule.isNotEmpty)
           YearlyBreakdown(
             currency: region.currency,
-            headers: const ['Year', 'Contributed', 'Interest', 'Balance'],
+            headers: ['Year', 'Contributed', 'Interest', 'Balance'],
             rows: [
               for (final y in schedule)
                 [
@@ -631,19 +676,25 @@ class _EmiCalcState extends State<EmiCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeEMI,
       subtitle: 'Equated monthly installment',
+      tool: 'emi',
+      sheetLine: () => emi <= 0
+          ? null
+          : 'Loan payment (${plainNumber(P)} at ${plainNumber(ratePctValue)}%, '
+              '${plainNumber(termYears)} y${nonEcbNote(region.currency)}): '
+              '${sheetMoney(emi, region.currency)}',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         NumberInput(
             label: 'Loan amount (${region.currency})', controller: principal),
         NumberInput(label: 'Annual rate (%)', controller: ratePct),
         NumberInput(label: 'Term (years)', controller: years),
-        const SizedBox(height: Spacing.lg),
+        SizedBox(height: Spacing.lg),
         ResultRow(label: 'Monthly EMI', value: cur(emi), highlight: true),
         ResultRow(label: 'Total interest', value: cur(totalInterest)),
         ResultRow(label: 'Total payable', value: cur(totalPayable)),
         if (schedule.isNotEmpty)
           YearlyBreakdown(
             currency: region.currency,
-            headers: const ['Year', 'Principal', 'Interest', 'Balance'],
+            headers: ['Year', 'Principal', 'Interest', 'Balance'],
             rows: [
               for (final y in schedule)
                 [
@@ -659,11 +710,10 @@ class _EmiCalcState extends State<EmiCalc> {
   }
 }
 
-// =================== YEAR-BY-YEAR (PRO) ===================
+// =================== YEAR-BY-YEAR ===================
 
-/// Year-by-year table under the EMI and compound-interest results. This is
-/// the "advanced finance insights" CalcMaster Pro sells: Pro users see the
-/// table, everyone else sees what it is and a way to the paywall.
+/// Year-by-year table under the EMI and compound-interest results. Free for
+/// everyone: CalcMaster sells nothing.
 class YearlyBreakdown extends StatelessWidget {
   final String currency;
   final List<String> headers;
@@ -682,30 +732,27 @@ class YearlyBreakdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: Spacing.lg),
-      child: PremiumGate(
-        fallback: const _BreakdownLocked(title: _title),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('$_title ($currency)',
-                style: const TextStyle(
-                    color: AppColors.text,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700)),
-            const SizedBox(height: Spacing.sm),
-            _row(headers, header: true),
-            for (final r in rows) _row(r),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('$_title ($currency)',
+              style: TextStyle(
+                  color: context.ledger.ink,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700)),
+          const SizedBox(height: Spacing.sm),
+          _row(context, headers, header: true),
+          for (final r in rows) _row(context, r),
+        ],
       ),
     );
   }
 
-  Widget _row(List<String> cells, {bool header = false}) {
+  Widget _row(BuildContext context, List<String> cells, {bool header = false}) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 6),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: context.ledger.rule)),
       ),
       child: Row(children: [
         for (var i = 0; i < cells.length; i++)
@@ -717,10 +764,11 @@ class YearlyBreakdown extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: header ? AppColors.textMuted : AppColors.text,
+                fontFamily: Fonts.figures,
+                color: header ? context.ledger.inkSoft : context.ledger.ink,
                 fontSize: header ? 12 : 13,
                 fontWeight: header ? FontWeight.w600 : FontWeight.w400,
-                fontFeatures: const [FontFeature.tabularFigures()],
+                fontFeatures: Fonts.tabular,
               ),
             ),
           ),
@@ -729,57 +777,11 @@ class YearlyBreakdown extends StatelessWidget {
   }
 }
 
-class _BreakdownLocked extends StatelessWidget {
-  final String title;
-  const _BreakdownLocked({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(Spacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border.all(color: AppColors.border),
-        borderRadius: BorderRadius.circular(Radii.card),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(children: [
-            const Icon(Icons.lock_outline, size: 18, color: AppColors.warning),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(title,
-                  style: const TextStyle(
-                      color: AppColors.text,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700)),
-            ),
-          ]),
-          const SizedBox(height: 6),
-          const Text(
-            'See how much you pay or earn in every year, and the balance '
-            'left at the end of each one. Included with CalcMaster Pro.',
-            style: TextStyle(color: AppColors.textMuted, fontSize: 13),
-          ),
-          const SizedBox(height: Spacing.sm),
-          TextButton(
-            onPressed: () {
-              AnalyticsService.instance.logPaywallShown('yearly_breakdown');
-              context.push('/paywall');
-            },
-            child: const Text('See CalcMaster Pro',
-                style: TextStyle(color: AppColors.warning)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 // =================== CURRENCY ===================
 
+/// Converts an amount at the European Central Bank reference rate — today's,
+/// or the rate published for a date the user picks ("Rate on the day"). Only
+/// the ECB's 30 currencies are offered; nothing is estimated.
 class CurrencyCalc extends StatefulWidget {
   const CurrencyCalc({super.key});
   @override
@@ -789,6 +791,14 @@ class CurrencyCalc extends StatefulWidget {
 class _CurrencyCalcState extends State<CurrencyCalc> {
   final amount = TextEditingController(text: '1');
   String? from;
+  String? to;
+
+  /// Null means today's rate (the latest table).
+  DateTime? on;
+  RateTableLookup? _dated;
+  bool _loadingDated = false;
+  RateClient? _ownClient;
+
   @override
   void initState() {
     super.initState();
@@ -801,81 +811,203 @@ class _CurrencyCalcState extends State<CurrencyCalc> {
     super.dispose();
   }
 
+  RateClient get _client {
+    final sheets = Provider.of<SheetsController?>(context, listen: false);
+    return sheets?.rateClient ?? (_ownClient ??= RateClient());
+  }
+
+  Future<void> _loadDated() async {
+    final day = on;
+    final base = from;
+    if (day == null || base == null) return;
+    setState(() => _loadingDated = true);
+    final result = await _client.fetchTableOn(day, base);
+    if (!mounted || on != day || from != base) return;
+    setState(() {
+      _dated = result;
+      _loadingDated = false;
+    });
+  }
+
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: on ?? now,
+      firstDate: DateTime(1999, 1, 4),
+      lastDate: now,
+      helpText: 'ECB rate on',
+    );
+    if (picked == null || !mounted) return;
+    setState(() {
+      on = picked;
+      _dated = null;
+    });
+    _loadDated();
+  }
+
+  String? _reason(RateFailure f, DateTime day) => switch (f) {
+        RateFailure.offline =>
+          'Needs a connection to get the ECB rates for ${dayMonth(day)}',
+        RateFailure.beforeEcb => 'ECB rates start on 4 Jan 1999',
+        RateFailure.future => 'That date is in the future',
+        RateFailure.unsupported => noEcbRateMessage(from ?? ''),
+        RateFailure.http => 'Frankfurter returned no ECB rates for ${dayMonth(day)}',
+      };
+
   @override
   Widget build(BuildContext context) {
     final regionState = context.watch<RegionProvider>();
-    from ??= regionState.region.currency;
-    final rates = regionState.rates;
-    final allCodes = <String>{
-      ...regions.map((r) => r.currency),
-      'USD',
-      'EUR',
-      'GBP',
-      'JPY',
-      'CAD',
-      'AUD',
-      'INR',
-      'CHF',
-      'CNY',
-      'MXN',
-      'BRL',
-      'KRW',
-      'SGD',
-      'HKD',
-      'NZD',
-      'ZAR',
-      'SEK',
-      'NOK',
-      'DKK',
-      ...rates.keys,
-    }.toList();
+    final home = regionState.region.currency;
+    from ??= isEcbCurrency(home) ? home : 'USD';
+    to ??= from == 'USD' ? 'EUR' : 'USD';
     final num = safeNumber(amount.text);
+    final codes = ecbCurrencies;
+
+    // Rates for 1 [from]: the latest table (cross rates) or the dated table.
+    Map<String, double>? table;
+    String? asOf;
+    String? reason;
+    if (on == null) {
+      final latest = regionState.latestTable;
+      if (latest != null) {
+        table = {
+          for (final q in codes)
+            if (crossRateFrom(latest, from!, q) case final r?) q: r.rate,
+        };
+        asOf = latest.date;
+      }
+    } else if (_dated != null) {
+      if (_dated!.ok) {
+        table = {..._dated!.rates!, from!: 1};
+        asOf = _dated!.ecbDate;
+      } else {
+        reason = _reason(_dated!.failure!, on!);
+      }
+    }
+
+    String dateLine() {
+      if (on == null) {
+        if (table == null) {
+          return regionState.ratesLoading
+              ? 'Loading rates…'
+              : 'No ECB rates yet — needs a connection';
+        }
+        return regionState.ratesLive
+            ? 'ECB rates, $asOf'
+            : 'ECB rates, $asOf (offline)';
+      }
+      if (_loadingDated) return 'Getting the ECB rates for ${dayMonth(on!)}…';
+      if (asOf == null) return reason ?? 'ECB rates for ${dayMonth(on!)}';
+      final used = DateTime.parse(asOf);
+      final asked = isoDate(on!);
+      return asOf == asked
+          ? 'ECB rates, ${dayMonthYear(used)}'
+          : 'ECB rates, ${weekdayDayMonth(used)} (no rate on ${weekdayDayMonth(on!)})';
+    }
+
+    final rate = table?[to!];
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeCurrency,
-      subtitle: rates.isEmpty
-          ? (regionState.ratesLoading
-              ? 'Loading rates…'
-              : 'Rates unavailable')
-          : regionState.ratesLive
-              ? 'ECB rates, ${regionState.ratesDate}'
-              : 'ECB rates, ${regionState.ratesDate} (offline)',
+      subtitle: dateLine(),
+      tool: 'currency',
+      sheetLine: () {
+        if (num <= 0) return null;
+        final date = on == null ? '' : ' on ${isoDate(on!)}';
+        return '${plainNumber(num)} ${from!}$date in ${to!}';
+      },
       actions: [
         IconButton(
           tooltip: 'Refresh exchange rates',
-          icon: const Icon(Icons.refresh, color: AppColors.textMuted),
-          onPressed: () => context.read<RegionProvider>().refreshRates(),
+          icon: Icon(Icons.refresh, color: context.ledger.inkSoft),
+          onPressed: () => on == null
+              ? context.read<RegionProvider>().refreshRates()
+              : _loadDated(),
         ),
       ],
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         NumberInput(label: 'Amount', controller: amount),
+        const SizedBox(height: Spacing.sm),
+        Text('Rate on',
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
+        const SizedBox(height: Spacing.xs),
+        Row(children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: _pickDate,
+              icon: const Icon(Icons.event, size: 18),
+              label: Text(on == null ? 'Today' : dayMonthYear(on!)),
+            ),
+          ),
+          if (on != null) ...[
+            const SizedBox(width: Spacing.sm),
+            TextButton(
+              onPressed: () => setState(() {
+                on = null;
+                _dated = null;
+              }),
+              child: const Text('Use today'),
+            ),
+          ],
+        ]),
         const SizedBox(height: Spacing.md),
         Text(AppLocalizations.of(context)!.labelFrom,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
         const SizedBox(height: Spacing.sm),
         ChipPicker<String>(
-          options: [for (final c in allCodes) (id: c, label: c)],
+          options: [for (final c in codes) (id: c, label: c)],
           value: from!,
-          onChange: (v) => setState(() => from = v),
+          onChange: (v) {
+            setState(() {
+              from = v;
+              _dated = null;
+            });
+            _loadDated();
+          },
+        ),
+        const SizedBox(height: Spacing.sm),
+        Text(AppLocalizations.of(context)!.labelTo,
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
+        const SizedBox(height: Spacing.sm),
+        ChipPicker<String>(
+          options: [for (final c in codes) (id: c, label: c)],
+          value: to!,
+          onChange: (v) => setState(() => to = v),
         ),
         const SizedBox(height: Spacing.lg),
-        if (rates.isEmpty)
+        if (table == null)
           Text(
-            regionState.ratesLoading
-                ? 'Loading exchange rates…'
-                : 'Exchange rates unavailable. Connect to the internet and '
-                    'tap refresh.',
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+            reason ??
+                (on != null
+                    ? 'Getting the ECB rates for ${dayMonth(on!)}…'
+                    : regionState.ratesLoading
+                        ? 'Loading exchange rates…'
+                        : "Needs a connection to get today's ECB rates. "
+                            'Tap refresh when you are online.'),
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 14),
           )
-        else
-          for (final code in allCodes.where((c) => c != from).take(18))
+        else ...[
+          if (rate != null)
             ResultRow(
-              label: code,
-              value: () {
-                final v = convertCurrency(num, from!, code, rates);
-                return v.isFinite ? formatNumber(v) : '—';
-              }(),
-              highlight: code == regionState.region.currency,
+              label: '${formatNumber(num)} ${from!} in ${to!}',
+              caption: 'ECB ${formatRate(rate)}',
+              value: '${formatNumber(num * rate, maxDigits: 2)} ${to!}',
+              highlight: true,
             ),
+          for (final code in codes.where((c) => c != from && c != to))
+            if (table[code] case final r?)
+              ResultRow(
+                label: code,
+                value: formatNumber(num * r),
+                highlight: code == home,
+              ),
+          const SizedBox(height: Spacing.md),
+          Text(
+            'European Central Bank reference rates via Frankfurter '
+            '(api.frankfurter.dev). Not the rate your bank or card charged.',
+            style: TextStyle(color: context.ledger.inkSoft, fontSize: 12),
+          ),
+        ],
       ]),
     );
   }
@@ -928,31 +1060,31 @@ class _UnitPriceCalcState extends State<UnitPriceCalc> {
         double up, bool win) {
       return Expanded(
         child: Container(
-          padding: const EdgeInsets.all(Spacing.md),
+          padding: EdgeInsets.all(Spacing.md),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: context.ledger.surface,
             border: Border.all(
                 color: win
-                    ? AppColors.success.withValues(alpha: 0.5)
-                    : AppColors.border),
-            borderRadius: BorderRadius.circular(Radii.card),
+                    ? context.ledger.primary.withValues(alpha: 0.5)
+                    : context.ledger.rule),
+            borderRadius: BorderRadius.circular(Radii.button),
           ),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('Option $name',
-                style: const TextStyle(
-                    color: AppColors.text,
+                style: TextStyle(
+                    color: context.ledger.ink,
                     fontSize: 18,
                     fontWeight: FontWeight.w700)),
             NumberInput(label: 'Price (${region.currency})', controller: p),
             NumberInput(label: 'Quantity', controller: q),
-            const SizedBox(height: Spacing.sm),
+            SizedBox(height: Spacing.sm),
             Text(AppLocalizations.of(context)!.labelPerUnit,
                 style:
-                    const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+                    TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
             Text(up.isFinite ? cur(up) : '—',
                 style: TextStyle(
-                    color: win ? AppColors.success : AppColors.text,
+                    color: win ? context.ledger.primary : context.ledger.ink,
                     fontSize: 22,
                     fontWeight: FontWeight.w700)),
           ]),
@@ -963,19 +1095,32 @@ class _UnitPriceCalcState extends State<UnitPriceCalc> {
     return InnerScaffold(
       title: AppLocalizations.of(context)!.financeUnitPrice,
       subtitle: 'Which pack is cheaper?',
+      tool: 'unit_price',
+      sheetLine: () {
+        if (cheaper != null) {
+          final up = cheaper == 'A' ? upA : upB;
+          return 'Cheaper per unit (option $cheaper'
+              '${nonEcbNote(region.currency)}): ${sheetMoney(up, region.currency)}';
+        }
+        if (upA.isFinite) {
+          return 'Unit price A${nonEcbNote(region.currency)}: '
+              '${sheetMoney(upA, region.currency)}';
+        }
+        return null;
+      },
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           card('A', pa, qa, upA, cheaper == 'A'),
-          const SizedBox(width: Spacing.md),
+          SizedBox(width: Spacing.md),
           card('B', pb, qb, upB, cheaper == 'B'),
         ]),
         if (cheaper != null)
           Padding(
-            padding: const EdgeInsets.only(top: Spacing.lg),
+            padding: EdgeInsets.only(top: Spacing.lg),
             child: Center(
               child: Text('Option $cheaper is cheaper per unit.',
-                  style: const TextStyle(
-                      color: AppColors.success,
+                  style: TextStyle(
+                      color: context.ledger.primary,
                       fontSize: 16,
                       fontWeight: FontWeight.w600)),
             ),

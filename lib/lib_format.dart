@@ -60,3 +60,18 @@ double safeNumber(String input) {
   final cleaned = input.replaceAll(',', '').trim();
   return double.tryParse(cleaned) ?? 0;
 }
+
+/// A number a sheet line can read back: no thousands separators, at most
+/// [maxDigits] decimals, trailing zeros dropped (`1580.17`, `0.5`, `12`).
+String plainNumber(double value, {int maxDigits = 6}) {
+  if (!value.isFinite) return '0';
+  var s = value.toStringAsFixed(maxDigits);
+  if (s.contains('.')) {
+    s = s.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
+  }
+  return s == '-0' ? '0' : s;
+}
+
+/// A money amount for a sheet line: two decimals, no separators (`59.00`).
+String plainMoney(double value) =>
+    value.isFinite ? value.toStringAsFixed(2) : '0.00';

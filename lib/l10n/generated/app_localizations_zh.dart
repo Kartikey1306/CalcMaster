@@ -12,70 +12,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appTitle => 'CalcMaster';
 
   @override
-  String get appTagline => '全球计算器与转换器';
-
-  @override
-  String get tabConvert => '转换';
-
-  @override
-  String get tabCalculate => '计算';
-
-  @override
-  String get tabFinance => '财务';
-
-  @override
-  String get tabTools => '工具';
-
-  @override
-  String get tabNotes => '笔记';
-
-  @override
-  String get pillUnitConversion => '单位转换';
-
-  @override
-  String get pillCalculators => '计算器';
-
-  @override
-  String get pillFinanceTools => '财务工具';
-
-  @override
-  String get pillUtilityTools => '实用工具';
-
-  @override
-  String get pillSavedNotes => '已保存的笔记';
-
-  @override
-  String get convertHubHeading => '转换';
-
-  @override
-  String get convertHubSubheading => '点击任何单位即可立即转换';
-
-  @override
-  String get calculateHubHeading => '计算';
-
-  @override
-  String get calculateHubSubheading => '标准 · 科学 · 百分比 · 进制 · 分数';
-
-  @override
-  String get financeHubHeading => '财务';
-
-  @override
-  String get financeHubSubheading => '税款 · 小费 · 折扣 · 复利 · 贷款 · 货币 · 单价';
-
-  @override
-  String get toolsHubHeading => '工具';
-
-  @override
-  String get toolsHubSubheading =>
-      'GPS · 欧姆定律 · BMI · 日期差 · 时区 · ADC/DAC · 年龄 · 宽高比';
-
-  @override
-  String get notesHubHeading => '笔记';
-
-  @override
-  String get notesHubSubheading => '保存计算、公式和提醒';
-
-  @override
   String get categoryDistance => '距离';
 
   @override
@@ -118,9 +54,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String labelUnitsAvailable(int count) {
     return '$count 个单位可用';
   }
-
-  @override
-  String get calcStandard => '标准';
 
   @override
   String get calcScientific => '科学';
@@ -186,21 +119,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsTitle => '设置';
 
   @override
-  String get settingsSubscription => '订阅';
-
-  @override
-  String get settingsSubscribePro => '订阅 Pro';
-
-  @override
-  String get settingsCalcMasterPro => 'CalcMaster Pro';
-
-  @override
-  String get settingsRestorePurchases => '恢复购买';
-
-  @override
-  String get settingsPreferences => '偏好设置';
-
-  @override
   String get settingsNotifications => '通知';
 
   @override
@@ -219,90 +137,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsAbout => '关于 CalcMaster';
 
   @override
-  String get paywallTitle => '解锁 CalcMaster Pro';
-
-  @override
-  String get paywallSubtitle => '贷款和投资的逐年明细,并支持独立开发。';
-
-  @override
-  String get paywallBenefitAdFree => '无广告体验';
-
-  @override
-  String get paywallBenefitAdvanced => '贷款与投资逐年明细';
-
-  @override
-  String get paywallBenefitRealtime => '实时汇率刷新';
-
-  @override
-  String get paywallBenefitSupport => '优先邮件支持';
-
-  @override
-  String get paywallTierMonthly => '按月';
-
-  @override
-  String get paywallTierAnnual => '按年';
-
-  @override
-  String get paywallTierLifetime => '终身';
-
-  @override
-  String get paywallBadgeBestValue => '最超值';
-
-  @override
-  String get paywallContinue => '继续';
-
-  @override
-  String get paywallProcessing => '处理中…';
-
-  @override
-  String get paywallRestore => '恢复购买';
-
-  @override
-  String get paywallTermsFooter => '继续即表示您同意我们的条款和隐私政策。';
-
-  @override
-  String get paywallTermsOfUse => '使用条款';
-
-  @override
-  String get paywallSubscriptionsDisabled => '此版本尚未启用订阅。';
-
-  @override
-  String get paywallCancelAnytime => '随时取消';
-
-  @override
-  String get paywallLifetimeForever => '一次付费,永久拥有';
-
-  @override
   String get regionPickerTitle => '选择地区';
-
-  @override
-  String get notesAddNote => '添加笔记';
-
-  @override
-  String get notesSaveChanges => '保存修改';
-
-  @override
-  String get notesSearch => '搜索笔记';
-
-  @override
-  String get notesEmpty => '还没有笔记。在上方添加第一条。';
-
-  @override
-  String get notesDeleteHint => '提示:长按笔记可删除。';
-
-  @override
-  String get notesNewTitleHint => '新笔记标题';
-
-  @override
-  String get notesTitleHint => '标题';
-
-  @override
-  String get notesBodyHint => '正文';
-
-  @override
-  String actionCopy(String value) {
-    return '已复制: $value';
-  }
 
   @override
   String get actionUseMyLocation => '使用我的位置';
@@ -317,47 +152,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get aboutVersion => '版本';
 
   @override
-  String get aboutBuild => '构建';
-
-  @override
-  String get aboutMadeWith => '用心打造';
-
-  @override
   String get aboutBlurb =>
-      'CalcMaster 把人们真正常用的计算器集合在一个精致的应用里 — 单位转换、百分比、科学计算、税务与财务、电子工具,以及笔记本。尊重你的隐私与电池。';
-
-  @override
-  String get aiChatHint => '问 CalcMaster AI...';
-
-  @override
-  String get aiChatTitle => 'CalcMaster AI';
-
-  @override
-  String get aiChatEmpty => '问我任何关于计算、换算或财务的问题。';
-
-  @override
-  String get authTwoFactor => '双重身份验证';
-
-  @override
-  String get authCancel => '取消';
-
-  @override
-  String get authVerify => '验证';
-
-  @override
-  String get authOtpHint => '000000';
+      'CalcMaster 在横线表单上完成真实生活中的计算：算术、百分比、单位，以及按你指定日期的欧洲央行参考汇率换算货币。三十个工具可把结果加到你的表单上。表单只保存在你的设备上，无需账户。';
 
   @override
   String get privacyAtGlance => '隐私概览';
-
-  @override
-  String get deleteNoteTitle => '删除此笔记？';
-
-  @override
-  String get deleteNoteCancel => '取消';
-
-  @override
-  String get deleteNoteConfirm => '删除';
 
   @override
   String get labelFilingStatus => '报税状态';
@@ -382,4 +181,122 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get labelPctChangeXtoY => '从 X 到 Y 的百分比变化';
+
+  @override
+  String get toolsTitle => '工具';
+
+  @override
+  String get toolsSubtitle => '除 BMI 外，每个结果都能加到你的表单上。';
+
+  @override
+  String get toolsGroupMoney => '金钱';
+
+  @override
+  String get toolsGroupMeasure => '度量';
+
+  @override
+  String get toolsGroupTime => '时间';
+
+  @override
+  String get toolsGroupMaths => '数学';
+
+  @override
+  String get toolsGroupEngineering => '工程';
+
+  @override
+  String get toolsGroupBody => '身体';
+
+  @override
+  String get toolSalesTax => '销售税 / 增值税';
+
+  @override
+  String get toolIncomeTax => '所得税估算';
+
+  @override
+  String get toolCalendar => '日历';
+
+  @override
+  String get settingsHomeCurrency => '本币与地区';
+
+  @override
+  String get settingsHomeCurrencyHint => '工具使用的货币及其适用的税表。';
+
+  @override
+  String get settingsAppearance => '外观';
+
+  @override
+  String get appearanceSystem => '跟随系统';
+
+  @override
+  String get appearanceLedger => '账本（浅色）';
+
+  @override
+  String get appearanceNight => '夜间账本';
+
+  @override
+  String get settingsRates => '汇率';
+
+  @override
+  String settingsRatesBody(int count) {
+    return '欧洲央行参考汇率。已缓存的汇率：$count';
+  }
+
+  @override
+  String get settingsClearRateCache => '清除缓存';
+
+  @override
+  String get helpHowLinesWork => '行的写法';
+
+  @override
+  String get aboutTagline => '横线表单上的计算，按当日欧洲央行汇率';
+
+  @override
+  String get sheetsTitle => '表单';
+
+  @override
+  String get sheetsSearchHint => '搜索标题和行';
+
+  @override
+  String get sheetsNew => '新建';
+
+  @override
+  String get sheetsEmpty => '还没有表单。新建一个吧——每一行都会边输入边算出结果。';
+
+  @override
+  String get sheetNewSheet => '新建表单';
+
+  @override
+  String get sheetShareText => '以文本分享';
+
+  @override
+  String get sheetExportCsv => '导出 CSV';
+
+  @override
+  String get sheetCopy => '复制到剪贴板';
+
+  @override
+  String get sheetReprice => '重新定价';
+
+  @override
+  String sheetRatesAsOf(String date) {
+    return '汇率截至 $date';
+  }
+
+  @override
+  String get sheetTotal => '合计';
+
+  @override
+  String get sheetAddToSheet => '加到表单';
+
+  @override
+  String get sheetRename => '重命名';
+
+  @override
+  String get sheetDuplicate => '复制';
+
+  @override
+  String get sheetDelete => '删除';
+
+  @override
+  String get sheetUndo => '撤销';
 }

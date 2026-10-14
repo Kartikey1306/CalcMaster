@@ -12,70 +12,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get appTitle => 'CalcMaster';
 
   @override
-  String get appTagline => 'ワールド計算機 & コンバーター';
-
-  @override
-  String get tabConvert => '変換';
-
-  @override
-  String get tabCalculate => '計算';
-
-  @override
-  String get tabFinance => 'ファイナンス';
-
-  @override
-  String get tabTools => 'ツール';
-
-  @override
-  String get tabNotes => 'ノート';
-
-  @override
-  String get pillUnitConversion => '単位変換';
-
-  @override
-  String get pillCalculators => '計算機';
-
-  @override
-  String get pillFinanceTools => 'ファイナンスツール';
-
-  @override
-  String get pillUtilityTools => 'ユーティリティ';
-
-  @override
-  String get pillSavedNotes => '保存したノート';
-
-  @override
-  String get convertHubHeading => '変換';
-
-  @override
-  String get convertHubSubheading => '任意の単位をタップしてすぐ変換';
-
-  @override
-  String get calculateHubHeading => '計算';
-
-  @override
-  String get calculateHubSubheading => '標準 · 関数 · パーセント · 基数 · 分数';
-
-  @override
-  String get financeHubHeading => 'ファイナンス';
-
-  @override
-  String get financeHubSubheading => '税 · チップ · 割引 · 複利 · ローン · 通貨 · 単価';
-
-  @override
-  String get toolsHubHeading => 'ツール';
-
-  @override
-  String get toolsHubSubheading =>
-      'GPS · オームの法則 · BMI · 日付差 · タイムゾーン · ADC/DAC · 年齢 · アスペクト比';
-
-  @override
-  String get notesHubHeading => 'ノート';
-
-  @override
-  String get notesHubSubheading => '計算、数式、リマインダーを保存';
-
-  @override
   String get categoryDistance => '距離';
 
   @override
@@ -118,9 +54,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String labelUnitsAvailable(int count) {
     return '$count 単位利用可能';
   }
-
-  @override
-  String get calcStandard => '標準';
 
   @override
   String get calcScientific => '関数';
@@ -186,21 +119,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsTitle => '設定';
 
   @override
-  String get settingsSubscription => 'サブスクリプション';
-
-  @override
-  String get settingsSubscribePro => 'Pro に登録';
-
-  @override
-  String get settingsCalcMasterPro => 'CalcMaster Pro';
-
-  @override
-  String get settingsRestorePurchases => '購入を復元';
-
-  @override
-  String get settingsPreferences => '環境設定';
-
-  @override
   String get settingsNotifications => '通知';
 
   @override
@@ -219,90 +137,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsAbout => 'CalcMaster について';
 
   @override
-  String get paywallTitle => 'CalcMaster Pro を解放';
-
-  @override
-  String get paywallSubtitle => 'ローンと投資の年ごとの内訳、そして開発支援。';
-
-  @override
-  String get paywallBenefitAdFree => '広告なし体験';
-
-  @override
-  String get paywallBenefitAdvanced => 'ローンと投資の年ごとの内訳';
-
-  @override
-  String get paywallBenefitRealtime => 'リアルタイム為替更新';
-
-  @override
-  String get paywallBenefitSupport => '優先メールサポート';
-
-  @override
-  String get paywallTierMonthly => '月額';
-
-  @override
-  String get paywallTierAnnual => '年額';
-
-  @override
-  String get paywallTierLifetime => '買い切り';
-
-  @override
-  String get paywallBadgeBestValue => '最もお得';
-
-  @override
-  String get paywallContinue => '続ける';
-
-  @override
-  String get paywallProcessing => '処理中…';
-
-  @override
-  String get paywallRestore => '購入を復元';
-
-  @override
-  String get paywallTermsFooter => '続行することで、利用規約とプライバシーポリシーに同意したものとみなされます。';
-
-  @override
-  String get paywallTermsOfUse => '利用規約';
-
-  @override
-  String get paywallSubscriptionsDisabled => 'このビルドではサブスクリプションがまだ有効になっていません。';
-
-  @override
-  String get paywallCancelAnytime => 'いつでも解約可';
-
-  @override
-  String get paywallLifetimeForever => '1度の支払いで永久利用';
-
-  @override
   String get regionPickerTitle => '地域を選択';
-
-  @override
-  String get notesAddNote => 'ノートを追加';
-
-  @override
-  String get notesSaveChanges => '変更を保存';
-
-  @override
-  String get notesSearch => 'ノートを検索';
-
-  @override
-  String get notesEmpty => 'まだノートがありません。上から最初の1件を追加してください。';
-
-  @override
-  String get notesDeleteHint => 'ヒント: ノートを長押しで削除。';
-
-  @override
-  String get notesNewTitleHint => '新規ノートのタイトル';
-
-  @override
-  String get notesTitleHint => 'タイトル';
-
-  @override
-  String get notesBodyHint => '本文';
-
-  @override
-  String actionCopy(String value) {
-    return 'コピーしました: $value';
-  }
 
   @override
   String get actionUseMyLocation => '現在地を使う';
@@ -317,47 +152,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get aboutVersion => 'バージョン';
 
   @override
-  String get aboutBuild => 'ビルド';
-
-  @override
-  String get aboutMadeWith => '制作';
-
-  @override
   String get aboutBlurb =>
-      'CalcMaster は、人々が本当によく使う計算機を1つの洗練されたアプリにまとめました — 単位変換、パーセント、関数計算、税務・ファイナンス、エレクトロニクス、そしてノートパッド。プライバシーとバッテリーを尊重します。';
-
-  @override
-  String get aiChatHint => 'CalcMaster AIに質問...';
-
-  @override
-  String get aiChatTitle => 'CalcMaster AI';
-
-  @override
-  String get aiChatEmpty => '計算・変換・財務について何でも聞いてください。';
-
-  @override
-  String get authTwoFactor => '二段階認証';
-
-  @override
-  String get authCancel => 'キャンセル';
-
-  @override
-  String get authVerify => '確認';
-
-  @override
-  String get authOtpHint => '000000';
+      'CalcMaster は罫線シートで日常の計算をします。四則演算、パーセント、単位、そして指定した日の欧州中央銀行参照レートでの通貨換算。30 のツールが結果をシートに追加します。シートは端末内にだけ保存され、アカウントはありません。';
 
   @override
   String get privacyAtGlance => 'プライバシーの概要';
-
-  @override
-  String get deleteNoteTitle => 'このメモを削除しますか？';
-
-  @override
-  String get deleteNoteCancel => 'キャンセル';
-
-  @override
-  String get deleteNoteConfirm => '削除';
 
   @override
   String get labelFilingStatus => '申告状況';
@@ -382,4 +181,122 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get labelPctChangeXtoY => 'XからYへの%変化';
+
+  @override
+  String get toolsTitle => 'ツール';
+
+  @override
+  String get toolsSubtitle => 'BMI 以外の結果はすべてシートに追加できます。';
+
+  @override
+  String get toolsGroupMoney => 'お金';
+
+  @override
+  String get toolsGroupMeasure => '単位';
+
+  @override
+  String get toolsGroupTime => '時間';
+
+  @override
+  String get toolsGroupMaths => '数学';
+
+  @override
+  String get toolsGroupEngineering => 'エンジニアリング';
+
+  @override
+  String get toolsGroupBody => 'からだ';
+
+  @override
+  String get toolSalesTax => '消費税 / VAT';
+
+  @override
+  String get toolIncomeTax => '所得税の概算';
+
+  @override
+  String get toolCalendar => 'カレンダー';
+
+  @override
+  String get settingsHomeCurrency => '基準通貨と地域';
+
+  @override
+  String get settingsHomeCurrencyHint => 'ツールが使う通貨と、適用する税表です。';
+
+  @override
+  String get settingsAppearance => '外観';
+
+  @override
+  String get appearanceSystem => 'システム';
+
+  @override
+  String get appearanceLedger => '台帳（ライト）';
+
+  @override
+  String get appearanceNight => '夜の台帳';
+
+  @override
+  String get settingsRates => '為替レート';
+
+  @override
+  String settingsRatesBody(int count) {
+    return '欧州中央銀行の参照レート。保存済みレート：$count';
+  }
+
+  @override
+  String get settingsClearRateCache => 'キャッシュを消去';
+
+  @override
+  String get helpHowLinesWork => '行の書き方';
+
+  @override
+  String get aboutTagline => '罫線シートで計算、その日の ECB レートで';
+
+  @override
+  String get sheetsTitle => 'シート';
+
+  @override
+  String get sheetsSearchHint => 'タイトルと行を検索';
+
+  @override
+  String get sheetsNew => '新規';
+
+  @override
+  String get sheetsEmpty => 'シートはまだありません。始めましょう——各行は入力するそばから計算されます。';
+
+  @override
+  String get sheetNewSheet => '新しいシート';
+
+  @override
+  String get sheetShareText => 'テキストで共有';
+
+  @override
+  String get sheetExportCsv => 'CSV を書き出す';
+
+  @override
+  String get sheetCopy => 'クリップボードにコピー';
+
+  @override
+  String get sheetReprice => '再計算';
+
+  @override
+  String sheetRatesAsOf(String date) {
+    return '$date 時点のレート';
+  }
+
+  @override
+  String get sheetTotal => '合計';
+
+  @override
+  String get sheetAddToSheet => 'シートに追加';
+
+  @override
+  String get sheetRename => '名前を変更';
+
+  @override
+  String get sheetDuplicate => '複製';
+
+  @override
+  String get sheetDelete => '削除';
+
+  @override
+  String get sheetUndo => '元に戻す';
 }

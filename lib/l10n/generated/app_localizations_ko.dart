@@ -12,70 +12,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appTitle => 'CalcMaster';
 
   @override
-  String get appTagline => '월드 계산기 & 변환기';
-
-  @override
-  String get tabConvert => '변환';
-
-  @override
-  String get tabCalculate => '계산';
-
-  @override
-  String get tabFinance => '금융';
-
-  @override
-  String get tabTools => '도구';
-
-  @override
-  String get tabNotes => '메모';
-
-  @override
-  String get pillUnitConversion => '단위 변환';
-
-  @override
-  String get pillCalculators => '계산기';
-
-  @override
-  String get pillFinanceTools => '금융 도구';
-
-  @override
-  String get pillUtilityTools => '유틸리티 도구';
-
-  @override
-  String get pillSavedNotes => '저장된 메모';
-
-  @override
-  String get convertHubHeading => '변환';
-
-  @override
-  String get convertHubSubheading => '단위를 탭하여 즉시 변환';
-
-  @override
-  String get calculateHubHeading => '계산';
-
-  @override
-  String get calculateHubSubheading => '표준 · 공학 · 백분율 · 진수 · 분수';
-
-  @override
-  String get financeHubHeading => '금융';
-
-  @override
-  String get financeHubSubheading => '세금 · 팁 · 할인 · 복리 · 대출 · 환율 · 단위가격';
-
-  @override
-  String get toolsHubHeading => '도구';
-
-  @override
-  String get toolsHubSubheading =>
-      'GPS · 옴의 법칙 · BMI · 날짜 차이 · 시간대 · ADC/DAC · 나이 · 화면 비율';
-
-  @override
-  String get notesHubHeading => '메모';
-
-  @override
-  String get notesHubSubheading => '계산, 공식, 알림 저장';
-
-  @override
   String get categoryDistance => '거리';
 
   @override
@@ -118,9 +54,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String labelUnitsAvailable(int count) {
     return '$count개 단위 사용 가능';
   }
-
-  @override
-  String get calcStandard => '표준';
 
   @override
   String get calcScientific => '공학';
@@ -186,21 +119,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsTitle => '설정';
 
   @override
-  String get settingsSubscription => '구독';
-
-  @override
-  String get settingsSubscribePro => 'Pro 구독';
-
-  @override
-  String get settingsCalcMasterPro => 'CalcMaster Pro';
-
-  @override
-  String get settingsRestorePurchases => '구매 복원';
-
-  @override
-  String get settingsPreferences => '환경설정';
-
-  @override
   String get settingsNotifications => '알림';
 
   @override
@@ -219,90 +137,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsAbout => 'CalcMaster 정보';
 
   @override
-  String get paywallTitle => 'CalcMaster Pro 잠금 해제';
-
-  @override
-  String get paywallSubtitle => '대출과 투자의 연도별 내역, 그리고 인디 개발 지원.';
-
-  @override
-  String get paywallBenefitAdFree => '광고 없는 경험';
-
-  @override
-  String get paywallBenefitAdvanced => '대출·투자 연도별 내역';
-
-  @override
-  String get paywallBenefitRealtime => '실시간 환율 새로고침';
-
-  @override
-  String get paywallBenefitSupport => '우선 이메일 지원';
-
-  @override
-  String get paywallTierMonthly => '월간';
-
-  @override
-  String get paywallTierAnnual => '연간';
-
-  @override
-  String get paywallTierLifetime => '평생';
-
-  @override
-  String get paywallBadgeBestValue => '최고의 가치';
-
-  @override
-  String get paywallContinue => '계속';
-
-  @override
-  String get paywallProcessing => '처리 중…';
-
-  @override
-  String get paywallRestore => '구매 복원';
-
-  @override
-  String get paywallTermsFooter => '계속하면 약관 및 개인정보 처리방침에 동의하는 것입니다.';
-
-  @override
-  String get paywallTermsOfUse => '이용약관';
-
-  @override
-  String get paywallSubscriptionsDisabled => '이 빌드에서는 구독이 아직 활성화되지 않았습니다.';
-
-  @override
-  String get paywallCancelAnytime => '언제든 취소';
-
-  @override
-  String get paywallLifetimeForever => '한 번 결제, 평생 소유';
-
-  @override
   String get regionPickerTitle => '지역 선택';
-
-  @override
-  String get notesAddNote => '메모 추가';
-
-  @override
-  String get notesSaveChanges => '변경 사항 저장';
-
-  @override
-  String get notesSearch => '메모 검색';
-
-  @override
-  String get notesEmpty => '아직 메모가 없습니다. 위에서 첫 메모를 추가하세요.';
-
-  @override
-  String get notesDeleteHint => '팁: 메모를 길게 눌러 삭제.';
-
-  @override
-  String get notesNewTitleHint => '새 메모 제목';
-
-  @override
-  String get notesTitleHint => '제목';
-
-  @override
-  String get notesBodyHint => '내용';
-
-  @override
-  String actionCopy(String value) {
-    return '복사됨: $value';
-  }
 
   @override
   String get actionUseMyLocation => '내 위치 사용';
@@ -317,47 +152,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get aboutVersion => '버전';
 
   @override
-  String get aboutBuild => '빌드';
-
-  @override
-  String get aboutMadeWith => '제작';
-
-  @override
   String get aboutBlurb =>
-      'CalcMaster는 사람들이 실제로 사용하는 계산기들을 한 앱에 모았습니다 — 단위 변환, 백분율, 공학 계산, 세금 + 금융, 전자공학, 메모장. 개인정보와 배터리를 존중합니다.';
-
-  @override
-  String get aiChatHint => 'CalcMaster AI에게 질문...';
-
-  @override
-  String get aiChatTitle => 'CalcMaster AI';
-
-  @override
-  String get aiChatEmpty => '계산, 변환 또는 재무에 대해 무엇이든 물어보세요.';
-
-  @override
-  String get authTwoFactor => '이중 인증';
-
-  @override
-  String get authCancel => '취소';
-
-  @override
-  String get authVerify => '확인';
-
-  @override
-  String get authOtpHint => '000000';
+      'CalcMaster는 줄 쳐진 시트에서 실생활 계산을 합니다. 사칙연산, 퍼센트, 단위, 그리고 지정한 날짜의 유럽중앙은행 기준 환율로 통화를 환산합니다. 서른 개의 도구가 결과를 시트에 추가합니다. 시트는 기기에만 저장되며 계정은 없습니다.';
 
   @override
   String get privacyAtGlance => '개인정보 보호 요약';
-
-  @override
-  String get deleteNoteTitle => '이 메모를 삭제하시겠습니까?';
-
-  @override
-  String get deleteNoteCancel => '취소';
-
-  @override
-  String get deleteNoteConfirm => '삭제';
 
   @override
   String get labelFilingStatus => '신고 상태';
@@ -382,4 +181,122 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get labelPctChangeXtoY => 'X에서 Y로의 % 변화';
+
+  @override
+  String get toolsTitle => '도구';
+
+  @override
+  String get toolsSubtitle => 'BMI를 제외한 모든 결과를 시트에 추가할 수 있습니다.';
+
+  @override
+  String get toolsGroupMoney => '돈';
+
+  @override
+  String get toolsGroupMeasure => '측정';
+
+  @override
+  String get toolsGroupTime => '시간';
+
+  @override
+  String get toolsGroupMaths => '수학';
+
+  @override
+  String get toolsGroupEngineering => '공학';
+
+  @override
+  String get toolsGroupBody => '신체';
+
+  @override
+  String get toolSalesTax => '판매세 / 부가세';
+
+  @override
+  String get toolIncomeTax => '소득세 추정';
+
+  @override
+  String get toolCalendar => '달력';
+
+  @override
+  String get settingsHomeCurrency => '기본 통화 및 지역';
+
+  @override
+  String get settingsHomeCurrencyHint => '도구가 사용하는 통화와 적용하는 세율표입니다.';
+
+  @override
+  String get settingsAppearance => '화면 모드';
+
+  @override
+  String get appearanceSystem => '시스템';
+
+  @override
+  String get appearanceLedger => '장부 (라이트)';
+
+  @override
+  String get appearanceNight => '야간 장부';
+
+  @override
+  String get settingsRates => '환율';
+
+  @override
+  String settingsRatesBody(int count) {
+    return '유럽중앙은행 기준 환율. 저장된 환율: $count';
+  }
+
+  @override
+  String get settingsClearRateCache => '캐시 지우기';
+
+  @override
+  String get helpHowLinesWork => '줄 작성법';
+
+  @override
+  String get aboutTagline => '줄 쳐진 시트 위의 계산, 그날의 ECB 환율로';
+
+  @override
+  String get sheetsTitle => '시트';
+
+  @override
+  String get sheetsSearchHint => '제목과 줄 검색';
+
+  @override
+  String get sheetsNew => '새로 만들기';
+
+  @override
+  String get sheetsEmpty => '아직 시트가 없습니다. 하나 시작해 보세요 — 줄마다 입력하는 즉시 계산됩니다.';
+
+  @override
+  String get sheetNewSheet => '새 시트';
+
+  @override
+  String get sheetShareText => '텍스트로 공유';
+
+  @override
+  String get sheetExportCsv => 'CSV 내보내기';
+
+  @override
+  String get sheetCopy => '클립보드에 복사';
+
+  @override
+  String get sheetReprice => '재계산';
+
+  @override
+  String sheetRatesAsOf(String date) {
+    return '$date 기준 환율';
+  }
+
+  @override
+  String get sheetTotal => '합계';
+
+  @override
+  String get sheetAddToSheet => '시트에 추가';
+
+  @override
+  String get sheetRename => '이름 바꾸기';
+
+  @override
+  String get sheetDuplicate => '복제';
+
+  @override
+  String get sheetDelete => '삭제';
+
+  @override
+  String get sheetUndo => '실행 취소';
 }

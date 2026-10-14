@@ -30,17 +30,17 @@ class NumberInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: Spacing.sm),
+      padding: EdgeInsets.symmetric(vertical: Spacing.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (label != null) ...[
             Padding(
-              padding: const EdgeInsets.only(left: 2, bottom: 6),
+              padding: EdgeInsets.only(left: 2, bottom: 6),
               child: Text(
                 label!,
-                style: const TextStyle(
-                  color: AppColors.textMuted,
+                style: TextStyle(
+                  color: context.ledger.inkSoft,
                   fontSize: 13,
                 ),
               ),
@@ -48,11 +48,11 @@ class NumberInput extends StatelessWidget {
           ],
           Container(
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: context.ledger.surface,
               borderRadius: BorderRadius.circular(Radii.input),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: context.ledger.rule),
             ),
-            padding: const EdgeInsets.symmetric(
+            padding: EdgeInsets.symmetric(
               horizontal: Spacing.lg,
               vertical: Spacing.md,
             ),
@@ -78,18 +78,18 @@ class NumberInput extends StatelessWidget {
                       readOnly: readOnly,
                       onTap: onTap,
 
-                      style: const TextStyle(
-                        color: AppColors.text,
+                      style: TextStyle(
+                        color: context.ledger.ink,
                         fontSize: 22,
                         fontWeight: FontWeight.w600,
                       ),
-                      cursorColor: AppColors.accentPrimary,
-                      decoration: const InputDecoration(
+                      cursorColor: context.ledger.primary,
+                      decoration: InputDecoration(
                         isCollapsed: true,
                         border: InputBorder.none,
                         hintText: '0',
                         hintStyle: TextStyle(
-                          color: AppColors.textDim,
+                          color: context.ledger.inkSoft,
                         ),
                       ),
                       inputFormatters: [
@@ -99,11 +99,11 @@ class NumberInput extends StatelessWidget {
                   ),
                 ),
                 if (unitSymbol != null) ...[
-                  const SizedBox(width: Spacing.sm),
+                  SizedBox(width: Spacing.sm),
                   Text(
                     unitSymbol!,
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
+                    style: TextStyle(
+                      color: context.ledger.inkSoft,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),

@@ -124,132 +124,6 @@ abstract class AppLocalizations {
   /// **'CalcMaster'**
   String get appTitle;
 
-  /// Tagline shown under the app title in the Convert hero.
-  ///
-  /// In en, this message translates to:
-  /// **'World calculator & converter'**
-  String get appTagline;
-
-  /// No description provided for @tabConvert.
-  ///
-  /// In en, this message translates to:
-  /// **'Convert'**
-  String get tabConvert;
-
-  /// No description provided for @tabCalculate.
-  ///
-  /// In en, this message translates to:
-  /// **'Calculate'**
-  String get tabCalculate;
-
-  /// No description provided for @tabFinance.
-  ///
-  /// In en, this message translates to:
-  /// **'Finance'**
-  String get tabFinance;
-
-  /// No description provided for @tabTools.
-  ///
-  /// In en, this message translates to:
-  /// **'Tools'**
-  String get tabTools;
-
-  /// No description provided for @tabNotes.
-  ///
-  /// In en, this message translates to:
-  /// **'Notes'**
-  String get tabNotes;
-
-  /// No description provided for @pillUnitConversion.
-  ///
-  /// In en, this message translates to:
-  /// **'Unit Conversion'**
-  String get pillUnitConversion;
-
-  /// No description provided for @pillCalculators.
-  ///
-  /// In en, this message translates to:
-  /// **'Calculators'**
-  String get pillCalculators;
-
-  /// No description provided for @pillFinanceTools.
-  ///
-  /// In en, this message translates to:
-  /// **'Finance Tools'**
-  String get pillFinanceTools;
-
-  /// No description provided for @pillUtilityTools.
-  ///
-  /// In en, this message translates to:
-  /// **'Utility Tools'**
-  String get pillUtilityTools;
-
-  /// No description provided for @pillSavedNotes.
-  ///
-  /// In en, this message translates to:
-  /// **'Saved Notes'**
-  String get pillSavedNotes;
-
-  /// No description provided for @convertHubHeading.
-  ///
-  /// In en, this message translates to:
-  /// **'Convert'**
-  String get convertHubHeading;
-
-  /// No description provided for @convertHubSubheading.
-  ///
-  /// In en, this message translates to:
-  /// **'Tap any unit to convert instantly'**
-  String get convertHubSubheading;
-
-  /// No description provided for @calculateHubHeading.
-  ///
-  /// In en, this message translates to:
-  /// **'Calculate'**
-  String get calculateHubHeading;
-
-  /// No description provided for @calculateHubSubheading.
-  ///
-  /// In en, this message translates to:
-  /// **'Standard · Scientific · Percentage · Base · Fraction'**
-  String get calculateHubSubheading;
-
-  /// No description provided for @financeHubHeading.
-  ///
-  /// In en, this message translates to:
-  /// **'Finance'**
-  String get financeHubHeading;
-
-  /// No description provided for @financeHubSubheading.
-  ///
-  /// In en, this message translates to:
-  /// **'Tax · Tip & Split · Discount · Compound Interest · EMI · Currency · Unit Price'**
-  String get financeHubSubheading;
-
-  /// No description provided for @toolsHubHeading.
-  ///
-  /// In en, this message translates to:
-  /// **'Tools'**
-  String get toolsHubHeading;
-
-  /// No description provided for @toolsHubSubheading.
-  ///
-  /// In en, this message translates to:
-  /// **'GPS · Ohm\'s Law · BMI · Date Diff · Time Zones · ADC/DAC · Age · Aspect Ratio'**
-  String get toolsHubSubheading;
-
-  /// No description provided for @notesHubHeading.
-  ///
-  /// In en, this message translates to:
-  /// **'Notes'**
-  String get notesHubHeading;
-
-  /// No description provided for @notesHubSubheading.
-  ///
-  /// In en, this message translates to:
-  /// **'Save calculations, formulas, and reminders'**
-  String get notesHubSubheading;
-
   /// No description provided for @categoryDistance.
   ///
   /// In en, this message translates to:
@@ -333,12 +207,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} units available'**
   String labelUnitsAvailable(int count);
-
-  /// No description provided for @calcStandard.
-  ///
-  /// In en, this message translates to:
-  /// **'Standard'**
-  String get calcStandard;
 
   /// No description provided for @calcScientific.
   ///
@@ -466,36 +334,6 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settingsTitle;
 
-  /// No description provided for @settingsSubscription.
-  ///
-  /// In en, this message translates to:
-  /// **'Subscription'**
-  String get settingsSubscription;
-
-  /// No description provided for @settingsSubscribePro.
-  ///
-  /// In en, this message translates to:
-  /// **'Subscribe to Pro'**
-  String get settingsSubscribePro;
-
-  /// No description provided for @settingsCalcMasterPro.
-  ///
-  /// In en, this message translates to:
-  /// **'CalcMaster Pro'**
-  String get settingsCalcMasterPro;
-
-  /// No description provided for @settingsRestorePurchases.
-  ///
-  /// In en, this message translates to:
-  /// **'Restore purchases'**
-  String get settingsRestorePurchases;
-
-  /// No description provided for @settingsPreferences.
-  ///
-  /// In en, this message translates to:
-  /// **'Preferences'**
-  String get settingsPreferences;
-
   /// No description provided for @settingsNotifications.
   ///
   /// In en, this message translates to:
@@ -532,173 +370,11 @@ abstract class AppLocalizations {
   /// **'About CalcMaster'**
   String get settingsAbout;
 
-  /// No description provided for @paywallTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlock CalcMaster Pro'**
-  String get paywallTitle;
-
-  /// No description provided for @paywallSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Year-by-year breakdowns for loans and investments, and support for independent development.'**
-  String get paywallSubtitle;
-
-  /// No description provided for @paywallBenefitAdFree.
-  ///
-  /// In en, this message translates to:
-  /// **'Ad-free experience'**
-  String get paywallBenefitAdFree;
-
-  /// No description provided for @paywallBenefitAdvanced.
-  ///
-  /// In en, this message translates to:
-  /// **'Year-by-year loan and investment breakdowns'**
-  String get paywallBenefitAdvanced;
-
-  /// No description provided for @paywallBenefitRealtime.
-  ///
-  /// In en, this message translates to:
-  /// **'Real-time currency refresh'**
-  String get paywallBenefitRealtime;
-
-  /// No description provided for @paywallBenefitSupport.
-  ///
-  /// In en, this message translates to:
-  /// **'Priority email support'**
-  String get paywallBenefitSupport;
-
-  /// No description provided for @paywallTierMonthly.
-  ///
-  /// In en, this message translates to:
-  /// **'Monthly'**
-  String get paywallTierMonthly;
-
-  /// No description provided for @paywallTierAnnual.
-  ///
-  /// In en, this message translates to:
-  /// **'Annual'**
-  String get paywallTierAnnual;
-
-  /// No description provided for @paywallTierLifetime.
-  ///
-  /// In en, this message translates to:
-  /// **'Lifetime'**
-  String get paywallTierLifetime;
-
-  /// No description provided for @paywallBadgeBestValue.
-  ///
-  /// In en, this message translates to:
-  /// **'BEST VALUE'**
-  String get paywallBadgeBestValue;
-
-  /// No description provided for @paywallContinue.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue'**
-  String get paywallContinue;
-
-  /// No description provided for @paywallProcessing.
-  ///
-  /// In en, this message translates to:
-  /// **'Processing…'**
-  String get paywallProcessing;
-
-  /// No description provided for @paywallRestore.
-  ///
-  /// In en, this message translates to:
-  /// **'Restore purchases'**
-  String get paywallRestore;
-
-  /// No description provided for @paywallTermsFooter.
-  ///
-  /// In en, this message translates to:
-  /// **'By continuing you agree to our Terms and Privacy Policy.'**
-  String get paywallTermsFooter;
-
-  /// No description provided for @paywallTermsOfUse.
-  ///
-  /// In en, this message translates to:
-  /// **'Terms of Use'**
-  String get paywallTermsOfUse;
-
-  /// No description provided for @paywallSubscriptionsDisabled.
-  ///
-  /// In en, this message translates to:
-  /// **'Subscriptions are not yet enabled in this build.'**
-  String get paywallSubscriptionsDisabled;
-
-  /// No description provided for @paywallCancelAnytime.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel anytime'**
-  String get paywallCancelAnytime;
-
-  /// No description provided for @paywallLifetimeForever.
-  ///
-  /// In en, this message translates to:
-  /// **'Pay once, own it forever'**
-  String get paywallLifetimeForever;
-
   /// No description provided for @regionPickerTitle.
   ///
   /// In en, this message translates to:
   /// **'Select region'**
   String get regionPickerTitle;
-
-  /// No description provided for @notesAddNote.
-  ///
-  /// In en, this message translates to:
-  /// **'Add note'**
-  String get notesAddNote;
-
-  /// No description provided for @notesSaveChanges.
-  ///
-  /// In en, this message translates to:
-  /// **'Save changes'**
-  String get notesSaveChanges;
-
-  /// No description provided for @notesSearch.
-  ///
-  /// In en, this message translates to:
-  /// **'Search notes'**
-  String get notesSearch;
-
-  /// No description provided for @notesEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'No notes yet. Add your first one above.'**
-  String get notesEmpty;
-
-  /// No description provided for @notesDeleteHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Tip: long-press a note to delete.'**
-  String get notesDeleteHint;
-
-  /// No description provided for @notesNewTitleHint.
-  ///
-  /// In en, this message translates to:
-  /// **'New note title'**
-  String get notesNewTitleHint;
-
-  /// No description provided for @notesTitleHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Title'**
-  String get notesTitleHint;
-
-  /// No description provided for @notesBodyHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Body'**
-  String get notesBodyHint;
-
-  /// No description provided for @actionCopy.
-  ///
-  /// In en, this message translates to:
-  /// **'Copied: {value}'**
-  String actionCopy(String value);
 
   /// No description provided for @actionUseMyLocation.
   ///
@@ -724,89 +400,17 @@ abstract class AppLocalizations {
   /// **'Version'**
   String get aboutVersion;
 
-  /// No description provided for @aboutBuild.
-  ///
-  /// In en, this message translates to:
-  /// **'Build'**
-  String get aboutBuild;
-
-  /// No description provided for @aboutMadeWith.
-  ///
-  /// In en, this message translates to:
-  /// **'Made with'**
-  String get aboutMadeWith;
-
   /// No description provided for @aboutBlurb.
   ///
   /// In en, this message translates to:
-  /// **'CalcMaster bundles the calculators most people actually use — unit conversions, percentages, scientific math, tax + finance, electronics, and a notes pad — in one polished app that respects your privacy and your battery.'**
+  /// **'CalcMaster works out real-life sums on ruled sheets: arithmetic, percentages, units, and currencies at the European Central Bank reference rate for the day you name. Thirty tools add their results to your sheet. Sheets stay on your device; there is no account.'**
   String get aboutBlurb;
-
-  /// No description provided for @aiChatHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Ask CalcMaster AI...'**
-  String get aiChatHint;
-
-  /// No description provided for @aiChatTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'CalcMaster AI'**
-  String get aiChatTitle;
-
-  /// No description provided for @aiChatEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'Ask me anything about calculations, conversions, or finance.'**
-  String get aiChatEmpty;
-
-  /// No description provided for @authTwoFactor.
-  ///
-  /// In en, this message translates to:
-  /// **'Two-Factor Authentication'**
-  String get authTwoFactor;
-
-  /// No description provided for @authCancel.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get authCancel;
-
-  /// No description provided for @authVerify.
-  ///
-  /// In en, this message translates to:
-  /// **'Verify'**
-  String get authVerify;
-
-  /// No description provided for @authOtpHint.
-  ///
-  /// In en, this message translates to:
-  /// **'000000'**
-  String get authOtpHint;
 
   /// No description provided for @privacyAtGlance.
   ///
   /// In en, this message translates to:
   /// **'Privacy at a glance'**
   String get privacyAtGlance;
-
-  /// No description provided for @deleteNoteTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete this note?'**
-  String get deleteNoteTitle;
-
-  /// No description provided for @deleteNoteCancel.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get deleteNoteCancel;
-
-  /// No description provided for @deleteNoteConfirm.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete'**
-  String get deleteNoteConfirm;
 
   /// No description provided for @labelFilingStatus.
   ///
@@ -855,6 +459,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'% change from X to Y'**
   String get labelPctChangeXtoY;
+
+  /// No description provided for @toolsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools'**
+  String get toolsTitle;
+
+  /// No description provided for @toolsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every result can go onto your sheet — except BMI.'**
+  String get toolsSubtitle;
+
+  /// No description provided for @toolsGroupMoney.
+  ///
+  /// In en, this message translates to:
+  /// **'Money'**
+  String get toolsGroupMoney;
+
+  /// No description provided for @toolsGroupMeasure.
+  ///
+  /// In en, this message translates to:
+  /// **'Measure'**
+  String get toolsGroupMeasure;
+
+  /// No description provided for @toolsGroupTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get toolsGroupTime;
+
+  /// No description provided for @toolsGroupMaths.
+  ///
+  /// In en, this message translates to:
+  /// **'Maths'**
+  String get toolsGroupMaths;
+
+  /// No description provided for @toolsGroupEngineering.
+  ///
+  /// In en, this message translates to:
+  /// **'Engineering'**
+  String get toolsGroupEngineering;
+
+  /// No description provided for @toolsGroupBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Body'**
+  String get toolsGroupBody;
+
+  /// No description provided for @toolSalesTax.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales tax / VAT'**
+  String get toolSalesTax;
+
+  /// No description provided for @toolIncomeTax.
+  ///
+  /// In en, this message translates to:
+  /// **'Income tax estimate'**
+  String get toolIncomeTax;
+
+  /// No description provided for @toolCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get toolCalendar;
+
+  /// No description provided for @settingsHomeCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Home currency & region'**
+  String get settingsHomeCurrency;
+
+  /// No description provided for @settingsHomeCurrencyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The currency the tools use, and the tax tables they apply.'**
+  String get settingsHomeCurrencyHint;
+
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearance;
+
+  /// No description provided for @appearanceSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get appearanceSystem;
+
+  /// No description provided for @appearanceLedger.
+  ///
+  /// In en, this message translates to:
+  /// **'Ledger'**
+  String get appearanceLedger;
+
+  /// No description provided for @appearanceNight.
+  ///
+  /// In en, this message translates to:
+  /// **'Night ledger'**
+  String get appearanceNight;
+
+  /// No description provided for @settingsRates.
+  ///
+  /// In en, this message translates to:
+  /// **'Rates'**
+  String get settingsRates;
+
+  /// No description provided for @settingsRatesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference rates from the European Central Bank. Cached rates: {count}'**
+  String settingsRatesBody(int count);
+
+  /// No description provided for @settingsClearRateCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear cache'**
+  String get settingsClearRateCache;
+
+  /// No description provided for @helpHowLinesWork.
+  ///
+  /// In en, this message translates to:
+  /// **'How lines work'**
+  String get helpHowLinesWork;
+
+  /// No description provided for @aboutTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Sums on ruled sheets, with ECB rates on the day'**
+  String get aboutTagline;
+
+  /// No description provided for @sheetsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sheets'**
+  String get sheetsTitle;
+
+  /// No description provided for @sheetsSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search titles and lines'**
+  String get sheetsSearchHint;
+
+  /// No description provided for @sheetsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get sheetsNew;
+
+  /// No description provided for @sheetsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No sheets yet. Start one — every line works out as you type.'**
+  String get sheetsEmpty;
+
+  /// No description provided for @sheetNewSheet.
+  ///
+  /// In en, this message translates to:
+  /// **'New sheet'**
+  String get sheetNewSheet;
+
+  /// No description provided for @sheetShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'Share as text'**
+  String get sheetShareText;
+
+  /// No description provided for @sheetExportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get sheetExportCsv;
+
+  /// No description provided for @sheetCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy to clipboard'**
+  String get sheetCopy;
+
+  /// No description provided for @sheetReprice.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-price'**
+  String get sheetReprice;
+
+  /// No description provided for @sheetRatesAsOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Rates as of {date}'**
+  String sheetRatesAsOf(String date);
+
+  /// No description provided for @sheetTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get sheetTotal;
+
+  /// No description provided for @sheetAddToSheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to sheet'**
+  String get sheetAddToSheet;
+
+  /// No description provided for @sheetRename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get sheetRename;
+
+  /// No description provided for @sheetDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get sheetDuplicate;
+
+  /// No description provided for @sheetDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get sheetDelete;
+
+  /// No description provided for @sheetUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get sheetUndo;
 }
 
 class _AppLocalizationsDelegate

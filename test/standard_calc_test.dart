@@ -5,10 +5,11 @@ import 'package:calcmaster/l10n/generated/app_localizations.dart';
 import 'package:calcmaster/screens/calculate/calculate_screens.dart';
 import 'package:calcmaster/widgets/calc_key.dart';
 
-/// The keypad is a full-height phone layout, so pump it in a phone-sized
-/// window rather than the 800×600 test default.
+/// The keypad is a full-height phone layout, so pump it in a phone-shaped
+/// window rather than the 800×600 test default — a tall one, because the
+/// Scientific tool has five rows of function keys above the main keypad.
 Future<void> _pumpCalc(WidgetTester tester, Widget child) async {
-  tester.view.physicalSize = const Size(390, 844);
+  tester.view.physicalSize = const Size(390, 1100);
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
@@ -31,9 +32,14 @@ Future<void> _tapKey(WidgetTester tester, String label) async {
 }
 
 void main() {
-  group('StandardCalc · display + keypad', () {
+  // The standalone Standard calculator (an iOS Calculator look-alike) was
+// removed: the sheet replaces it. Its keypad behaviour lives on in
+// KeypadCalcState, which the Scientific tool and the unit converters use, so
+// these cases now drive the Scientific tool's main keypad — same keys, same
+// assertions.
+  group('Scientific · display + keypad', () {
     testWidgets('idle state shows 0 and an AC key', (tester) async {
-      await _pumpCalc(tester, const StandardCalc());
+      await _pumpCalc(tester, const ScientificCalc());
 
       expect(find.text('0'), findsWidgets); // readout + the 0 key
       expect(find.text('AC'), findsOneWidget);
@@ -42,7 +48,7 @@ void main() {
 
     testWidgets('typing shows the expression above the live result',
         (tester) async {
-      await _pumpCalc(tester, const StandardCalc());
+      await _pumpCalc(tester, const ScientificCalc());
 
       await _tapKey(tester, '5');
       await _tapKey(tester, '×');
@@ -58,7 +64,7 @@ void main() {
 
     testWidgets('equals commits the expression with a trailing =',
         (tester) async {
-      await _pumpCalc(tester, const StandardCalc());
+      await _pumpCalc(tester, const ScientificCalc());
 
       await _tapKey(tester, '8');
       await _tapKey(tester, '+');
@@ -71,7 +77,7 @@ void main() {
     });
 
     testWidgets('percent divides the trailing number by 100', (tester) async {
-      await _pumpCalc(tester, const StandardCalc());
+      await _pumpCalc(tester, const ScientificCalc());
 
       await _tapKey(tester, '5');
       await _tapKey(tester, '0');
@@ -82,7 +88,7 @@ void main() {
     });
 
     testWidgets('backspace deletes the last character', (tester) async {
-      await _pumpCalc(tester, const StandardCalc());
+      await _pumpCalc(tester, const ScientificCalc());
 
       await _tapKey(tester, '1');
       await _tapKey(tester, '2');

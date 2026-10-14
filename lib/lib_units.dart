@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
-import 'theme/tokens.dart';
+/// Units and conversion factors for the ten measure categories.
+///
+/// Pure Dart (no Flutter import) so the sheet engine can use it.
+library;
 
 class Unit {
   final String id;
@@ -39,8 +41,6 @@ class Category {
   final String label;
   final String subtitle;
   final ThumbHint hint;
-  final Color accent;
-  final IconData icon;
   final String svg;
   final List<Unit> units;
 
@@ -49,8 +49,6 @@ class Category {
     required this.label,
     required this.subtitle,
     required this.hint,
-    required this.accent,
-    required this.icon,
     required this.svg,
     required this.units,
   });
@@ -77,8 +75,6 @@ final List<Category> categories = [
     label: 'Distance',
     subtitle: 'km · mi · ft · m · in',
     hint: const ThumbHint('mi', 'ft'),
-    accent: CategoryAccent.distance,
-    icon: Icons.straighten,
     svg: 'assets/icons/distance.svg',
     units: [
       _linear('mm', 'Millimeter', 'mm', 0.001),
@@ -97,8 +93,6 @@ final List<Category> categories = [
     label: 'Volume',
     subtitle: 'mL · L · gal · fl oz',
     hint: const ThumbHint('mL', 'gal', 'cup'),
-    accent: CategoryAccent.volume,
-    icon: Icons.science_outlined,
     svg: 'assets/icons/volume.svg',
     units: [
       _linear('ml', 'Milliliter', 'mL', 0.001),
@@ -118,8 +112,6 @@ final List<Category> categories = [
     label: 'Weight',
     subtitle: 'kg · lb · g · oz · st',
     hint: const ThumbHint('lb', 'oz'),
-    accent: CategoryAccent.weight,
-    icon: Icons.fitness_center_outlined,
     svg: 'assets/icons/weight.svg',
     units: [
       _linear('mg', 'Milligram', 'mg', 0.000001),
@@ -136,8 +128,6 @@ final List<Category> categories = [
     label: 'Temperature',
     subtitle: '°F · °C · K',
     hint: const ThumbHint('°F', '°C', 'K'),
-    accent: CategoryAccent.temperature,
-    icon: Icons.thermostat_outlined,
     svg: 'assets/icons/temperature.svg',
     units: [
       Unit(
@@ -175,8 +165,6 @@ final List<Category> categories = [
     label: 'Speed',
     subtitle: 'mph · km/h · m/s · kn',
     hint: const ThumbHint('mph', 'km/h'),
-    accent: CategoryAccent.speed,
-    icon: Icons.speed_outlined,
     svg: 'assets/icons/speed.svg',
     units: [
       _linear('mps', 'Meters / second', 'm/s', 1),
@@ -191,8 +179,6 @@ final List<Category> categories = [
     label: 'Area',
     subtitle: 'm² · ft² · acres · km²',
     hint: const ThumbHint('m²', 'ac'),
-    accent: CategoryAccent.area,
-    icon: Icons.crop_square_outlined,
     svg: 'assets/icons/area.svg',
     units: [
       _linear('mm2', 'Square millimeter', 'mm²', 0.000001),
@@ -212,8 +198,6 @@ final List<Category> categories = [
     label: 'Data Size',
     subtitle: 'B · KB · MB · GB · TB',
     hint: const ThumbHint('B', 'MB', 'KB'),
-    accent: CategoryAccent.dataSize,
-    icon: Icons.storage_outlined,
     svg: 'assets/icons/data_size.svg',
     units: [
       _linear('b', 'Byte', 'B', 1),
@@ -234,8 +218,6 @@ final List<Category> categories = [
     label: 'Fuel Economy',
     subtitle: 'MPG · L/100km · km/L',
     hint: const ThumbHint('MPG', 'L/100km'),
-    accent: CategoryAccent.fuelEconomy,
-    icon: Icons.local_gas_station_outlined,
     svg: 'assets/icons/fuel_economy.svg',
     units: [
       Unit(
@@ -273,8 +255,6 @@ final List<Category> categories = [
     label: 'Pressure',
     subtitle: 'psi · bar · kPa · atm',
     hint: const ThumbHint('psi', 'bar'),
-    accent: CategoryAccent.pressure,
-    icon: Icons.compress_outlined,
     svg: 'assets/icons/pressure.svg',
     units: [
       _linear('pa', 'Pascal', 'Pa', 1),
@@ -291,8 +271,6 @@ final List<Category> categories = [
     label: 'Energy',
     subtitle: 'J · kWh · cal · BTU',
     hint: const ThumbHint('J', 'kWh'),
-    accent: CategoryAccent.energy,
-    icon: Icons.bolt_outlined,
     svg: 'assets/icons/energy.svg',
     units: [
       _linear('j', 'Joule', 'J', 1),
@@ -312,4 +290,98 @@ Category? categoryById(String id) {
     if (c.id == id) return c;
   }
   return null;
+}
+
+// ---------------------------------------------------------------------------
+// Sheet aliases
+// ---------------------------------------------------------------------------
+
+/// A unit together with the category it converts within.
+class UnitRef {
+  final Category category;
+  final Unit unit;
+  const UnitRef(this.category, this.unit);
+}
+
+/// Spelled-out names and common shorthands a sheet line may use, mapped to a
+/// unit id. Every unit's own id and symbol are accepted as well.
+const Map<String, String> _extraAliases = {
+  // distance
+  'metre': 'm', 'metres': 'm', 'meter': 'm', 'meters': 'm',
+  'millimetre': 'mm', 'millimetres': 'mm', 'millimeter': 'mm',
+  'millimeters': 'mm',
+  'centimetre': 'cm', 'centimetres': 'cm', 'centimeter': 'cm',
+  'centimeters': 'cm',
+  'kilometre': 'km', 'kilometres': 'km', 'kilometer': 'km',
+  'kilometers': 'km',
+  'foot': 'ft', 'feet': 'ft', "'": 'ft', '′': 'ft',
+  'inch': 'in', 'inches': 'in', '"': 'in', '″': 'in',
+  'yard': 'yd', 'yards': 'yd',
+  'mile': 'mi', 'miles': 'mi',
+  // volume
+  'litre': 'l', 'litres': 'l', 'liter': 'l', 'liters': 'l',
+  'millilitre': 'ml', 'millilitres': 'ml', 'milliliter': 'ml',
+  'milliliters': 'ml',
+  'gallon': 'gal', 'gallons': 'gal', 'cups': 'cup',
+  'pint': 'pt', 'pints': 'pt', 'quart': 'qt', 'quarts': 'qt',
+  // weight
+  'gram': 'g', 'grams': 'g', 'kilo': 'kg', 'kilos': 'kg',
+  'kilogram': 'kg', 'kilograms': 'kg', 'lbs': 'lb', 'pounds': 'lb',
+  'ounce': 'oz', 'ounces': 'oz', 'tonne': 't', 'tonnes': 't',
+  'stone': 'st',
+  // temperature
+  'c': 'c', '°c': 'c', 'celsius': 'c', 'f': 'f', '°f': 'f',
+  'fahrenheit': 'f', 'kelvin': 'k',
+  // speed
+  'kph': 'kmh', 'km/h': 'kmh', 'm/s': 'mps', 'knots': 'kn',
+  // area
+  'm2': 'm2', 'sqm': 'm2', 'ft2': 'ft2', 'sqft': 'ft2', 'acre': 'ac',
+  'acres': 'ac', 'hectare': 'ha', 'hectares': 'ha',
+  // fuel economy
+  'mpg': 'mpgus', 'l/100km': 'l100km', 'km/l': 'kmpl',
+  // energy
+  'joule': 'j', 'joules': 'j', 'calorie': 'cal', 'calories': 'cal',
+};
+
+Map<String, UnitRef>? _aliasIndex;
+
+Map<String, UnitRef> _buildAliasIndex() {
+  final byId = <String, UnitRef>{};
+  final index = <String, UnitRef>{};
+  for (final cat in categories) {
+    for (final u in cat.units) {
+      final ref = UnitRef(cat, u);
+      byId.putIfAbsent(u.id.toLowerCase(), () => ref);
+    }
+  }
+  index.addAll(byId);
+  for (final cat in categories) {
+    for (final u in cat.units) {
+      final sym = u.symbol.toLowerCase().replaceAll(' ', '');
+      index.putIfAbsent(sym, () => UnitRef(cat, u));
+    }
+  }
+  _extraAliases.forEach((alias, id) {
+    final ref = byId[id];
+    if (ref != null) index[alias] = ref;
+  });
+  return index;
+}
+
+/// The unit a sheet token names (`ft`, `feet`, `'`, `°C`, `km/h`…), or null.
+UnitRef? unitForToken(String token) {
+  final index = _aliasIndex ??= _buildAliasIndex();
+  return index[token.toLowerCase()];
+}
+
+/// A token for [unit] that [unitForToken] reads back as the same unit:
+/// its symbol when that is unambiguous, otherwise its id.
+String unitToken(Unit unit) {
+  final sym = unit.symbol.replaceAll(' ', '');
+  final readable = RegExp(r'''^([A-Za-z°][A-Za-z°/0-9²³]*|'|"|′|″)$''');
+  final back = unitForToken(sym);
+  if (readable.hasMatch(sym) && back != null && back.unit.id == unit.id) {
+    return sym;
+  }
+  return unit.id;
 }

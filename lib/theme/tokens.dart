@@ -1,64 +1,148 @@
 import 'package:flutter/material.dart';
 
-class AppColors {
-  // Near-black canvas in the spirit of the iOS Calculator / dark instrument
-  // apps: the UI is carried by the amber accent and the key contrast, not by
-  // a colored background.
-  static const bg = Color(0xFF000000);
-  static const surface = Color(0xFF141416);
-  static const surfaceAlt = Color(0xFF1C1C1E);
-  static const surfaceElevated = Color(0xFF2C2C2E);
-  static const text = Color(0xFFFFFFFF);
-  static const textMuted = Color(0x9EFFFFFF); // 62%
-  // 50%, not 42%: at 42% this composites to a 4.11 contrast ratio on the
-  // black background, under the 4.5 WCAG AA minimum for the 11px labels
-  // in the tab bar. 50% measures 5.3 on black and 5.3 on `surface`.
-  static const textDim = Color(0x80FFFFFF); // 50%
-  static const border = Color(0x14FFFFFF); // 8%
-  static const borderStrong = Color(0x24FFFFFF); // 14%
-  static const accentPrimary = Color(0xFFFF9F0A); // amber — operators & CTAs
-  static const accentSoft = Color(0x1FFF9F0A); // 12% amber wash
-  static const danger = Color(0xFFFF5C7A);
-  static const success = Color(0xFF5CE0A8);
-  static const warning = Color(0xFFFFC85C);
+/// The "Ledger" palette: a ruled sheet of paper, bottle-green ink for
+/// actions, copper for worked-out figures. "Night ledger" is the same sheet
+/// after dark.
+///
+/// Every text pair here is at least 4.5:1 (WCAG AA); `test/identity_test.dart`
+/// measures them. The hexes are this app's own — none of them appears in any
+/// other app of the portfolio.
+@immutable
+class LedgerColors extends ThemeExtension<LedgerColors> {
+  /// Scaffold / the sheet itself.
+  final Color paper;
+
+  /// Raised surfaces: inputs, the footer, bottom sheets.
+  final Color surface;
+
+  /// The 1 px rule under every sheet line, and every divider.
+  final Color rule;
+
+  /// Body text.
+  final Color ink;
+
+  /// Secondary text: captions, gutter numbers, hints.
+  final Color inkSoft;
+
+  /// Actions, the margin rule, the "=" mark.
+  final Color primary;
+
+  /// Text and icons on [primary].
+  final Color onPrimary;
+
+  /// Worked-out figures: line results and the total.
+  final Color result;
+
+  /// Error lines and destructive actions.
+  final Color error;
+
+  const LedgerColors({
+    required this.paper,
+    required this.surface,
+    required this.rule,
+    required this.ink,
+    required this.inkSoft,
+    required this.primary,
+    required this.onPrimary,
+    required this.result,
+    required this.error,
+  });
+
+  /// Light, the default.
+  static const ledger = LedgerColors(
+    paper: Color(0xFFF4F0E6),
+    surface: Color(0xFFF4F0E6),
+    rule: Color(0xFFD9D2C1),
+    ink: Color(0xFF22201C),
+    inkSoft: Color(0xFF6B6457),
+    primary: Color(0xFF2C5E4F),
+    onPrimary: Color(0xFFFFFFFF),
+    result: Color(0xFF9A4A14),
+    error: Color(0xFFA8322A),
+  );
+
+  /// Dark.
+  static const night = LedgerColors(
+    paper: Color(0xFF161A17),
+    surface: Color(0xFF1F2420),
+    rule: Color(0xFF353C36),
+    ink: Color(0xFFEAE5D7),
+    inkSoft: Color(0xFFB3AC9C),
+    primary: Color(0xFF7FB89F),
+    onPrimary: Color(0xFF161A17),
+    result: Color(0xFFE2A273),
+    error: Color(0xFFEE8F84),
+  );
+
+  static LedgerColors of(BuildContext context) =>
+      Theme.of(context).extension<LedgerColors>() ?? ledger;
+
+  @override
+  LedgerColors copyWith({
+    Color? paper,
+    Color? surface,
+    Color? rule,
+    Color? ink,
+    Color? inkSoft,
+    Color? primary,
+    Color? onPrimary,
+    Color? result,
+    Color? error,
+  }) =>
+      LedgerColors(
+        paper: paper ?? this.paper,
+        surface: surface ?? this.surface,
+        rule: rule ?? this.rule,
+        ink: ink ?? this.ink,
+        inkSoft: inkSoft ?? this.inkSoft,
+        primary: primary ?? this.primary,
+        onPrimary: onPrimary ?? this.onPrimary,
+        result: result ?? this.result,
+        error: error ?? this.error,
+      );
+
+  @override
+  LedgerColors lerp(ThemeExtension<LedgerColors>? other, double t) {
+    if (other is! LedgerColors) return this;
+    return LedgerColors(
+      paper: Color.lerp(paper, other.paper, t)!,
+      surface: Color.lerp(surface, other.surface, t)!,
+      rule: Color.lerp(rule, other.rule, t)!,
+      ink: Color.lerp(ink, other.ink, t)!,
+      inkSoft: Color.lerp(inkSoft, other.inkSoft, t)!,
+      primary: Color.lerp(primary, other.primary, t)!,
+      onPrimary: Color.lerp(onPrimary, other.onPrimary, t)!,
+      result: Color.lerp(result, other.result, t)!,
+      error: Color.lerp(error, other.error, t)!,
+    );
+  }
 }
 
-/// Calculator keypad palette (iOS Calculator layout: gray functions, darker
-/// digits, amber operators that invert while held/active).
-class KeyColors {
-  static const function = Color(0xFF3A3A3C); // AC, +/−, %, SWAP
-  static const functionText = Color(0xFFFFFFFF);
-  static const digit = Color(0xFF2C2C2E); // numbers & decimal
-  static const digitText = Color(0xFFFFFFFF);
-  static const secondary = Color(0xFF232325); // scientific function keys
-  static const operator = AppColors.accentPrimary; // ÷ × − + =
-  static const operatorText = Color(0xFFFFFFFF);
-  static const operatorActive = Color(0xFFFFFFFF); // pressed/latched operator
+extension LedgerContext on BuildContext {
+  /// The current Ledger / Night ledger colours.
+  LedgerColors get ledger => LedgerColors.of(this);
 }
 
-/// Per-category tints. Kept inside one warm amber family so the app reads as
-/// a single monochrome system (as in the reference design) while each
-/// category still has its own shade.
-class CategoryAccent {
-  static const distance = Color(0xFFFFB13C); // amber
-  static const volume = Color(0xFFFFC85C); // honey
-  static const weight = Color(0xFFE0A44A); // bronze
-  static const temperature = Color(0xFFFF8A4C); // ember
-  static const speed = Color(0xFFFFD166); // sun
-  static const area = Color(0xFFD9B168); // sand
-  static const dataSize = Color(0xFFF2B33D); // marigold
-  static const fuelEconomy = Color(0xFFFF9F0A); // signal orange
-  static const pressure = Color(0xFFE8A15C); // clay
-  static const energy = Color(0xFFFFD86B); // gold
+/// Font families bundled under `assets/fonts/`.
+class Fonts {
+  /// Interface text.
+  static const ui = 'GolosText';
+
+  /// Every figure: line input, results, gutter numbers, the total, keys.
+  static const figures = 'RedditMono';
+
+  /// Tabular figures so columns of numbers line up.
+  static const tabular = [FontFeature.tabularFigures()];
 }
 
+/// Shape language: square sheet rows, barely rounded buttons and chips, and
+/// bottom sheets whose top corners are the only soft edge.
 class Radii {
-  static const card = 20.0;
-  static const cardThumb = 18.0;
-  static const pill = 999.0;
-  static const button = 14.0;
-  static const input = 16.0;
-  static const sheet = 24.0;
+  static const button = 4.0;
+  static const chip = 4.0;
+  static const input = 4.0;
+  static const sheetTop = 8.0;
+  static const row = 0.0;
 }
 
 class Spacing {

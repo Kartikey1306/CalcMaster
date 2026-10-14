@@ -1,18 +1,11 @@
-import 'dart:io';
-
-import 'package:agl_i18n/agl_i18n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:calcmaster/app_router.dart';
-import 'package:calcmaster/l10n/generated/app_localizations.dart';
-import 'package:calcmaster/monetization/premium_provider.dart';
-import 'package:calcmaster/state/auth_provider.dart';
-import 'package:calcmaster/state/notes_provider.dart';
-import 'package:calcmaster/state/region_provider.dart';
-import 'package:calcmaster/theme/app_theme.dart';
+import 'package:calcmaster/screens/sheet/sheet_screen.dart';
+import 'package:calcmaster/screens/sheet/sheets_list_screen.dart';
+
+import 'support/app_harness.dart';
 
 /// Foldable / dual-screen survival.
 ///
@@ -27,15 +20,9 @@ import 'package:calcmaster/theme/app_theme.dart';
 /// produce no RenderFlex overflow and no layout exception (both surface
 /// through `tester.takeException()` in debug).
 ///
-/// Blocks real sockets: `RegionProvider` refreshes FX rates on construction and
-/// that live request would outlive the test body. `fetchLatestRates()` already
-/// falls back to the bundled static rates, so refusing to connect exercises the
-/// offline path rather than papering over anything.
-class _OfflineHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) =>
-      throw const SocketException('network disabled in tests');
-}
+/// Sockets are blocked (see `support/app_harness.dart`): `RegionProvider`
+/// refreshes ECB rates on construction, and refusing to connect exercises the
+/// offline path rather than the network.
 
 /// Logical window sizes a folding iPhone passes through.
 const _windows = <String, Size>{
@@ -51,33 +38,34 @@ const _windows = <String, Size>{
   'smallest 320x690': Size(320, 690),
 };
 
-/// Every primary destination, addressed by route so the real router, the real
-/// shell chrome and the real providers are all in play.
+/// Every primary destination, addressed by route so the real router and the
+/// real providers are all in play. (There is no tab bar: the sheet is home,
+/// and the Sheets list, Tools drawer and Settings open over it.)
 const _tabRoutes = <String>[
-  '/convert',
-  '/calculate',
-  '/finance',
+  '/',
+  '/sheets',
   '/tools',
-  '/notes',
+  '/settings',
+  '/help',
 ];
 
 const _detailRoutes = <String>[
-  '/convert/distance',
-  '/convert/temperature',
-  '/convert/dataSize',
-  '/calculate/standard',
-  '/calculate/scientific',
-  '/calculate/percentage',
-  '/calculate/base',
-  '/calculate/fraction',
-  '/finance/tax',
-  '/finance/paycheck',
-  '/finance/tip',
-  '/finance/discount',
-  '/finance/compound',
-  '/finance/emi',
-  '/finance/currency',
-  '/finance/unit-price',
+  '/tools/convert/distance',
+  '/tools/convert/temperature',
+  '/tools/convert/dataSize',
+  '/tools/scientific',
+  '/tools/percentage',
+  '/tools/base',
+  '/tools/fraction',
+  '/tools/tax',
+  '/tools/sales-tax',
+  '/tools/paycheck',
+  '/tools/tip',
+  '/tools/discount',
+  '/tools/compound',
+  '/tools/emi',
+  '/tools/currency',
+  '/tools/unit-price',
   '/tools/gps',
   '/tools/ohm',
   '/tools/bmi',
@@ -88,60 +76,33 @@ const _detailRoutes = <String>[
   '/tools/aspect-ratio',
   '/tools/calendar',
   '/settings',
-  '/paywall',
   '/privacy',
   '/about',
-  '/login',
+  '/help',
 ];
 
 void main() {
-  setUpAll(() => HttpOverrides.global = _OfflineHttpOverrides());
-  tearDownAll(() => HttpOverrides.global = null);
-  setUp(() {
-    SharedPreferences.setMockInitialValues({});
-    // `appRouter` is a top-level singleton shared by every test in this file,
-    // so it remembers wherever the previous test navigated to. Put it back on
-    // the first tab so each test boots the app the way a cold launch does.
-    appRouter.go('/convert');
-  });
+  setUpApp();
 
-  Widget buildApp({TextScaler? scaler}) {
-    final locale = AglLocaleController();
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<AglLocaleController>.value(value: locale),
-        ChangeNotifierProvider(create: (_) => RegionProvider()),
-        ChangeNotifierProvider(create: (_) => NotesProvider()),
-        ChangeNotifierProvider(create: (_) => PremiumProvider()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-      ],
-      child: MaterialApp.router(
-        theme: buildAppTheme(),
-        routerConfig: appRouter,
-        debugShowCheckedModeBanner: false,
-        // Same delegate set as `main.dart` — settings reads `AglL10n.of`.
-        supportedLocales: locale.supportedLocales,
-        localizationsDelegates:
-            aglLocalizationsDelegates(AppLocalizations.delegate),
-        builder: scaler == null
-            ? null
-            : (context, child) => MediaQuery(
-                  data: MediaQuery.of(context).copyWith(textScaler: scaler),
-                  child: child!,
-                ),
-      ),
-    );
+  /// A sheet with lines on it, so the editor is laid out with results,
+  /// captions and an error rather than empty.
+  Future<void> fillSheet(WidgetTester tester) async {
+    appRouter.go('/');
+    await settle(tester);
+    await tester.enterText(find.byType(TextField).first, 'Shelf: 12 ft in m');
+    await tester.testTextInput.receiveAction(TextInputAction.next);
+    await settle(tester);
+    await tester.enterText(find.byType(TextField).at(1),
+        'Dinner: 38.50 EUR on 14 Sep in USD');
+    await tester.pump();
   }
+
+  Widget buildApp() => testApp();
 
   /// Sizes the test window in *logical* pixels.
   void resize(WidgetTester tester, Size logical) {
     tester.view.devicePixelRatio = 3.0;
     tester.view.physicalSize = logical * 3.0;
-  }
-
-  Future<void> settle(WidgetTester tester) async {
-    await tester.pump(const Duration(milliseconds: 200));
-    await tester.pumpAndSettle(const Duration(milliseconds: 400));
   }
 
   /// Navigates to [route] and settles. Returns whatever the frame threw.
@@ -153,7 +114,7 @@ void main() {
 
   group('foldable window sizes', () {
     _windows.forEach((name, size) {
-      testWidgets('every tab lays out at $name', (tester) async {
+      testWidgets('every destination lays out at $name', (tester) async {
         resize(tester, size);
         addTearDown(tester.view.reset);
 
@@ -180,8 +141,8 @@ void main() {
           expect(await visit(tester, route), isNull,
               reason: '$route overflowed at $name');
         }
-        // Leave the shared router on a tab route for the next test.
-        await visit(tester, '/convert');
+        // Leave the shared router at home for the next test.
+        await visit(tester, '/');
       });
     });
   });
@@ -190,13 +151,12 @@ void main() {
     // A fold *and* large type is where text layouts actually break, so the
     // busiest screens get a second pass at 1.6x.
     const busiest = <String>[
-      '/convert',
-      '/convert/distance',
-      '/calculate',
-      '/calculate/scientific',
-      '/finance/currency',
+      '/',
+      '/tools/convert/distance',
       '/tools',
-      '/notes',
+      '/tools/scientific',
+      '/tools/currency',
+      '/sheets',
       '/settings',
     ];
 
@@ -206,16 +166,20 @@ void main() {
         resize(tester, size);
         addTearDown(tester.view.reset);
 
-        await tester.pumpWidget(buildApp(scaler: const TextScaler.linear(1.6)));
+        textScale(tester, 1.6);
+        await tester.pumpWidget(buildApp());
         await settle(tester);
         expect(tester.takeException(), isNull,
             reason: 'app boot overflowed at 1.6x text, $name');
 
+        await fillSheet(tester);
+        expect(tester.takeException(), isNull,
+            reason: 'a filled sheet overflowed at 1.6x text, $name');
         for (final route in busiest) {
           expect(await visit(tester, route), isNull,
               reason: '$route overflowed at 1.6x text, $name');
         }
-        await visit(tester, '/convert');
+        await visit(tester, '/');
       });
     });
   });
@@ -254,40 +218,39 @@ void main() {
       }
     });
 
-    testWidgets('the nav chrome follows the live window width', (tester) async {
+    testWidgets('the two-pane layout follows the live window width',
+        (tester) async {
       addTearDown(tester.view.reset);
       resize(tester, _windows['folded 360x840']!);
 
       await tester.pumpWidget(buildApp());
       await settle(tester);
-      await visit(tester, '/convert');
+      await visit(tester, '/');
 
-      // Folded: bottom bar, no rail.
-      expect(find.byType(NavigationRail), findsNothing);
-      expect(find.byType(BottomNavigationBar), findsNothing,
-          reason: 'this app uses a custom bottom bar, not the Material one');
-      final foldedBottom = tester
-          .widget<Scaffold>(find.byType(Scaffold).first)
-          .bottomNavigationBar;
-      expect(foldedBottom, isNotNull, reason: 'folded should show a bottom bar');
+      // Folded: the sheet alone, with a Sheets button; never a tab bar.
+      expect(find.byType(SheetsListPane), findsNothing);
+      expect(find.byTooltip('Sheets'), findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
+      expect(find.byType(BottomNavigationBar), findsNothing);
 
-      // Unfold *without* rebuilding the app: the rail must appear anyway.
+      // Unfold *without* rebuilding the app: the Sheets list appears beside
+      // the sheet anyway.
       resize(tester, _windows['unfolded landscape 840x730']!);
       await settle(tester);
       expect(tester.takeException(), isNull);
-      expect(find.byType(NavigationRail), findsOneWidget,
+      expect(find.byType(SheetsListPane), findsOneWidget,
           reason: 'the width breakpoint must react to the live window, not to '
               'a value captured at startup');
+      expect(find.byType(SheetEditor), findsOneWidget);
+      expect(find.byTooltip('Sheets'), findsNothing,
+          reason: 'the list is already on screen');
 
-      // Refold: back to the bottom bar.
+      // Refold: back to the sheet alone.
       resize(tester, _windows['folded 360x840']!);
       await settle(tester);
       expect(tester.takeException(), isNull);
-      expect(find.byType(NavigationRail), findsNothing);
-      expect(
-        tester.widget<Scaffold>(find.byType(Scaffold).first).bottomNavigationBar,
-        isNotNull,
-      );
+      expect(find.byType(SheetsListPane), findsNothing);
+      expect(find.byTooltip('Sheets'), findsOneWidget);
     });
   });
 }

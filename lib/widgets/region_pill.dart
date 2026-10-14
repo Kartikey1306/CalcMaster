@@ -34,34 +34,34 @@ class RegionPill extends StatelessWidget {
         // 48dp minimum: the pill measured 41dp tall, below both the Android
         // and iOS tap-target guidelines. Constrain rather than pad, so the
         // height holds at larger text scales too.
-        constraints: const BoxConstraints(minHeight: 48),
+        constraints: BoxConstraints(minHeight: 48),
         alignment: Alignment.center,
         padding:
-            const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: 8),
+            EdgeInsets.symmetric(horizontal: Spacing.md, vertical: 8),
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(Radii.pill),
-          border: Border.all(color: AppColors.border),
+          color: context.ledger.surface,
+          borderRadius: BorderRadius.circular(Radii.chip),
+          border: Border.all(color: context.ledger.rule),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.location_on_outlined,
-                size: 14, color: AppColors.text),
-            const SizedBox(width: 6),
-            Text(region.flag, style: const TextStyle(fontSize: 16)),
-            const SizedBox(width: 6),
+            Icon(Icons.location_on_outlined,
+                size: 14, color: context.ledger.ink),
+            SizedBox(width: 6),
+            Text(region.flag, style: TextStyle(fontSize: 16)),
+            SizedBox(width: 6),
             Text(region.label,
-                style: const TextStyle(
-                    color: AppColors.text,
+                style: TextStyle(
+                    color: context.ledger.ink,
                     fontWeight: FontWeight.w600,
                     fontSize: 14)),
-            const SizedBox(width: 4),
-            const Text('·', style: TextStyle(color: AppColors.textMuted)),
-            const SizedBox(width: 4),
+            SizedBox(width: 4),
+            Text('·', style: TextStyle(color: context.ledger.inkSoft)),
+            SizedBox(width: 4),
             Text(region.symbol,
-                style: const TextStyle(
-                    color: AppColors.text,
+                style: TextStyle(
+                    color: context.ledger.ink,
                     fontWeight: FontWeight.w600,
                     fontSize: 14)),
           ],
@@ -79,13 +79,15 @@ class RegionPickerSheet extends StatelessWidget {
     final loc = AppLocalizations.of(context)!;
     final current = context.watch<RegionProvider>().regionId;
     return Container(
-      padding: const EdgeInsets.fromLTRB(
+      padding: EdgeInsets.fromLTRB(
           Spacing.lg, Spacing.lg, Spacing.lg, Spacing.xxxl),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      decoration: BoxDecoration(
+        color: context.ledger.surface,
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(Radii.sheetTop)),
       ),
-      child: Column(
+      child: SingleChildScrollView(
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -93,21 +95,21 @@ class RegionPickerSheet extends StatelessWidget {
             child: Container(
               width: 40,
               height: 4,
-              margin: const EdgeInsets.only(bottom: Spacing.md),
+              margin: EdgeInsets.only(bottom: Spacing.md),
               decoration: BoxDecoration(
-                color: AppColors.borderStrong,
+                color: context.ledger.rule,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
           Text(loc.regionPickerTitle,
-              style: const TextStyle(
-                  color: AppColors.text,
+              style: TextStyle(
+                  color: context.ledger.ink,
                   fontSize: 18,
                   fontWeight: FontWeight.w700)),
-          const SizedBox(height: Spacing.md),
-          const _DetectLocationButton(),
-          const SizedBox(height: Spacing.sm),
+          SizedBox(height: Spacing.md),
+          _DetectLocationButton(),
+          SizedBox(height: Spacing.sm),
           for (final r in regions)
             InkWell(
               borderRadius: BorderRadius.circular(Radii.button),
@@ -116,39 +118,40 @@ class RegionPickerSheet extends StatelessWidget {
                 Navigator.pop(context);
               },
               child: Container(
-                padding: const EdgeInsets.all(Spacing.md),
+                padding: EdgeInsets.all(Spacing.md),
                 decoration: BoxDecoration(
                   color: r.id == current
-                      ? AppColors.surfaceAlt
+                      ? context.ledger.primary.withValues(alpha: 0.08)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(Radii.button),
                 ),
                 child: Row(
                   children: [
-                    Text(r.flag, style: const TextStyle(fontSize: 24)),
-                    const SizedBox(width: Spacing.md),
+                    Text(r.flag, style: TextStyle(fontSize: 24)),
+                    SizedBox(width: Spacing.md),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(r.label,
-                              style: const TextStyle(
-                                  color: AppColors.text,
+                              style: TextStyle(
+                                  color: context.ledger.ink,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16)),
                           Text('${r.currency} · ${r.symbol}',
-                              style: const TextStyle(
-                                  color: AppColors.textMuted, fontSize: 13)),
+                              style: TextStyle(
+                                  color: context.ledger.inkSoft, fontSize: 13)),
                         ],
                       ),
                     ),
                     if (r.id == current)
-                      const Icon(Icons.check, color: AppColors.success),
+                      Icon(Icons.check, color: context.ledger.primary),
                   ],
                 ),
               ),
             ),
         ],
+      ),
       ),
     );
   }
@@ -163,7 +166,7 @@ class _DetectLocationButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final detecting = context.watch<RegionProvider>().detecting;
     return Material(
-      color: AppColors.accentPrimary.withValues(alpha: 0.14),
+      color: context.ledger.primary.withValues(alpha: 0.14),
       borderRadius: BorderRadius.circular(Radii.button),
       child: InkWell(
         borderRadius: BorderRadius.circular(Radii.button),
@@ -180,7 +183,7 @@ class _DetectLocationButton extends StatelessWidget {
                 }
                 messenger.showSnackBar(SnackBar(
                   behavior: SnackBarBehavior.floating,
-                  duration: const Duration(milliseconds: 1600),
+                  duration: Duration(milliseconds: 1600),
                   content: Text(switch (result) {
                     DetectResult.success => 'Region set from your location',
                     DetectResult.permissionDenied =>
@@ -193,30 +196,30 @@ class _DetectLocationButton extends StatelessWidget {
                 ));
               },
         child: Container(
-          padding: const EdgeInsets.symmetric(
+          padding: EdgeInsets.symmetric(
               horizontal: Spacing.md, vertical: Spacing.md),
           decoration: BoxDecoration(
             border: Border.all(
-                color: AppColors.accentPrimary.withValues(alpha: 0.4)),
+                color: context.ledger.primary.withValues(alpha: 0.4)),
             borderRadius: BorderRadius.circular(Radii.button),
           ),
           child: Row(
             children: [
               if (detecting)
-                const SizedBox(
+                SizedBox(
                   width: 18,
                   height: 18,
                   child: CircularProgressIndicator(
-                      strokeWidth: 2, color: AppColors.accentPrimary),
+                      strokeWidth: 2, color: context.ledger.primary),
                 )
               else
-                const Icon(Icons.my_location,
-                    size: 18, color: AppColors.accentPrimary),
-              const SizedBox(width: Spacing.md),
+                Icon(Icons.my_location,
+                    size: 18, color: context.ledger.primary),
+              SizedBox(width: Spacing.md),
               Text(
                 detecting ? 'Detecting…' : 'Detect my location',
-                style: const TextStyle(
-                    color: AppColors.text,
+                style: TextStyle(
+                    color: context.ledger.ink,
                     fontWeight: FontWeight.w600,
                     fontSize: 15),
               ),
