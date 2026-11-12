@@ -105,4 +105,75 @@ void main() {
       expect(s.any((x) => x.title.startsWith('In ')), isFalse);
     });
   });
+
+  group('more ways of writing it', () {
+    test('thousands commas, decimal commas and "k"', () {
+      expect(readLine('rent 1,200 eur').amount, 1200);
+      expect(readLine('coffee 3,50 eur').amount, 3.5);
+      expect(readLine('car 2k usd').amount, 2000);
+      expect(readLine('deposit 1,250.75 usd').amount, 1250.75);
+    });
+
+    test('people in words, and "in half"', () {
+      expect(readLine('dinner 60 eur for two people').people, 2);
+      expect(readLine('taxi 30 usd split in half').people, 2);
+      expect(readLine('rent 900 between three').people, 3);
+    });
+
+    test('several amounts are added up', () {
+      final r = readLine('pizza 12 and drinks 8 eur for 2 people');
+      expect(r.parts, [12, 8]);
+      expect(r.amount, 20);
+      expect(r.people, 2);
+      final each = pick(suggestLines('pizza 12 and drinks 8 eur for 2 people'),
+          'Per person');
+      expect(work(each.line).value, 10);
+      final whole = pick(
+          suggestLines('pizza 12 and drinks 8 eur for 2 people'), 'Whole bill');
+      expect(work(whole.line).display, '20.00 EUR');
+    });
+
+    test('quantity times price', () {
+      expect(readLine('3 tickets at 12 eur each').amount, 36);
+      expect(readLine('hotel 3 nights 120 eur').amount, 360);
+      expect(readLine('4 x 2.5 usd').amount, 10);
+      final s = suggestLines('hotel 3 nights 120 eur for 2 people');
+      expect(work(pick(s, 'Per person').line).value, 180);
+      expect(pick(s, 'Per person').line, startsWith('Hotel, 3 nights'));
+    });
+
+    test('"tip 15" and "tax 8" without a % sign are percentages', () {
+      final r = readLine('dinner 100 usd tip 15 tax 8');
+      expect(r.tipPct, 15);
+      expect(r.taxPct, 8);
+      expect(r.amount, 100);
+      expect(work(suggestLines('dinner 100 usd tip 15').first.line).value,
+          closeTo(115, 1e-9));
+    });
+
+    test('"for 2 coffees" counts coffees, not people', () {
+      final r = readLine('paid 8 eur for 2 coffees');
+      expect(r.people, isNull);
+      expect(r.amount, 8);
+      expect(r.label, '2 coffees');
+    });
+
+    test('every suggestion for these lines works out in the sheet', () {
+      for (final input in [
+        'pizza 12 and drinks 8 eur for 2 people',
+        'hotel 3 nights 120 eur for 2 people',
+        '3 tickets at 12 eur each',
+        'lunch 45,50 eur 10% tip for 3',
+        'rent 1,200 between three',
+        'groceries 2k inr tax 5',
+      ]) {
+        for (final s in suggestLines(input, homeCurrency: 'EUR')) {
+          final r = work(s.line);
+          expect(r.kind == LineKind.value || r.kind == LineKind.needsRate,
+              isTrue,
+              reason: '"$input" → "${s.line}": ${r.kind} ${r.message}');
+        }
+      }
+    });
+  });
 }

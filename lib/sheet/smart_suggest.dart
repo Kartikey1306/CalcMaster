@@ -32,6 +32,14 @@ class SmartReading {
   final double? offPct;
   final String? target;
 
+  /// Several amounts on one line ("pizza 12 and drinks 8") are added up;
+  /// [amount] is their sum. A single amount is a list of one.
+  final List<double> parts;
+
+  /// "3 tickets at 12 each", "3 nights 120": [amount] is quantity × price.
+  final int? quantity;
+  final double? unitPrice;
+
   const SmartReading({
     this.label,
     this.amount,
@@ -41,6 +49,9 @@ class SmartReading {
     this.taxPct,
     this.offPct,
     this.target,
+    this.parts = const [],
+    this.quantity,
+    this.unitPrice,
   });
 
   bool get understood =>
@@ -51,7 +62,9 @@ class SmartReading {
           taxPct != null ||
           offPct != null ||
           target != null ||
-          label != null);
+          label != null ||
+          quantity != null ||
+          parts.length > 1);
 }
 
 // ---------------------------------------------------------------------------
@@ -96,6 +109,17 @@ const _fillers = {
   'for', 'the', 'a', 'an', 'and', 'with', 'split', 'between', 'among',
   'each', 'per', 'plus', 'at', 'of', 'on', 'my', 'our', 'was', 'is', 'cost',
   'costs', 'paid', 'spent', 'total', 'bill', 'in', 'to', 'into', 'us', 'me',
+  'x', 'times', 'apiece', 'ea', 'also', 'came', 'it',
+};
+
+/// Things counted before a price: "3 nights 120 EUR", "2 tickets 15 each".
+const _countWords = {
+  'night', 'nights', 'day', 'days', 'hour', 'hours', 'hrs', 'week', 'weeks',
+  'month', 'months', 'ticket', 'tickets', 'item', 'items', 'piece', 'pieces',
+  'pcs', 'unit', 'units', 'round', 'rounds', 'bottle', 'bottles', 'box',
+  'boxes', 'pack', 'packs', 'pass', 'passes', 'room', 'rooms', 'seat',
+  'seats', 'lesson', 'lessons', 'class', 'classes', 'session', 'sessions',
+  'beers', 'coffees', 'meals', 'shirts', 'kg', 'kilos', 'litres', 'liters',
 };
 
 /// Everyday things people total up, for fixing typos in the label.
@@ -168,7 +192,37 @@ String? _currencyOf(String w) {
 // Reading
 // ---------------------------------------------------------------------------
 
-final _token = RegExp(r"[€£$¥₹₩]|\d+(?:[.,]\d+)?%?|[A-Za-z][A-Za-z']*");
+// A number may carry thousands commas (1,200), a decimal (18.50 or 18,50),
+// a "k" for thousands (2k) and a trailing %.
+final _token = RegExp(
+    r"[€£$¥₹₩@×]|\d[\d,]*(?:\.\d+)?(?:k(?![a-z]))?%?|[A-Za-z][A-Za-z']*",
+    caseSensitive: false);
+
+final _thousands = RegExp(r'^\d{1,3}(?:,\d{3})+(?:\.\d+)?$');
+
+/// "1,200" → 1200, "18,50" → 18.5, "2k" → 2000, "15%" → 15.
+double? _parseNumber(String t) {
+  var s = t.toLowerCase().replaceAll('%', '');
+  var scale = 1.0;
+  if (s.endsWith('k')) {
+    scale = 1000;
+    s = s.substring(0, s.length - 1);
+  }
+  if (s.isEmpty || !RegExp(r'^\d').hasMatch(s)) return null;
+  if (_thousands.hasMatch(s)) {
+    s = s.replaceAll(',', '');
+  } else {
+    s = s.replaceAll(',', '.');
+  }
+  final v = double.tryParse(s);
+  return v == null ? null : v * scale;
+}
+
+const _numberWords = {
+  'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6,
+  'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10, 'eleven': 11, 'twelve': 12,
+  'couple': 2, 'half': 2, 'halves': 2,
+};
 
 /// Understands what it can of [input].
 SmartReading readLine(String input) {
@@ -184,14 +238,27 @@ SmartReading readLine(String input) {
   int? people;
   double? tip, tax, off;
   String? target;
+  var parts = <double>[];
+  int? quantity;
+  double? unitPrice;
+  String? countNote;
   final labelWords = <String>[];
   final used = List<bool>.filled(tokens.length, false);
 
   double? numAt(int i) {
     if (i < 0 || i >= tokens.length) return null;
-    final t = tokens[i].replaceAll('%', '').replaceAll(',', '.');
-    return double.tryParse(t);
+    return _parseNumber(tokens[i]);
   }
+
+  /// A currency word or sign right beside token [i].
+  bool hasCurrencyBeside(int i) => [i - 1, i + 1].any((j) =>
+      j >= 0 &&
+      j < lower.length &&
+      !used[j] &&
+      numAt(j) == null &&
+      // "persons" is one slip from "pesos": a people word is never money.
+      !_isPeopleWord(lower[j]) &&
+      _currencyOf(lower[j]) != null);
 
   bool isPct(int i) => i >= 0 && i < tokens.length && tokens[i].endsWith('%');
 
@@ -243,40 +310,103 @@ SmartReading readLine(String input) {
     }
   }
 
-  // Pass 3: people — "2 people", "for 3", "split 4 ways", "between 5".
+  // Pass 2b: "tip 15", "15 tip", "tax 8" — a whole number from 1 to 30 right
+  // beside a tip or tax word, with no currency of its own, is a percentage.
   for (var i = 0; i < tokens.length; i++) {
     if (used[i] || isPct(i)) continue;
     final n = numAt(i);
-    if (n == null || n != n.roundToDouble() || n < 1 || n > 1000) continue;
-    // "for 3", "between 4" (no people word) are read once the amount is known.
-    final next = wordAt(i + 1);
-    if (next != null && !used[i + 1] && _isPeopleWord(next)) {
-      people = n.toInt();
-      used[i] = used[i + 1] = true;
+    if (n == null || n != n.roundToDouble() || n < 1 || n > 30) continue;
+    if (hasCurrencyBeside(i)) continue;
+    for (final j in [i - 1, i + 1]) {
+      final w = wordAt(j);
+      if (w == null || used[j]) continue;
+      if (tip == null && (w == 'tip' || _closest(w, _tipWords) != null)) {
+        tip = n;
+      } else if (tax == null &&
+          (_taxWords.contains(w) || _closest(w, _taxWords) != null)) {
+        tax = n;
+      } else {
+        continue;
+      }
+      used[i] = used[j] = true;
       break;
     }
   }
 
-  // Pass 4: the amount, with a currency next to it.
+  // Pass 3: people — "2 people", "two people", "split 4 ways", "in half".
   for (var i = 0; i < tokens.length; i++) {
     if (used[i] || isPct(i)) continue;
-    final n = numAt(i);
-    if (n == null) continue;
-    amount = n;
+    final next = wordAt(i + 1);
+    final peopleAfter = next != null &&
+        !used[i + 1] &&
+        (next == 'ways' || _isPeopleWord(next));
+    final n = numAt(i) ?? _numberWords[lower[i]]?.toDouble();
+    if (n != null &&
+        n == n.roundToDouble() &&
+        n >= 1 &&
+        n <= 1000 &&
+        peopleAfter &&
+        !hasCurrencyBeside(i)) {
+      people = n.toInt();
+      used[i] = used[i + 1] = true;
+      break;
+    }
+    if (lower[i] == 'half' || lower[i] == 'halves') {
+      people = 2;
+      used[i] = true;
+      if (i > 0 && lower[i - 1] == 'in') used[i - 1] = true;
+      break;
+    }
+  }
+
+  // "for 2", "split 3", "between four" with no people word: only when another
+  // number is left over to be the amount, and never a number with a currency.
+  if (people == null) {
+    final numbers = [
+      for (var i = 0; i < tokens.length; i++)
+        if (!used[i] && !isPct(i) && numAt(i) != null) i
+    ];
+    for (var i = 0; i < tokens.length; i++) {
+      if (used[i] || isPct(i)) continue;
+      final n = numAt(i) ?? _numberWords[lower[i]]?.toDouble();
+      if (n == null || n != n.roundToDouble() || n < 2 || n > 100) continue;
+      if (hasCurrencyBeside(i)) continue;
+      final isDigit = numAt(i) != null;
+      if (isDigit && numbers.length < 2) continue;
+      final prev = wordAt(i - 1);
+      if ({'for', 'between', 'among', 'by', 'split'}.contains(prev)) {
+        // "for 2 coffees" counts coffees, not people.
+        final next = wordAt(i + 1);
+        if (next != null && _countWords.contains(next)) continue;
+        people = n.toInt();
+        used[i] = true;
+        break;
+      }
+    }
+  }
+
+  // Pass 4: the amounts, and a currency beside any of them.
+  final amountAt = [
+    for (var i = 0; i < tokens.length; i++)
+      if (!used[i] && !isPct(i) && numAt(i) != null) i
+  ];
+  for (final i in amountAt) {
     used[i] = true;
+  }
+  for (final i in amountAt) {
     for (final j in [i + 1, i - 1]) {
       if (j < 0 || j >= tokens.length || used[j]) continue;
       final c = _currencyOf(lower[j]);
       if (c != null) {
-        currency = c;
+        currency ??= c;
         used[j] = true;
         break;
       }
     }
-    break;
+    if (currency != null) break;
   }
 
-  // A currency word anywhere else, if none sat next to the amount.
+  // A currency word anywhere else, if none sat next to an amount.
   if (currency == null) {
     for (var i = 0; i < tokens.length; i++) {
       if (used[i]) continue;
@@ -289,25 +419,51 @@ SmartReading readLine(String input) {
     }
   }
 
-  // "for 2", "split 3", "between 4" with no people word.
-  if (people == null && amount != null) {
-    for (var i = 0; i < tokens.length; i++) {
-      if (used[i] || isPct(i)) continue;
-      final n = numAt(i);
-      if (n == null || n != n.roundToDouble() || n < 2 || n > 100) continue;
-      final prev = wordAt(i - 1);
-      final next = wordAt(i + 1);
-      if ({'for', 'between', 'among', 'by', 'split'}.contains(prev) ||
-          next == 'ways' ||
-          (next != null && _isPeopleWord(next))) {
-        people = n.toInt();
-        used[i] = true;
-        if (next != null && (next == 'ways' || _isPeopleWord(next))) {
-          used[i + 1] = true;
+  if (amountAt.length == 2) {
+    // Quantity × price: "3 x 12", "3 @ 12", "3 tickets at 12 each",
+    // "3 nights 120 EUR". The count is a whole number; the price may not be.
+    final a = amountAt[0], b = amountAt[1];
+    final between = [for (var k = a + 1; k < b; k++) lower[k]];
+    final after = [
+      for (var k = b + 1; k < tokens.length && k <= b + 2; k++) lower[k]
+    ];
+    final timesWord = between.any(
+        (w) => const {'x', '×', '@', 'at', 'times'}.contains(w));
+    final eachWord =
+        after.any((w) => const {'each', 'apiece', 'ea'}.contains(w));
+    final counted =
+        a + 1 < tokens.length && _countWords.contains(lower[a + 1]);
+    final qa = numAt(a)!, pb = numAt(b)!;
+    final countAfterPrice =
+        b + 1 < tokens.length && _countWords.contains(lower[b + 1]);
+    if (!counted && !timesWord && !eachWord && countAfterPrice) {
+      // "8 EUR for 2 coffees": the 2 counts what was bought; the price is
+      // the total.
+      countNote = '${tokens[b]} ${tokens[b + 1]}';
+      used[b + 1] = true;
+      amountAt.removeAt(1);
+    } else if ((timesWord || eachWord || counted) &&
+        qa == qa.roundToDouble() &&
+        qa >= 1 &&
+        qa <= 1000) {
+      quantity = qa.toInt();
+      unitPrice = pb;
+      amount = qa * pb;
+      for (var k = a + 1; k < b; k++) {
+        if (const {'x', '×', '@', 'at', 'times'}.contains(lower[k])) {
+          used[k] = true;
         }
-        break;
+      }
+      if (counted) {
+        countNote = '$quantity ${tokens[a + 1]}';
+        used[a + 1] = true;
       }
     }
+  }
+  if (quantity == null && amountAt.isNotEmpty) {
+    // Several amounts are added up ("pizza 12 and drinks 8").
+    parts = [for (final i in amountAt.take(12)) numAt(i)!];
+    amount = parts.fold<double>(0, (s, v) => s + v);
   }
 
   // Whatever words are left (before the amount, mostly) are the label.
@@ -328,6 +484,9 @@ SmartReading readLine(String input) {
     final l = labelWords.join(' ');
     label = l[0].toUpperCase() + l.substring(1);
   }
+  if (countNote != null) {
+    label = label == null ? countNote : '$label, $countNote';
+  }
 
   return SmartReading(
     label: label,
@@ -338,6 +497,9 @@ SmartReading readLine(String input) {
     taxPct: tax,
     offPct: off,
     target: target,
+    parts: parts,
+    quantity: quantity,
+    unitPrice: unitPrice,
   );
 }
 
@@ -365,8 +527,29 @@ List<SmartSuggestion> suggestLines(
   if (!r.understood) return const [];
   final amt = r.amount!;
   final cur = r.currency;
-  final base = cur == null ? _n(amt) : '${_n(amt)} $cur';
   final label = r.label;
+
+  /// The amount in sheet grammar, split [split] ways. The sheet lets only one
+  /// amount carry a currency when dividing, so a split sum is written
+  /// "(12 + 8) / 2 EUR", and an unsplit one "12 EUR + 8 EUR".
+  String amountExpr(int? split) {
+    final q = r.quantity, u = r.unitPrice;
+    if (q != null && u != null) {
+      final e = cur == null ? '${_n(u)} * $q' : '${_n(u)} $cur * $q';
+      return split == null ? e : '$e / $split';
+    }
+    if (r.parts.length > 1) {
+      final sum = r.parts.map(_n).join(' + ');
+      if (split != null) {
+        return cur == null ? '($sum) / $split' : '($sum) / $split $cur';
+      }
+      return cur == null
+          ? sum
+          : r.parts.map((p) => '${_n(p)} $cur').join(' + ');
+    }
+    final b = cur == null ? _n(amt) : '${_n(amt)} $cur';
+    return split == null ? b : '$b / $split';
+  }
 
   // Percent steps must end the line ("A / 2 + 18%"): the sheet reads a
   // trailing "± N%" as a markup and chains them left to right, while a % in
@@ -396,8 +579,7 @@ List<SmartSuggestion> suggestLines(
       if (what.isNotEmpty) what,
       if (n.isNotEmpty) '(${n.join(', ')})',
     ].join(' ');
-    final body = StringBuffer(base);
-    if (split != null) body.write(' / $split');
+    final body = StringBuffer(amountExpr(split));
     body.write(steps);
     if (extraTip != null) body.write(' + ${_n(extraTip)}%');
     if (into != null) body.write(' in $into');

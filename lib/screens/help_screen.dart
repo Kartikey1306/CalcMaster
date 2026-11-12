@@ -13,7 +13,7 @@ class HelpScreen extends StatelessWidget {
     ('Other lines', '#2 * 3   or   prev + 10', '#n is line n\'s result; prev is the line above.'),
     ('Names', 'nights = 3   then   120 EUR * nights', 'Give a value a name and use it on any line below. Change it once and every line that uses it updates. A plain-number name is a setting and stays out of the total.'),
     ('Percentages', '#1 + 18%   ·   20% of 250', 'Add or take off a percentage, or take a share.'),
-    ('Just type it', 'dinner 18 euro for 2 people', 'Write it the way you\'d say it — typos are fine. Suggestions (per person, with a tip, in your currency) appear under the line; tap one.'),
+    ('Just type it', 'dinner 18 euro for 2 people', 'Write it the way you\'d say it — typos are fine. The answer appears straight away, with the sheet\'s new total. Press Enter or Use to keep it, or tap another way to work it out (whole bill, with a tip, in your currency). It also reads "pizza 12 and drinks 8", "3 nights 120 EUR", "tip 15", "two people" and "1,200".'),
     ('Paid & due', 'Swipe a line → PAID   ← DUE', 'Rubber-stamp a line by swiping it, or from the line-number menu. The footer splits the total into paid and pending. Swipe again to lift the stamp.'),
     ('Units', '12 ft in m', 'Distance, volume, weight, temperature, speed, area, data, fuel, pressure, energy.'),
     ('Currency', '38.50 EUR in USD', 'Converted at the European Central Bank reference rate. Undated lines keep (pin) the rate they were first worked out with; tap Re-price to move them to today\'s rate.'),

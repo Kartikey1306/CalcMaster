@@ -162,21 +162,43 @@ class _SheetEditorState extends State<SheetEditor> {
 
   void _onSubmitted(int i) {
     final sheets = context.read<SheetsController>();
+    // Enter keeps the worked-out answer, if the line had one, and moves on.
+    final answers = _answersFor(i, sheets, context.read<RegionProvider>());
+    if (answers.isNotEmpty) _applySuggestion(i, answers.first.suggestion.line);
     sheets.insertLine(i + 1);
     _focusLine(i + 1);
   }
 
-  /// Smart suggestions for the line being typed — only while the sheet can't
-  /// work it out as written ("finner 18 eurp for 2 peoer").
-  List<SmartSuggestion> _suggestionsFor(
-      String text, LineResult? r, RegionProvider regions) {
+  /// Worked-out answers for the line being typed — only while the sheet
+  /// can't read it as written ("finner 18 eurp for 2 peoer"). Each one is
+  /// worked out against the whole sheet, so it shows the real result and the
+  /// sheet's total with it. Readings the sheet can't work out are dropped.
+  List<_Answer> _answersFor(
+      int i, SheetsController sheets, RegionProvider regions) {
+    final sheet = sheets.current;
+    if (i < 0 || i >= sheet.lines.length) return const [];
+    final text = sheet.lines[i].text;
     if (text.trim().isEmpty) return const [];
-    if (r != null && r.kind != LineKind.heading && r.kind != LineKind.error) {
-      return const [];
-    }
-    return suggestLines(text,
+    final eval = sheets.evaluation();
+    final r = i < eval.lines.length ? eval.lines[i] : null;
+    // Only for a line the sheet could not read at all. A line it understood
+    // and found a real mistake in ("Can't convert kg to m", division by
+    // zero) keeps its own message: a guess there would hide the reason.
+    final unread = r == null ||
+        r.kind == LineKind.heading ||
+        (r.kind == LineKind.error &&
+            (r.message ?? '').startsWith('Unknown'));
+    if (!unread) return const [];
+    final out = <_Answer>[];
+    for (final s in suggestLines(text,
         homeCurrency: regions.region.currency,
-        customaryTip: customaryTipPercent[regions.regionId]);
+        customaryTip: customaryTipPercent[regions.regionId])) {
+      final p = sheets.preview(i, s.line);
+      if (p.line.hasValue || p.line.kind == LineKind.needsRate) {
+        out.add(_Answer(s, p.line, p.sheet));
+      }
+    }
+    return out;
   }
 
   void _applySuggestion(int i, String line) {
@@ -421,11 +443,8 @@ class _SheetEditorState extends State<SheetEditor> {
                     hint: fresh && i == 0 ? sheetHints.first : null,
                     stamp: sheet.lines[i].stamp,
                     onStamp: (st) => _stamp(i, st),
-                    suggestions: _focused == i
-                        ? _suggestionsFor(
-                            sheet.lines[i].text,
-                            i < eval.lines.length ? eval.lines[i] : null,
-                            regions)
+                    answers: _focused == i
+                        ? _answersFor(i, sheets, regions)
                         : const [],
                     onSuggestion: (line) => _applySuggestion(i, line),
                     onChanged: (t) => sheets.setLineText(i, t),
@@ -532,7 +551,7 @@ class _LineRow extends StatelessWidget {
   final VoidCallback onInsertRef;
   final LineStamp? stamp;
   final ValueChanged<LineStamp?> onStamp;
-  final List<SmartSuggestion> suggestions;
+  final List<_Answer> answers;
   final ValueChanged<String> onSuggestion;
 
   const _LineRow({
@@ -548,7 +567,7 @@ class _LineRow extends StatelessWidget {
     required this.onInsertRef,
     required this.stamp,
     required this.onStamp,
-    required this.suggestions,
+    required this.answers,
     required this.onSuggestion,
   });
 
@@ -604,6 +623,33 @@ class _LineRow extends StatelessWidget {
                   )),
                 ]),
               ),
+            ),
+          ),
+        ),
+      );
+    } else if (answers.isNotEmpty && answers.first.line.hasValue) {
+      // The answer, right away, while the line is still loosely typed. It
+      // is faded until it is kept (Enter, or Use below).
+      final a = answers.first;
+      trailing = Semantics(
+        container: true,
+        liveRegion: true,
+        label: 'Line $n answer ${a.line.display}',
+        excludeSemantics: true,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.sm, vertical: Spacing.sm),
+          child: Text(
+            '≈ ${a.line.display}',
+            textAlign: TextAlign.end,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontFamily: Fonts.figures,
+              fontFeatures: Fonts.tabular,
+              color: c.result.withValues(alpha: 0.6),
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
             ),
           ),
         ),
@@ -747,8 +793,8 @@ class _LineRow extends StatelessWidget {
                   style: TextStyle(color: c.inkSoft, fontSize: 12),
                 ),
               ),
-            if (suggestions.isNotEmpty)
-              _SuggestionStrip(suggestions: suggestions, onPick: onSuggestion),
+            if (answers.isNotEmpty)
+              _AnswerCard(answers: answers, onPick: onSuggestion),
           ],
         ),
       ),
@@ -857,55 +903,159 @@ class _SwipeHint extends StatelessWidget {
   }
 }
 
-/// "Did you mean" chips under a line the sheet couldn't read as typed.
-class _SuggestionStrip extends StatelessWidget {
-  final List<SmartSuggestion> suggestions;
+/// One reading of a loosely typed line, worked out against the whole sheet.
+class _Answer {
+  final SmartSuggestion suggestion;
+  final LineResult line;
+  final SheetEvaluation sheet;
+  const _Answer(this.suggestion, this.line, this.sheet);
+
+  String get value => line.hasValue ? line.display! : 'Getting rate…';
+}
+
+/// The answer under a loosely typed line: the worked-out value, the line it
+/// will write, and the sheet's total with it, with one button to keep it.
+/// Other readings ("Whole bill", "In USD") sit below with their own values.
+class _AnswerCard extends StatelessWidget {
+  final List<_Answer> answers;
   final ValueChanged<String> onPick;
-  const _SuggestionStrip({required this.suggestions, required this.onPick});
+  const _AnswerCard({required this.answers, required this.onPick});
 
   @override
   Widget build(BuildContext context) {
     final c = context.ledger;
-    // Part of the text field's tap region, so tapping a chip doesn't close
-    // the keyboard first.
+    final top = answers.first;
+    final others = answers.skip(1).toList();
+    final total = top.sheet;
+    // The total only means something when this line is counted in it.
+    final showTotal = top.line.hasValue &&
+        !top.line.isSetting &&
+        top.line.tag == total.mainTag;
+
+    // Part of the text field's tap region, so tapping the card doesn't
+    // close the keyboard first.
     return TextFieldTapRegion(
       child: Padding(
         padding: const EdgeInsets.only(
             left: RuledPaper.gutter + Spacing.md, bottom: Spacing.sm),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(children: [
-            Icon(Icons.auto_awesome, size: 16, color: c.primary),
-            const SizedBox(width: Spacing.xs),
-            for (final s in suggestions)
-              Padding(
-                padding: const EdgeInsets.only(left: Spacing.xs),
-                child: Semantics(
-                  button: true,
-                  label: 'Suggestion: ${s.title}. ${s.line}',
-                  excludeSemantics: true,
-                  child: Material(
-                    color: c.primary.withValues(alpha: 0.1),
-                    shape: StadiumBorder(
-                        side: BorderSide(
-                            color: c.primary.withValues(alpha: 0.35))),
-                    child: InkWell(
-                      customBorder: const StadiumBorder(),
-                      onTap: () => onPick(s.line),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: Spacing.md, vertical: 6),
-                        child: Text(s.title,
+        child: Container(
+          padding: const EdgeInsets.all(Spacing.md),
+          decoration: BoxDecoration(
+            color: c.primary.withValues(alpha: 0.07),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: c.primary.withValues(alpha: 0.3)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(children: [
+                Icon(Icons.auto_awesome, size: 18, color: c.primary),
+                const SizedBox(width: Spacing.sm),
+                Expanded(
+                  child: Semantics(
+                    container: true,
+                    label: 'Answer: ${top.suggestion.title}, ${top.value}',
+                    excludeSemantics: true,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(top.suggestion.title,
                             style: TextStyle(
-                                color: c.primary,
-                                fontSize: 13,
+                                color: c.inkSoft,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w600)),
-                      ),
+                        Text(top.value,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: Fonts.figures,
+                              fontFeatures: Fonts.tabular,
+                              color: c.result,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                            )),
+                      ],
                     ),
                   ),
                 ),
+                const SizedBox(width: Spacing.sm),
+                Semantics(
+                  button: true,
+                  label: 'Use this answer: ${top.suggestion.line}',
+                  excludeSemantics: true,
+                  child: FilledButton.icon(
+                    key: const Key('answer-use'),
+                    onPressed: () => onPick(top.suggestion.line),
+                    icon: const Icon(Icons.check, size: 18),
+                    label: const Text('Use'),
+                  ),
+                ),
+              ]),
+              const SizedBox(height: Spacing.xs),
+              Text(
+                top.suggestion.line,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    fontFamily: Fonts.figures,
+                    color: c.inkSoft,
+                    fontSize: 12),
               ),
-          ]),
+              if (showTotal) ...[
+                const SizedBox(height: Spacing.xs),
+                Text(
+                  'Sheet total with this: ${total.totalDisplay}',
+                  key: const Key('answer-total'),
+                  style: TextStyle(
+                      color: c.ink, fontSize: 13, fontWeight: FontWeight.w600),
+                ),
+              ],
+              if (others.isNotEmpty) ...[
+                const SizedBox(height: Spacing.sm),
+                Wrap(
+                  spacing: Spacing.xs,
+                  runSpacing: Spacing.xs,
+                  children: [
+                    for (final a in others)
+                      Semantics(
+                        button: true,
+                        label: 'Use instead: ${a.suggestion.title}, '
+                            '${a.value}',
+                        excludeSemantics: true,
+                        child: Material(
+                          color: c.surface,
+                          shape: StadiumBorder(
+                              side: BorderSide(
+                                  color: c.primary.withValues(alpha: 0.35))),
+                          child: InkWell(
+                            customBorder: const StadiumBorder(),
+                            onTap: () => onPick(a.suggestion.line),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: Spacing.md, vertical: 6),
+                              child: Text.rich(
+                                TextSpan(children: [
+                                  TextSpan(
+                                      text: '${a.suggestion.title}  ',
+                                      style: TextStyle(color: c.inkSoft)),
+                                  TextSpan(
+                                      text: a.value,
+                                      style: TextStyle(
+                                          fontFamily: Fonts.figures,
+                                          color: c.primary,
+                                          fontWeight: FontWeight.w700)),
+                                ]),
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );

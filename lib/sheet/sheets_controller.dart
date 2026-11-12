@@ -143,6 +143,22 @@ class SheetsController extends ChangeNotifier with WidgetsBindingObserver {
     return eval;
   }
 
+  /// What the current sheet would show if line [index] read [text]: that
+  /// line's result and the sheet's total with it. Nothing is saved; a rate
+  /// the preview needs is fetched, so the answer fills in when it arrives.
+  ({LineResult line, SheetEvaluation sheet}) preview(int index, String text) {
+    final lines = [...current.lines];
+    if (index < 0 || index >= lines.length) {
+      throw RangeError.index(index, lines);
+    }
+    lines[index] = lines[index].withText(text);
+    final eval = evaluateSheet(lines, rates: _book, today: _now());
+    if (eval.needs.isNotEmpty) {
+      scheduleMicrotask(() => _fetch(eval.needs));
+    }
+    return (line: eval.lines[index], sheet: eval);
+  }
+
   int get cachedRateCount => rateClient.cache.length;
 
   // ---- editing ------------------------------------------------------------

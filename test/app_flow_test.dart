@@ -408,4 +408,53 @@ void main() {
       expect(csv, contains('1,Dinner,38.50 EUR on 2026-09-14 in USD,44.47,USD,1.1551,2026-09-14'));
     });
   });
+
+  group('smart answers', () {
+    testWidgets('a loosely typed line shows its answer and the total at once; '
+        'Use keeps it', (tester) async {
+      phone(tester);
+      await tester.pumpWidget(testApp());
+      await settle(tester);
+      await tester.enterText(lineField(0), 'finner 18 eurp for 2 peoer');
+      await tester.pump();
+
+      // The answer is on the line and in the card before anything is tapped.
+      expect(find.text('≈ 9.00 EUR'), findsOneWidget);
+      expect(find.text('Per person'), findsOneWidget);
+      expect(find.text('9.00 EUR'), findsOneWidget);
+      expect(find.text('Sheet total with this: 9.00 EUR'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('answer-use')));
+      await settle(tester);
+      expect(tester.widget<TextField>(lineField(0)).controller!.text,
+          'Dinner per person: 18 EUR / 2');
+      expect(find.byKey(const Key('answer-use')), findsNothing);
+    });
+
+    testWidgets('Enter on a loosely typed line keeps its answer and moves on',
+        (tester) async {
+      phone(tester);
+      await tester.pumpWidget(testApp());
+      await settle(tester);
+      await tester.enterText(lineField(0), 'taxi 30 eur split in half');
+      await tester.pump();
+      await tester.testTextInput.receiveAction(TextInputAction.next);
+      await settle(tester);
+      expect(tester.widget<TextField>(lineField(0)).controller!.text,
+          'Taxi per person: 30 EUR / 2');
+      expect(find.text('15.00 EUR'), findsWidgets);
+    });
+
+    testWidgets('the total counts the lines above', (tester) async {
+      phone(tester);
+      await tester.pumpWidget(testApp());
+      await settle(tester);
+      await tester.enterText(lineField(0), 'Hotel: 100 EUR');
+      await tester.testTextInput.receiveAction(TextInputAction.next);
+      await settle(tester);
+      await tester.enterText(lineField(1), 'pizza 12 and drinks 8 eur');
+      await tester.pump();
+      expect(find.text('Sheet total with this: 120.00 EUR'), findsOneWidget);
+    });
+  });
 }
