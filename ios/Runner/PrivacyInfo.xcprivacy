@@ -7,32 +7,6 @@
          App Store Connect privacy answers - Apple compares them. -->
     <key>NSPrivacyCollectedDataTypes</key>
     <array>
-        <!-- Account sign-in -->
-        <dict>
-            <key>NSPrivacyCollectedDataType</key>
-            <string>NSPrivacyCollectedDataTypeEmailAddress</string>
-            <key>NSPrivacyCollectedDataTypeLinked</key>
-            <true/>
-            <key>NSPrivacyCollectedDataTypeTracking</key>
-            <false/>
-            <key>NSPrivacyCollectedDataTypePurposes</key>
-            <array>
-                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
-            </array>
-        </dict>
-        <!-- Account identifier -->
-        <dict>
-            <key>NSPrivacyCollectedDataType</key>
-            <string>NSPrivacyCollectedDataTypeUserID</string>
-            <key>NSPrivacyCollectedDataTypeLinked</key>
-            <true/>
-            <key>NSPrivacyCollectedDataTypeTracking</key>
-            <false/>
-            <key>NSPrivacyCollectedDataTypePurposes</key>
-            <array>
-                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
-            </array>
-        </dict>
         <!-- Location features -->
         <dict>
             <key>NSPrivacyCollectedDataType</key>
@@ -59,19 +33,6 @@
                 <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
             </array>
         </dict>
-        <!-- Subscription entitlement -->
-        <dict>
-            <key>NSPrivacyCollectedDataType</key>
-            <string>NSPrivacyCollectedDataTypePurchaseHistory</string>
-            <key>NSPrivacyCollectedDataTypeLinked</key>
-            <true/>
-            <key>NSPrivacyCollectedDataTypeTracking</key>
-            <false/>
-            <key>NSPrivacyCollectedDataTypePurposes</key>
-            <array>
-                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
-            </array>
-        </dict>
         <!-- Advertising identifier -->
         <dict>
             <key>NSPrivacyCollectedDataType</key>
@@ -79,7 +40,7 @@
             <key>NSPrivacyCollectedDataTypeLinked</key>
             <false/>
             <key>NSPrivacyCollectedDataTypeTracking</key>
-            <false/>
+            <true/>
             <key>NSPrivacyCollectedDataTypePurposes</key>
             <array>
                 <string>NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising</string>
@@ -127,10 +88,13 @@
         </dict>
     </array>
 
-    <!-- This app does not link collected data to third-party data for
-         advertising or measurement across other companies apps. -->
+    <!-- The app shows the App Tracking Transparency prompt and, when the
+         user allows it, AdMob serves personalised ads: that is tracking.
+         Google Mobile Ads ships its own manifest listing its tracking
+         domains. App Store Connect must answer "Yes, used for tracking"
+         for Device ID to match. -->
     <key>NSPrivacyTracking</key>
-    <false/>
+    <true/>
     <key>NSPrivacyTrackingDomains</key>
     <array/>
 </dict>
