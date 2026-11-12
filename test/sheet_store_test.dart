@@ -79,6 +79,62 @@ void main() {
     });
   });
 
+  group('a damaged save is never lost', () {
+    test('unreadable JSON is set aside before anything saves over it',
+        () async {
+      const broken = '[{"id":"a","title":"Rent", "lines": [';
+      final c = await open({SheetStore.kSheets: broken});
+      // The user carries on and the app saves a fresh sheet…
+      c.setLineText(0, 'New line 5');
+      await c.flush();
+      final prefs = await SharedPreferences.getInstance();
+      // …but the original text is still there, untouched.
+      expect(prefs.getString(SheetStore.kSheetsUnreadable), broken);
+      expect(SheetStore(prefs).hasUnreadableSheets, isTrue);
+      c.dispose();
+    });
+
+    test('one bad sheet keeps the good ones and sets the original aside',
+        () async {
+      final raw = jsonEncode([
+        {
+          'id': 'good',
+          'title': 'Trip',
+          'createdAt': 1,
+          'updatedAt': 2,
+          'lines': [
+            {'text': '12 ft in m'}
+          ],
+        },
+        'not a sheet',
+      ]);
+      SharedPreferences.setMockInitialValues({SheetStore.kSheets: raw});
+      final prefs = await SharedPreferences.getInstance();
+      final store = SheetStore(prefs);
+      final sheets = store.loadSheets();
+      expect(sheets.map((s) => s.id), ['good']);
+      expect(prefs.getString(SheetStore.kSheetsUnreadable), raw);
+    });
+
+    test('a later failure never replaces the first copy set aside', () async {
+      SharedPreferences.setMockInitialValues(
+          {SheetStore.kSheets: '{oops', SheetStore.kSheetsUnreadable: 'first'});
+      final prefs = await SharedPreferences.getInstance();
+      SheetStore(prefs).loadSheets();
+      expect(prefs.getString(SheetStore.kSheetsUnreadable), 'first');
+    });
+
+    test('a healthy save sets nothing aside', () async {
+      final c = await open({});
+      c.setLineText(0, '10 + 5');
+      await c.flush();
+      c.dispose();
+      final prefs = await SharedPreferences.getInstance();
+      SheetStore(prefs).loadSheets();
+      expect(prefs.containsKey(SheetStore.kSheetsUnreadable), isFalse);
+    });
+  });
+
   group('persist and reload', () {
     test('a sheet is saved under sheets_v1 and comes back as it was',
         () async {

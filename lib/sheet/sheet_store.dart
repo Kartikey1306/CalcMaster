@@ -24,19 +24,42 @@ class SheetStore {
   /// Dated ECB rates, `date|BASE|QUOTE` → rate. Published rates never change.
   static const kRateCache = 'ecb_rates_v1';
 
+  /// A verbatim copy of saved sheets that could not be read in full. Written
+  /// before anything else can save over them, and never overwritten, so a
+  /// damaged save is always recoverable.
+  static const kSheetsUnreadable = 'sheets_v1_unreadable';
+
+  /// Whether some saved sheets could not be read and were set aside.
+  bool get hasUnreadableSheets => prefs.containsKey(kSheetsUnreadable);
+
   List<Sheet> loadSheets() {
     final raw = prefs.getString(kSheets);
     if (raw == null) return [];
     try {
       final list = jsonDecode(raw);
-      if (list is! List) return [];
-      return [
+      if (list is! List) {
+        _setAside(raw);
+        return [];
+      }
+      final sheets = [
         for (final s in list)
           if (Sheet.fromJson(s) case final Sheet sheet) sheet,
       ];
+      // One bad sheet must not take the others with it, and must not vanish
+      // either: keep the readable ones, and the original text for the rest.
+      if (sheets.length != list.length) _setAside(raw);
+      return sheets;
     } catch (_) {
+      _setAside(raw);
       return [];
     }
+  }
+
+  void _setAside(String raw) {
+    if (prefs.containsKey(kSheetsUnreadable)) return;
+    // SharedPreferences updates its in-memory copy at once, so this is in
+    // place before the next save can replace kSheets.
+    prefs.setString(kSheetsUnreadable, raw);
   }
 
   /// Saves every sheet that has something on it; blank sheets are not kept.

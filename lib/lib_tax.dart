@@ -51,10 +51,12 @@ const Map<RegionId, double> customaryTipPercent = {
 };
 
 const Map<RegionId, Map<FilingStatus, double>> standardDeduction = {
+  // 2025 amounts as raised by the One Big Beautiful Bill Act (July 2025),
+  // up from the 15,000 / 30,000 / 22,500 the IRS first announced.
   RegionId.US: {
-    FilingStatus.single: 15000,
-    FilingStatus.joint: 30000,
-    FilingStatus.head: 22500
+    FilingStatus.single: 15750,
+    FilingStatus.joint: 31500,
+    FilingStatus.head: 23625
   },
   // UK: the £12,570 personal allowance is already modelled as the 0% band in
   // the bracket table below, so applying it again as a standard deduction would

@@ -11,12 +11,13 @@ void main() {
     test('100k single, bi-weekly, no state tax', () {
       final r = computePaycheck(
           100000, RegionId.US, FilingStatus.single, PayFrequency.biweekly);
-      // Taxable 85000: 1192.50 + 12% × 36550 + 22% × 36525 = 13614
-      expect(r.incomeTaxAnnual, closeTo(13614, 1));
+      // Taxable 84250 (2025 standard deduction 15750):
+      // 1192.50 + 12% × 36550 + 22% × 35775 = 13449
+      expect(r.incomeTaxAnnual, closeTo(13449, 1));
       expect(_social(r, 'Social Security'), closeTo(6200, 1e-6));
       expect(_social(r, 'Medicare'), closeTo(1450, 1e-6));
-      expect(r.netAnnual, closeTo(78736, 1));
-      expect(r.netPerPeriod, closeTo(78736 / 26, 0.05));
+      expect(r.netAnnual, closeTo(78901, 1));
+      expect(r.netPerPeriod, closeTo(78901 / 26, 0.05));
       expect(r.grossPerPeriod, closeTo(100000 / 26, 1e-6));
     });
 
@@ -40,8 +41,8 @@ void main() {
           100000, RegionId.US, FilingStatus.single, PayFrequency.biweekly,
           preTaxRate: 0.10);
       expect(r.preTaxAnnual, closeTo(10000, 1e-6));
-      // Taxable 75000: 1192.50 + 4386 + 22% × 26525 = 11414
-      expect(r.incomeTaxAnnual, closeTo(11414, 1));
+      // Taxable 74250: 1192.50 + 4386 + 22% × 25775 = 11249
+      expect(r.incomeTaxAnnual, closeTo(11249, 1));
       expect(_social(r, 'Social Security'), closeTo(6200, 1e-6));
     });
 

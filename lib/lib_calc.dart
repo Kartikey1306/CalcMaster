@@ -19,7 +19,10 @@ const Map<String, ({int prec, bool right})> _ops = {
   '*': (prec: 2, right: false),
   '/': (prec: 2, right: false),
   '%': (prec: 2, right: false),
-  '^': (prec: 3, right: true),
+  // Unary minus: tighter than × ÷ but looser than ^, so -2^2 = -4 and
+  // 10^-3 = 0.001.
+  'neg': (prec: 3, right: true),
+  '^': (prec: 4, right: true),
 };
 
 double _apply(String op, double a, double b) {
@@ -165,11 +168,14 @@ List<_Tok> _tokenize(String input) {
     }
     if (_ops.containsKey(c)) {
       final last = tokens.isEmpty ? null : tokens.last;
-      // Unary minus -> insert (-1)*
-      if (c == '-' &&
-          (last == null || (last.type != 'num' && last.type != 'rparen'))) {
-        tokens.add(_Tok('num', -1.0));
-        tokens.add(_Tok('op', '*'));
+      // A minus that doesn't follow a value (a number, a closing bracket or
+      // a factorial) negates what comes next.
+      final afterValue = last != null &&
+          (last.type == 'num' ||
+              last.type == 'rparen' ||
+              (last.type == 'op' && last.value == '!'));
+      if (c == '-' && !afterValue) {
+        tokens.add(_Tok('op', 'neg'));
         i++;
         continue;
       }
@@ -194,11 +200,15 @@ double evaluate(String input, {AngleUnit angle = AngleUnit.rad}) {
       ops.add(tok);
     } else if (tok.type == 'op') {
       if (tok.value == '!') {
-        if (out.isEmpty || out.last.type != 'num') {
-          throw CalcError("'!' must follow a number");
-        }
-        final n = out.removeLast().value as double;
-        out.add(_Tok('num', _factorial(n)));
+        // Postfix: applies to the value just completed — a number, a
+        // bracket or a function call: 5!, (1+2)!, sqrt(9)!.
+        if (out.isEmpty) throw CalcError("'!' must follow a number");
+        out.add(tok);
+        continue;
+      }
+      if (tok.value == 'neg') {
+        // Prefix: nothing to its left to pop.
+        ops.add(tok);
         continue;
       }
       while (ops.isNotEmpty) {
@@ -245,6 +255,12 @@ double evaluate(String input, {AngleUnit angle = AngleUnit.rad}) {
   for (final tok in out) {
     if (tok.type == 'num') {
       stack.add(tok.value as double);
+    } else if (tok.type == 'op' && tok.value == '!') {
+      if (stack.isEmpty) throw CalcError("'!' must follow a number");
+      stack.add(_factorial(stack.removeLast()));
+    } else if (tok.type == 'op' && tok.value == 'neg') {
+      if (stack.isEmpty) throw CalcError('Bad expr');
+      stack.add(-stack.removeLast());
     } else if (tok.type == 'op') {
       if (stack.length < 2) throw CalcError('Bad expr');
       final b = stack.removeLast();

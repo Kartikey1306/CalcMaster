@@ -19,15 +19,15 @@ void main() {
 
     test('income of 50000 — single', () {
       final r = computeIncomeTax(50000, RegionId.US, FilingStatus.single);
-      // Taxable = 50000 - 15000 = 35000
+      // Taxable = 50000 - 15750 = 34250 (2025 standard deduction, OBBBA)
       // 10% on first 11925 = 1192.50
-      // 12% on (35000 - 11925) = 23075 → 2769.00
-      // Total = 3961.50
-      expect(r.taxableIncome, closeTo(35000, 1e-2));
-      expect(r.taxOwed, closeTo(3961.50, 1.0)); // allow $1 rounding
-      expect(r.effectiveRate, closeTo(3961.50 / 50000, 1e-3));
+      // 12% on (34250 - 11925) = 22325 → 2679.00
+      // Total = 3871.50
+      expect(r.taxableIncome, closeTo(34250, 1e-2));
+      expect(r.taxOwed, closeTo(3871.50, 1.0)); // allow $1 rounding
+      expect(r.effectiveRate, closeTo(3871.50 / 50000, 1e-3));
       expect(r.marginalRate, closeTo(0.12, 1e-6));
-      expect(r.takeHome, closeTo(50000 - 3961.50, 1.0));
+      expect(r.takeHome, closeTo(50000 - 3871.50, 1.0));
     });
 
     test('high income hits 37% bracket', () {

@@ -103,4 +103,23 @@ void main() {
     test('negative result', () => expect(evaluate('3-10'), -7.0));
     test('chained operations', () => expect(evaluate('1+2+3+4+5'), 15.0));
   });
+
+  group('evaluate — minus signs and factorials', () {
+    test('negative exponent', () => expect(evaluate('10^-3'), closeTo(0.001, 1e-12)));
+    test('negative exponent of 2', () => expect(evaluate('2^-2'), 0.25));
+    test('minus binds looser than a power', () => expect(evaluate('-2^2'), -4.0));
+    test('bracketed negative squared', () => expect(evaluate('(-2)^2'), 4.0));
+    test('leading minus', () => expect(evaluate('-5+3'), -2.0));
+    test('times a negative', () => expect(evaluate('4*-3'), -12.0));
+    test('divide by a negative', () => expect(evaluate('9/-3'), -3.0));
+    test('double negative', () => expect(evaluate('5--3'), 8.0));
+    test('negated bracket', () => expect(evaluate('-(2+3)*2'), -10.0));
+    test('negated function', () => expect(evaluate('-sqrt(16)'), -4.0));
+    test('minus after a factorial', () => expect(evaluate('3!-1'), 5.0));
+    test('factorial of a bracket', () => expect(evaluate('(1+2)!'), 6.0));
+    test('factorial of a function', () => expect(evaluate('sqrt(9)!'), 6.0));
+    test('negated factorial', () => expect(evaluate('-3!'), -6.0));
+    test('factorial binds tighter than a power',
+        () => expect(evaluate('2^3!'), 64.0));
+  });
 }
