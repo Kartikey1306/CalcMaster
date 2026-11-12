@@ -451,13 +451,19 @@ class _TipCalcState extends State<TipCalc> {
               '${sheetMoney(total / p, region.currency)}',
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         NumberInput(label: 'Bill (${region.currency})', controller: bill),
-        NumberInput(label: 'Tip %', controller: tipPct),
+        NumberInput(
+            label: 'Tip %',
+            controller: tipPct,
+            presets: {0, 10, 15, 18, 20, customary}.toList()..sort(),
+            presetLabel: (n) => '${formatNumber(n.toDouble())}%'),
         Text('Customary tip in ${region.label}: ${formatNumber(customary)}%',
             style: TextStyle(color: context.ledger.inkSoft, fontSize: 12)),
         NumberInput(
             label: 'People',
             controller: people,
-            keyboardType: TextInputType.number),
+            keyboardType: TextInputType.number,
+            step: 1,
+            stepMin: 1),
         SizedBox(height: Spacing.lg),
         ResultRow(label: 'Tip', value: cur(tip)),
         ResultRow(label: (AglL10n.of(context)?.miscTotal ?? 'Total'), value: cur(total), highlight: true),
@@ -514,7 +520,11 @@ class _DiscountCalcState extends State<DiscountCalc> {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         NumberInput(
             label: 'Original (${region.currency})', controller: original),
-        NumberInput(label: 'Discount %', controller: pct),
+        NumberInput(
+            label: 'Discount %',
+            controller: pct,
+            presets: const [10, 20, 25, 30, 50],
+            presetLabel: (n) => '$n% off'),
         SizedBox(height: Spacing.lg),
         ResultRow(label: 'You save', value: cur(savings)),
         ResultRow(label: 'Final price', value: cur(fin), highlight: true),

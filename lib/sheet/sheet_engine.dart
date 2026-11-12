@@ -195,6 +195,9 @@ class LineResult {
   final RateUse? rate;
   final bool isTotal;
 
+  /// The name this line defines (`rent = 1200`), or null.
+  final String? variable;
+
   /// A rate this undated line should be pinned to from now on.
   final RatePin? newPin;
 
@@ -207,8 +210,13 @@ class LineResult {
     this.message,
     this.rate,
     this.isTotal = false,
+    this.variable,
     this.newPin,
   });
+
+  /// A plain-number variable (`nights = 3`) is a setting, not an amount:
+  /// never summed, never reported as left out.
+  bool get isSetting => variable != null && tag == null;
 
   /// 1-based line number, as shown in the gutter.
   int get number => index + 1;
@@ -240,6 +248,14 @@ class SheetEvaluation {
   /// the sheet has none (then there is nothing to re-price).
   final String? pinnedAsOf;
 
+  /// Sums of the counted lines stamped PAID and PENDING (same rule as the
+  /// total: only lines in [mainTag]).
+  final double paid;
+  final double pending;
+
+  /// How many counted lines carry a stamp; 0 hides the paid/owed split.
+  final int stampedCount;
+
   const SheetEvaluation({
     required this.lines,
     required this.mainTag,
@@ -248,7 +264,14 @@ class SheetEvaluation {
     required this.excludedNote,
     required this.needs,
     required this.pinnedAsOf,
+    this.paid = 0,
+    this.pending = 0,
+    this.stampedCount = 0,
   });
+
+  bool get hasStamps => stampedCount > 0;
+  String get paidDisplay => formatTagged(paid, mainTag);
+  String get pendingDisplay => formatTagged(pending, mainTag);
 
   bool get hasValues => lines.any((l) => l.hasValue && !l.isTotal);
 
@@ -398,6 +421,29 @@ final _pctOf =
     RegExp(r'^(\d+(?:\.\d+)?)\s*%\s+of\s+(.+)$', caseSensitive: false);
 final _number = r'\d[\d,]*(?:\.\d+)?|\.\d+';
 
+/// `rent = 1200`, `per_month = total_cost / 12`.
+final _assignment = RegExp(r'^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+)$');
+final _identifier = RegExp(r'\b[A-Za-z_][A-Za-z0-9_]*\b');
+
+/// Words a variable may not be called: the sheet's own keywords and every
+/// function or constant the evaluator understands.
+const _reservedNames = {
+  'prev', 'total', 'sum', 'of', 'in', 'on', 'to', 'x',
+  'pi', 'e', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh',
+  'tanh', 'asinh', 'acosh', 'atanh', 'cbrt', 'log', 'ln', 'sqrt', 'exp',
+  'abs', 'ceil', 'floor', 'round',
+};
+
+/// Why [name] can't be a variable, or null when it can.
+String? variableNameProblem(String name) {
+  final lower = name.toLowerCase();
+  if (_reservedNames.contains(lower)) return '"$name" is a reserved word';
+  if (_tagFor(name) != null) {
+    return '"$name" is a unit or currency — pick another name';
+  }
+  return null;
+}
+
 /// Works out every line of a sheet.
 ///
 /// [today] decides what "14 Sep" (no year) and "in the future" mean.
@@ -414,7 +460,34 @@ SheetEvaluation evaluateSheet(
   if (pass.any((r) => r.isTotal && r.tag != main)) {
     pass = _Pass(lines, rates, today, main).run(forced: true);
   }
-  return _summarise(pass, main);
+  final summary = _summarise(pass, main);
+  var paid = 0.0, pending = 0.0, stamped = 0;
+  for (final r in pass) {
+    if (r.isTotal || r.isSetting || !r.hasValue || r.tag != main) continue;
+    switch (lines[r.index].stamp) {
+      case LineStamp.paid:
+        paid += r.value!;
+        stamped++;
+      case LineStamp.pending:
+        pending += r.value!;
+        stamped++;
+      case null:
+        break;
+    }
+  }
+  if (stamped == 0) return summary;
+  return SheetEvaluation(
+    lines: summary.lines,
+    mainTag: summary.mainTag,
+    total: summary.total,
+    excludedCount: summary.excludedCount,
+    excludedNote: summary.excludedNote,
+    needs: summary.needs,
+    pinnedAsOf: summary.pinnedAsOf,
+    paid: paid,
+    pending: pending,
+    stampedCount: stamped,
+  );
 }
 
 Tag? _mainTag(List<LineResult> results) {
@@ -444,7 +517,7 @@ SheetEvaluation _summarise(List<LineResult> results, Tag? main) {
   final needs = <RateNeed>{};
   String? asOf;
   for (final r in results) {
-    if (r.isTotal) continue;
+    if (r.isTotal || r.isSetting) continue;
     if (r.kind == LineKind.needsRate) waiting++;
     if (r.hasValue) {
       // Only lines in the footer's currency or unit are added. A plain number
@@ -502,6 +575,20 @@ class _Pass {
   bool _forced = false;
   final List<LineResult> out = [];
 
+  /// Variables defined so far (lower-case name → its line's result). A later
+  /// definition of the same name takes over from that line on.
+  final Map<String, LineResult> _vars = {};
+
+  /// Names whose defining line has no value (an error, a rate still loading).
+  final Map<String, int> _brokenVars = {};
+
+  bool _mentionsVariable(String s) => _identifier
+      .allMatches(s)
+      .any((m) {
+        final w = m.group(0)!.toLowerCase();
+        return _vars.containsKey(w) || _brokenVars.containsKey(w);
+      });
+
   List<LineResult> run({bool forced = false}) {
     _forced = forced;
     for (var i = 0; i < lines.length; i++) {
@@ -530,7 +617,12 @@ class _Pass {
     final lower = body.toLowerCase();
     if (lower == 'total' || lower == 'sum') return _total(i, label);
 
-    if (!_digit.hasMatch(body) && !_refWord.hasMatch(body)) {
+    final assign = _assignment.firstMatch(body);
+    if (assign != null) return _define(i, label, assign.group(1)!, assign.group(2)!.trim());
+
+    if (!_digit.hasMatch(body) &&
+        !_refWord.hasMatch(body) &&
+        !_mentionsVariable(body)) {
       return LineResult(index: i, kind: LineKind.heading, label: t);
     }
 
@@ -554,13 +646,75 @@ class _Pass {
     }
   }
 
+  /// `name = expression`: works the expression out like any line and makes
+  /// its result available by name to every line below.
+  LineResult _define(int i, String? label, String name, String rhs) {
+    final key = name.toLowerCase();
+    final problem = variableNameProblem(name);
+    LineResult r;
+    if (problem != null) {
+      r = LineResult(index: i, kind: LineKind.error, label: label, message: problem);
+    } else {
+      try {
+        r = _evaluateBody(i, label ?? name, rhs);
+        if (r.label == null) {
+          r = LineResult(
+              index: i,
+              kind: r.kind,
+              label: name,
+              value: r.value,
+              tag: r.tag,
+              rate: r.rate,
+              newPin: r.newPin);
+        }
+      } on _UnknownWord {
+        r = LineResult(
+            index: i,
+            kind: LineKind.error,
+            label: label ?? name,
+            message: 'Unknown name in "$rhs"');
+      } on _LineError catch (e) {
+        r = LineResult(
+            index: i, kind: LineKind.error, label: label ?? name, message: e.message);
+      } on _NeedsRate catch (e) {
+        r = LineResult(
+            index: i,
+            kind: LineKind.needsRate,
+            label: label ?? name,
+            message: e.message);
+        if (e.need != null) _needOf[r] = e.need!;
+      }
+    }
+    if (problem == null && r.hasValue) {
+      r = LineResult(
+          index: i,
+          kind: r.kind,
+          label: r.label,
+          value: r.value,
+          tag: r.tag,
+          rate: r.rate,
+          variable: name,
+          newPin: r.newPin);
+    }
+    if (problem == null) {
+      if (r.hasValue) {
+        _vars[key] = r;
+        _brokenVars.remove(key);
+      } else {
+        _vars.remove(key);
+        _brokenVars[key] = i;
+      }
+    }
+    return r;
+  }
+
   LineResult _total(int i, String? label) {
     // First pass: the most common tag above this line. Second pass: the
     // footer's tag, whatever it turned out to be.
     final tag = _forced ? totalTag : _mainTag(out);
     var sum = 0.0;
     for (final r in out) {
-      if (r.isTotal || !r.hasValue) continue;
+      if (r.isTotal || r.isSetting || !r.hasValue) continue;
       if (r.tag == tag) sum += r.value!;
     }
     return LineResult(
@@ -791,6 +945,20 @@ class _Pass {
       final r = _ref(i, i - 1, 'prev');
       return place(r.value!, r.tag);
     });
+    // Named variables defined on lines above.
+    if (_vars.isNotEmpty || _brokenVars.isNotEmpty) {
+      s = s.replaceAllMapped(_identifier, (m) {
+        final word = m.group(0)!;
+        final key = word.toLowerCase();
+        final v = _vars[key];
+        if (v != null) return place(v.value!, v.tag);
+        final broken = _brokenVars[key];
+        if (broken != null) {
+          throw _LineError('"$word" (line ${broken + 1}) has no value');
+        }
+        return word;
+      });
+    }
 
     // Currency symbol before or after a number: €38.50, 38.50€.
     s = s.replaceAllMapped(

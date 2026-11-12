@@ -156,6 +156,16 @@ class SheetsController extends ChangeNotifier with WidgetsBindingObserver {
     _replace(s.copyWith(lines: lines));
   }
 
+  /// Rubber-stamps line [index] PAID or PENDING; null lifts the stamp.
+  void setLineStamp(int index, LineStamp? stamp) {
+    final s = current;
+    if (index < 0 || index >= s.lines.length) return;
+    if (s.lines[index].stamp == stamp) return;
+    final lines = [...s.lines];
+    lines[index] = lines[index].withStamp(stamp);
+    _replace(s.copyWith(lines: lines));
+  }
+
   void insertLine(int at, [String text = '']) {
     final s = current;
     final lines = [...s.lines]..insert(at.clamp(0, s.lines.length), SheetLine(text));

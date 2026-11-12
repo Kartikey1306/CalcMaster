@@ -37,13 +37,17 @@ class ResultRow extends StatelessWidget {
   }
 
   Widget _build(BuildContext context) {
+    final c = context.ledger;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    // Receipt paper: a shade brighter than the sheet in light mode.
+    final slip = dark
+        ? c.surface
+        : Color.alphaBlend(Colors.white.withValues(alpha: 0.6), c.paper);
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.zero,
       child: Material(
-        color: highlight ? context.ledger.surface : context.ledger.surface,
-        borderRadius: BorderRadius.circular(Radii.button),
+        color: slip,
         child: InkWell(
-          borderRadius: BorderRadius.circular(Radii.button),
           onTap: () async {
             await Clipboard.setData(ClipboardData(text: value));
             await HapticFeedback.selectionClick();
@@ -80,56 +84,129 @@ class ResultRow extends StatelessWidget {
                 );
             }
           },
-          child: Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: Spacing.lg, vertical: Spacing.md),
-            decoration: BoxDecoration(
-              border: Border.all(
-                  color: highlight ? context.ledger.rule : context.ledger.rule),
-              borderRadius: BorderRadius.circular(Radii.button),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(label,
-                          style: TextStyle(
-                              color: context.ledger.ink,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600)),
-                      if (caption != null)
-                        Padding(
-                          padding: EdgeInsets.only(top: 2),
-                          child: Text(caption!,
-                              style: TextStyle(
-                                  color: context.ledger.inkSoft, fontSize: 13)),
-                        ),
-                    ],
-                  ),
-                ),
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 180),
-                  child: Text(
-                    value,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.end,
-                    style: TextStyle(
-                      color: highlight ? context.ledger.primary : context.ledger.ink,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+          child: CustomPaint(
+            // A torn-off till receipt: rows sit flush on one slip, with a
+            // dashed rule between them and a dotted leader to each figure.
+            foregroundPainter: _DashedRule(color: c.rule),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Spacing.lg, vertical: Spacing.md),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    // Dots run behind the whole row; the label and the figure
+                    // sit on slip-coloured patches that hide them, leaving a
+                    // dotted leader in between whatever their lengths.
+                    child: CustomPaint(
+                      painter: _DotLeader(color: c.rule),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Flexible(
+                            flex: 3,
+                            child: Container(
+                              color: slip,
+                              padding: const EdgeInsets.only(right: 6),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(label.toUpperCase(),
+                                      style: TextStyle(
+                                          fontFamily: Fonts.figures,
+                                          color: highlight ? c.ink : c.inkSoft,
+                                          fontSize: 13,
+                                          letterSpacing: 0.8,
+                                          fontWeight: highlight
+                                              ? FontWeight.w700
+                                              : FontWeight.w500)),
+                                  if (caption != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(caption!,
+                                          style: TextStyle(
+                                              color: c.inkSoft, fontSize: 12)),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            flex: 2,
+                            child: Container(
+                              color: slip,
+                              padding: const EdgeInsets.only(left: 6),
+                              child: Text(
+                                value,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                  fontFamily: Fonts.figures,
+                                  fontFeatures: Fonts.tabular,
+                                  color: highlight ? c.result : c.ink,
+                                  fontSize: highlight ? 20 : 16,
+                                  fontWeight: highlight
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(width: Spacing.md),
-                Icon(Icons.copy_outlined,
-                    size: 16, color: context.ledger.inkSoft),
-              ],
+                  const SizedBox(width: Spacing.sm),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Icon(Icons.copy_outlined,
+                        size: 14, color: c.inkSoft.withValues(alpha: 0.7)),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
+}
+
+class _DashedRule extends CustomPainter {
+  final Color color;
+  const _DashedRule({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final p = Paint()
+      ..color = color
+      ..strokeWidth = 1;
+    final y = size.height - 0.5;
+    for (var x = Spacing.lg; x < size.width - Spacing.lg; x += 7) {
+      canvas.drawLine(Offset(x, y), Offset(x + 3.5, y), p);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedRule old) => old.color != color;
+}
+
+class _DotLeader extends CustomPainter {
+  final Color color;
+  const _DotLeader({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final p = Paint()..color = color;
+    // Along the baseline of the last line of text.
+    final y = size.height - 6;
+    for (var x = 0.0; x < size.width; x += 5) {
+      canvas.drawCircle(Offset(x + 1, y), 0.9, p);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DotLeader old) => old.color != color;
 }

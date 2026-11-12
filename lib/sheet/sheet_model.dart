@@ -47,23 +47,43 @@ class RatePin {
   int get hashCode => Object.hash(base, quote, rate, date);
 }
 
+/// A rubber stamp on a line: the footer splits the total into what is paid
+/// and what is still owed.
+enum LineStamp {
+  paid,
+  pending;
+
+  static LineStamp? fromName(Object? name) {
+    for (final s in values) {
+      if (s.name == name) return s;
+    }
+    return null;
+  }
+}
+
 class SheetLine {
   final String text;
   final RatePin? pin;
-  const SheetLine(this.text, {this.pin});
+  final LineStamp? stamp;
+  const SheetLine(this.text, {this.pin, this.stamp});
 
-  SheetLine withText(String t) => SheetLine(t, pin: pin);
-  SheetLine withPin(RatePin? p) => SheetLine(text, pin: p);
+  SheetLine withText(String t) => SheetLine(t, pin: pin, stamp: stamp);
+  SheetLine withPin(RatePin? p) => SheetLine(text, pin: p, stamp: stamp);
+  SheetLine withStamp(LineStamp? s) => SheetLine(text, pin: pin, stamp: s);
 
-  Map<String, dynamic> toJson() =>
-      {'text': text, if (pin != null) 'pin': pin!.toJson()};
+  Map<String, dynamic> toJson() => {
+        'text': text,
+        if (pin != null) 'pin': pin!.toJson(),
+        if (stamp != null) 'stamp': stamp!.name,
+      };
 
   static SheetLine fromJson(Object? json) {
     if (json is String) return SheetLine(json);
     if (json is! Map) return const SheetLine('');
     final text = json['text'];
     return SheetLine(text is String ? text : '',
-        pin: RatePin.fromJson(json['pin']));
+        pin: RatePin.fromJson(json['pin']),
+        stamp: LineStamp.fromName(json['stamp']));
   }
 }
 

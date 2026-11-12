@@ -9,6 +9,9 @@ import '../../sheet/sheet_export.dart';
 import '../../sheet/sheet_model.dart';
 import '../../sheet/sheet_share.dart';
 import '../../sheet/sheets_controller.dart';
+import '../../sheet/smart_suggest.dart';
+import '../../lib_tax.dart' show customaryTipPercent;
+import '../../state/region_provider.dart';
 import '../../theme/tokens.dart';
 import 'rename_dialog.dart';
 import 'ruled_paper.dart';
@@ -163,8 +166,39 @@ class _SheetEditorState extends State<SheetEditor> {
     _focusLine(i + 1);
   }
 
+  /// Smart suggestions for the line being typed — only while the sheet can't
+  /// work it out as written ("finner 18 eurp for 2 peoer").
+  List<SmartSuggestion> _suggestionsFor(
+      String text, LineResult? r, RegionProvider regions) {
+    if (text.trim().isEmpty) return const [];
+    if (r != null && r.kind != LineKind.heading && r.kind != LineKind.error) {
+      return const [];
+    }
+    return suggestLines(text,
+        homeCurrency: regions.region.currency,
+        customaryTip: customaryTipPercent[regions.regionId]);
+  }
+
+  void _applySuggestion(int i, String line) {
+    HapticFeedback.selectionClick();
+    final ctrl = _ctrls[i];
+    ctrl.value = TextEditingValue(
+        text: line, selection: TextSelection.collapsed(offset: line.length));
+    context.read<SheetsController>().setLineText(i, line);
+  }
+
+  void _stamp(int i, LineStamp? stamp) {
+    final sheets = context.read<SheetsController>();
+    final current = sheets.current.lines[i].stamp;
+    // Stamping a line with the stamp it already has lifts it.
+    final next = current == stamp ? null : stamp;
+    sheets.setLineStamp(i, next);
+    HapticFeedback.mediumImpact();
+  }
+
   Future<void> _lineMenu(int i) async {
     final sheets = context.read<SheetsController>();
+    final stamp = sheets.current.lines[i].stamp;
     final choice = await showModalBottomSheet<String>(
       context: context,
       builder: (ctx) => SafeArea(
@@ -179,6 +213,24 @@ class _SheetEditorState extends State<SheetEditor> {
             title: Text('Insert a line below line ${i + 1}'),
             onTap: () => Navigator.pop(ctx, 'below'),
           ),
+          if (stamp != LineStamp.paid)
+            ListTile(
+              leading: Icon(Icons.verified_outlined, color: ctx.ledger.primary),
+              title: Text('Stamp line ${i + 1} PAID'),
+              onTap: () => Navigator.pop(ctx, 'paid'),
+            ),
+          if (stamp != LineStamp.pending)
+            ListTile(
+              leading: Icon(Icons.schedule, color: ctx.ledger.result),
+              title: Text('Stamp line ${i + 1} PENDING'),
+              onTap: () => Navigator.pop(ctx, 'pending'),
+            ),
+          if (stamp != null)
+            ListTile(
+              leading: const Icon(Icons.layers_clear_outlined),
+              title: const Text('Remove the stamp'),
+              onTap: () => Navigator.pop(ctx, 'unstamp'),
+            ),
           ListTile(
             leading: Icon(Icons.delete_outline, color: ctx.ledger.error),
             title: Text('Delete line ${i + 1}'),
@@ -197,6 +249,12 @@ class _SheetEditorState extends State<SheetEditor> {
         _focusLine(i + 1);
       case 'delete':
         sheets.removeLine(i);
+      case 'paid':
+        sheets.setLineStamp(i, LineStamp.paid);
+      case 'pending':
+        sheets.setLineStamp(i, LineStamp.pending);
+      case 'unstamp':
+        sheets.setLineStamp(i, null);
     }
   }
 
@@ -276,6 +334,7 @@ class _SheetEditorState extends State<SheetEditor> {
     }
     final sheet = sheets.current;
     final eval = sheets.evaluation();
+    final regions = context.watch<RegionProvider>();
     _sync(sheet);
     final fresh = sheet.lines.length == 1 &&
         sheet.lines.first.text.isEmpty &&
@@ -332,8 +391,7 @@ class _SheetEditorState extends State<SheetEditor> {
                 if (asOf != null)
                   PopupMenuItem(
                       value: 'reprice', child: Text(loc.sheetReprice)),
-                PopupMenuItem(
-                    value: 'help', child: Text(loc.helpHowLinesWork)),
+                PopupMenuItem(value: 'help', child: Text(loc.helpHowLinesWork)),
                 PopupMenuItem(
                     value: 'settings', child: Text(loc.settingsTitle)),
               ];
@@ -348,8 +406,7 @@ class _SheetEditorState extends State<SheetEditor> {
       body: SafeArea(
         top: false,
         child: Column(children: [
-          if (asOf != null)
-            _RatesBanner(asOf: asOf, onReprice: _reprice),
+          if (asOf != null) _RatesBanner(asOf: asOf, onReprice: _reprice),
           Expanded(
             child: CustomScrollView(
               slivers: [
@@ -362,6 +419,15 @@ class _SheetEditorState extends State<SheetEditor> {
                     focusNode: _nodes[i],
                     result: i < eval.lines.length ? eval.lines[i] : null,
                     hint: fresh && i == 0 ? sheetHints.first : null,
+                    stamp: sheet.lines[i].stamp,
+                    onStamp: (st) => _stamp(i, st),
+                    suggestions: _focused == i
+                        ? _suggestionsFor(
+                            sheet.lines[i].text,
+                            i < eval.lines.length ? eval.lines[i] : null,
+                            regions)
+                        : const [],
+                    onSuggestion: (line) => _applySuggestion(i, line),
                     onChanged: (t) => sheets.setLineText(i, t),
                     onSubmitted: () => _onSubmitted(i),
                     onGutter: () => _lineMenu(i),
@@ -464,6 +530,10 @@ class _LineRow extends StatelessWidget {
   final VoidCallback onSubmitted;
   final VoidCallback onGutter;
   final VoidCallback onInsertRef;
+  final LineStamp? stamp;
+  final ValueChanged<LineStamp?> onStamp;
+  final List<SmartSuggestion> suggestions;
+  final ValueChanged<String> onSuggestion;
 
   const _LineRow({
     super.key,
@@ -476,6 +546,10 @@ class _LineRow extends StatelessWidget {
     required this.onSubmitted,
     required this.onGutter,
     required this.onInsertRef,
+    required this.stamp,
+    required this.onStamp,
+    required this.suggestions,
+    required this.onSuggestion,
   });
 
   @override
@@ -510,17 +584,25 @@ class _LineRow extends StatelessWidget {
               widthFactor: 1,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: Spacing.sm),
-                child: Text(
-                  r.display!,
-                  textAlign: TextAlign.end,
-                  style: TextStyle(
-                    fontFamily: Fonts.figures,
-                    fontFeatures: Fonts.tabular,
-                    color: r.isTotal ? c.ink : c.result,
-                    fontWeight: r.isTotal ? FontWeight.w700 : FontWeight.w500,
-                    fontSize: 16,
-                  ),
-                ),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  if (stamp != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: Spacing.sm),
+                      child: _RubberStamp(stamp: stamp!),
+                    ),
+                  Flexible(
+                      child: Text(
+                    r.display!,
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                      fontFamily: Fonts.figures,
+                      fontFeatures: Fonts.tabular,
+                      color: r.isTotal ? c.ink : c.result,
+                      fontWeight: r.isTotal ? FontWeight.w700 : FontWeight.w500,
+                      fontSize: 16,
+                    ),
+                  )),
+                ]),
               ),
             ),
           ),
@@ -560,7 +642,7 @@ class _LineRow extends StatelessWidget {
       );
     }
 
-    return RuledPaper(
+    final row = RuledPaper(
       child: Padding(
         padding: const EdgeInsets.only(right: Spacing.sm),
         child: Column(
@@ -647,8 +729,8 @@ class _LineRow extends StatelessWidget {
                     // The result hugs the right edge; long lines wrap rather
                     // than push it off.
                     constraints: BoxConstraints(
-                        maxWidth:
-                            MediaQuery.sizeOf(context).width * 0.45),
+                        maxWidth: MediaQuery.sizeOf(context).width *
+                            (stamp != null ? 0.55 : 0.45)),
                     child: trailing,
                   ),
               ],
@@ -665,7 +747,165 @@ class _LineRow extends StatelessWidget {
                   style: TextStyle(color: c.inkSoft, fontSize: 12),
                 ),
               ),
+            if (suggestions.isNotEmpty)
+              _SuggestionStrip(suggestions: suggestions, onPick: onSuggestion),
           ],
+        ),
+      ),
+    );
+
+    final stamped = row;
+
+    // Swipe right: PAID. Swipe left: PENDING. Swiping again lifts the stamp.
+    // The row never leaves — the swipe only stamps it.
+    if (r == null || !r.hasValue || r.isTotal) return stamped;
+    return Dismissible(
+      key: ValueKey('stamp-${key.hashCode}-$index'),
+      direction: DismissDirection.horizontal,
+      dismissThresholds: const {
+        DismissDirection.startToEnd: 0.28,
+        DismissDirection.endToStart: 0.28,
+      },
+      confirmDismiss: (dir) async {
+        onStamp(dir == DismissDirection.startToEnd
+            ? LineStamp.paid
+            : LineStamp.pending);
+        return false;
+      },
+      background:
+          _SwipeHint(stamp: LineStamp.paid, lifting: stamp == LineStamp.paid),
+      secondaryBackground: _SwipeHint(
+          stamp: LineStamp.pending, lifting: stamp == LineStamp.pending),
+      child: stamped,
+    );
+  }
+}
+
+/// An inked rubber stamp, a little crooked, over the line's result.
+class _RubberStamp extends StatelessWidget {
+  final LineStamp stamp;
+  const _RubberStamp({required this.stamp});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.ledger;
+    final paid = stamp == LineStamp.paid;
+    final ink = paid ? c.primary : c.result;
+    return Semantics(
+      label: paid ? 'Stamped paid' : 'Stamped pending',
+      child: TweenAnimationBuilder<double>(
+        // Lands like a stamp: a touch big, then pressed flat.
+        tween: Tween(begin: 1.35, end: 1),
+        duration: MediaQuery.of(context).disableAnimations
+            ? Duration.zero
+            : const Duration(milliseconds: 260),
+        curve: Curves.easeOutBack,
+        builder: (context, scale, child) =>
+            Transform.scale(scale: scale, child: child),
+        child: Transform.rotate(
+          angle: paid ? -0.14 : 0.1,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+            decoration: BoxDecoration(
+              border: Border.all(color: ink.withValues(alpha: 0.8), width: 2),
+              borderRadius: BorderRadius.circular(3),
+            ),
+            child: Text(
+              paid ? 'PAID' : 'DUE',
+              style: TextStyle(
+                fontFamily: Fonts.figures,
+                color: ink.withValues(alpha: 0.8),
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 2,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SwipeHint extends StatelessWidget {
+  final LineStamp stamp;
+  final bool lifting;
+  const _SwipeHint({required this.stamp, required this.lifting});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.ledger;
+    final paid = stamp == LineStamp.paid;
+    final ink = paid ? c.primary : c.result;
+    return Container(
+      color: ink.withValues(alpha: 0.12),
+      alignment: paid ? Alignment.centerLeft : Alignment.centerRight,
+      padding: const EdgeInsets.symmetric(horizontal: Spacing.xl),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(
+            lifting
+                ? Icons.layers_clear_outlined
+                : (paid ? Icons.verified_outlined : Icons.schedule),
+            color: ink,
+            size: 20),
+        const SizedBox(width: Spacing.sm),
+        Text(lifting ? 'Remove stamp' : (paid ? 'PAID' : 'PENDING'),
+            style: TextStyle(
+                color: ink, fontWeight: FontWeight.w700, letterSpacing: 1.2)),
+      ]),
+    );
+  }
+}
+
+/// "Did you mean" chips under a line the sheet couldn't read as typed.
+class _SuggestionStrip extends StatelessWidget {
+  final List<SmartSuggestion> suggestions;
+  final ValueChanged<String> onPick;
+  const _SuggestionStrip({required this.suggestions, required this.onPick});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.ledger;
+    // Part of the text field's tap region, so tapping a chip doesn't close
+    // the keyboard first.
+    return TextFieldTapRegion(
+      child: Padding(
+        padding: const EdgeInsets.only(
+            left: RuledPaper.gutter + Spacing.md, bottom: Spacing.sm),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(children: [
+            Icon(Icons.auto_awesome, size: 16, color: c.primary),
+            const SizedBox(width: Spacing.xs),
+            for (final s in suggestions)
+              Padding(
+                padding: const EdgeInsets.only(left: Spacing.xs),
+                child: Semantics(
+                  button: true,
+                  label: 'Suggestion: ${s.title}. ${s.line}',
+                  excludeSemantics: true,
+                  child: Material(
+                    color: c.primary.withValues(alpha: 0.1),
+                    shape: StadiumBorder(
+                        side: BorderSide(
+                            color: c.primary.withValues(alpha: 0.35))),
+                    child: InkWell(
+                      customBorder: const StadiumBorder(),
+                      onTap: () => onPick(s.line),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: Spacing.md, vertical: 6),
+                        child: Text(s.title,
+                            style: TextStyle(
+                                color: c.primary,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ]),
         ),
       ),
     );
@@ -781,7 +1021,9 @@ class _Footer extends StatelessWidget {
     final value = eval.hasValues ? eval.totalDisplay : '—';
     return Semantics(
       container: true,
-      label: 'Total, $value${eval.excludedNote == null ? '' : '. ${eval.excludedNote}'}',
+      label: 'Total, $value'
+          '${eval.hasStamps ? '. Paid ${eval.paidDisplay}, pending ${eval.pendingDisplay}' : ''}'
+          '${eval.excludedNote == null ? '' : '. ${eval.excludedNote}'}',
       excludeSemantics: true,
       child: Container(
         decoration: BoxDecoration(
@@ -815,6 +1057,24 @@ class _Footer extends StatelessWidget {
                 ),
               ),
             ]),
+            if (eval.hasStamps)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Wrap(
+                  alignment: WrapAlignment.end,
+                  spacing: Spacing.lg,
+                  children: [
+                    _StampTotal(
+                        label: 'Paid',
+                        value: eval.paidDisplay,
+                        color: c.primary),
+                    _StampTotal(
+                        label: 'Pending',
+                        value: eval.pendingDisplay,
+                        color: c.result),
+                  ],
+                ),
+              ),
             if (eval.excludedNote != null)
               Padding(
                 padding: const EdgeInsets.only(top: 2),
@@ -826,5 +1086,33 @@ class _Footer extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _StampTotal extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+  const _StampTotal(
+      {required this.label, required this.value, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+      const SizedBox(width: 6),
+      Text('$label ',
+          style: TextStyle(color: context.ledger.inkSoft, fontSize: 13)),
+      Text(value,
+          style: TextStyle(
+              fontFamily: Fonts.figures,
+              fontFeatures: Fonts.tabular,
+              color: color,
+              fontSize: 13,
+              fontWeight: FontWeight.w600)),
+    ]);
   }
 }

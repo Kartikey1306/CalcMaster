@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../sheet/add_to_sheet.dart';
 import '../theme/tokens.dart';
+import 'receipt_tear_off.dart';
 
 class InnerScaffold extends StatelessWidget {
   final String title;
@@ -46,6 +47,7 @@ class InnerScaffold extends StatelessWidget {
         return;
       }
       addLineToSheet(context, line, tool: tool ?? title);
+      playReceiptTearOff(context, line);
     }
 
     return Scaffold(
