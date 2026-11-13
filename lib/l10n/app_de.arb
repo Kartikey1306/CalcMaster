@@ -77,6 +77,8 @@
   "settingsRates": "Kurse",
   "settingsRatesBody": "Referenzkurse der Europäischen Zentralbank. Gespeicherte Kurse: {count}",
   "settingsClearRateCache": "Cache leeren",
+  "settingsAutoRates": "Blätter auf dem neuesten Kurs halten",
+  "settingsAutoRatesBody": "Prüft alle 30 Minuten und beim Öffnen auf neue EZB-Kurse und aktualisiert die Zeilen. Aus: Jede Zeile behält ihren ersten Kurs.",
   "helpHowLinesWork": "So funktionieren Zeilen",
   "aboutTagline": "Rechnen auf linierten Blättern, mit EZB-Kursen vom Tag",
   "sheetsTitle": "Blätter",

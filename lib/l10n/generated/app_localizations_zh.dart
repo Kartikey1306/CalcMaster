@@ -245,6 +245,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsClearRateCache => '清除缓存';
 
   @override
+  String get settingsAutoRates => '让表格使用最新汇率';
+
+  @override
+  String get settingsAutoRatesBody =>
+      '每 30 分钟及打开应用时检查欧洲央行的新汇率，并更新各行。关闭：每行保留首次计算时的汇率。';
+
+  @override
   String get helpHowLinesWork => '行的写法';
 
   @override

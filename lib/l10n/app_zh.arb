@@ -77,6 +77,8 @@
   "settingsRates": "汇率",
   "settingsRatesBody": "欧洲央行参考汇率。已缓存的汇率：{count}",
   "settingsClearRateCache": "清除缓存",
+  "settingsAutoRates": "让表格使用最新汇率",
+  "settingsAutoRatesBody": "每 30 分钟及打开应用时检查欧洲央行的新汇率，并更新各行。关闭：每行保留首次计算时的汇率。",
   "helpHowLinesWork": "行的写法",
   "aboutTagline": "横线表单上的计算，按当日欧洲央行汇率",
   "sheetsTitle": "表单",

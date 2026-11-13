@@ -77,6 +77,8 @@
   "settingsRates": "Tipos de cambio",
   "settingsRatesBody": "Tipos de referencia del Banco Central Europeo. Tipos guardados: {count}",
   "settingsClearRateCache": "Borrar caché",
+  "settingsAutoRates": "Mantener las hojas al último tipo",
+  "settingsAutoRatesBody": "Busca nuevos tipos del BCE cada 30 minutos y al abrir la app, y actualiza las líneas. Desactivado: cada línea conserva el tipo con el que se calculó.",
   "helpHowLinesWork": "Cómo funcionan las líneas",
   "aboutTagline": "Cuentas en hojas rayadas, con tipos del BCE del día",
   "sheetsTitle": "Hojas",

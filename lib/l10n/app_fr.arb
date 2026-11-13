@@ -77,6 +77,8 @@
   "settingsRates": "Taux",
   "settingsRatesBody": "Taux de référence de la Banque centrale européenne. Taux en cache : {count}",
   "settingsClearRateCache": "Vider le cache",
+  "settingsAutoRates": "Garder les feuilles au dernier taux",
+  "settingsAutoRatesBody": "Vérifie les nouveaux taux de la BCE toutes les 30 minutes et à l’ouverture, et met les lignes à jour. Désactivé : chaque ligne garde son premier taux.",
   "helpHowLinesWork": "Comment écrire les lignes",
   "aboutTagline": "Des calculs sur feuilles lignées, aux taux BCE du jour",
   "sheetsTitle": "Feuilles",

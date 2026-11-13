@@ -247,6 +247,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsClearRateCache => 'Vider le cache';
 
   @override
+  String get settingsAutoRates => 'Garder les feuilles au dernier taux';
+
+  @override
+  String get settingsAutoRatesBody =>
+      'Vérifie les nouveaux taux de la BCE toutes les 30 minutes et à l’ouverture, et met les lignes à jour. Désactivé : chaque ligne garde son premier taux.';
+
+  @override
   String get helpHowLinesWork => 'Comment écrire les lignes';
 
   @override

@@ -52,7 +52,7 @@ pure Dart and run offline. The only network call is Frankfurter
 | `assets/fonts/` | Golos Text and Reddit Mono static instances + OFL licences |
 
 ## Rules that matter
-- **Real rates only.** ECB reference rates via Frankfurter; 30 currencies; never estimate a rate, never add a second source. A dated rate shows the ECB date actually used. Undated lines are pinned; re-pricing is an explicit tap.
+- **Real rates only.** ECB reference rates via Frankfurter; 30 currencies; never estimate a rate, never add a second source (no scraping). A dated rate shows the ECB date actually used. The latest table is re-fetched every 30 min and on resume; with Settings → "Keep sheets at the latest rate" (on by default) undated lines move to each new publication, with it off they stay pinned until Re-price.
 - **No account, no paywall.** The Supabase sign-in, demo session and Pro paywall were removed; do not reintroduce them.
 - **5.6:** one build for everyone — no remote switches, reviewer detection, hidden gestures or demo logins.
 

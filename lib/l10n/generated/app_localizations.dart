@@ -580,6 +580,18 @@ abstract class AppLocalizations {
   /// **'Clear cache'**
   String get settingsClearRateCache;
 
+  /// No description provided for @settingsAutoRates.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep sheets at the latest rate'**
+  String get settingsAutoRates;
+
+  /// No description provided for @settingsAutoRatesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Checks for new ECB rates every 30 minutes and when you open the app, and moves lines to them. Off: each line keeps the rate it was first worked out at.'**
+  String get settingsAutoRatesBody;
+
   /// No description provided for @helpHowLinesWork.
   ///
   /// In en, this message translates to:

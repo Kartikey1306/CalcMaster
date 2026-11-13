@@ -91,6 +91,8 @@
     }
   },
   "settingsClearRateCache": "Clear cache",
+  "settingsAutoRates": "Keep sheets at the latest rate",
+  "settingsAutoRatesBody": "Checks for new ECB rates every 30 minutes and when you open the app, and moves lines to them. Off: each line keeps the rate it was first worked out at.",
   "helpHowLinesWork": "How lines work",
   "aboutTagline": "Sums on ruled sheets, with ECB rates on the day",
   "sheetsTitle": "Sheets",

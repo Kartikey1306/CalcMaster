@@ -50,8 +50,8 @@ void main() {
 
       final line = evalWith(['100 EUR on 2026-10-10 in USD']).lines.single;
       expect(line.display, '112.06 USD');
-      expect(line.rate!.caption,
-          'ECB 1.1206 · Fri 9 Oct (no rate on Sat 10 Oct)');
+      expect(
+          line.rate!.caption, 'ECB 1.1206 · Fri 9 Oct (no rate on Sat 10 Oct)');
       expect(line.rate!.caption, contains('Fri 9 Oct'));
     });
 
@@ -117,8 +117,9 @@ void main() {
     late FakeRates rates;
     late SheetsController sheets;
 
-    Future<void> start({RatesResult? table}) async {
-      SharedPreferences.setMockInitialValues({});
+    Future<void> start({RatesResult? table, bool autoUpdate = true}) async {
+      SharedPreferences.setMockInitialValues(
+          {SheetsController.kAutoUpdateRates: autoUpdate});
       rates = FakeRates(table: table);
       sheets = SheetsController(
           rates: rates,
@@ -149,7 +150,8 @@ void main() {
       expect(api.calls, 1);
     });
 
-    test('offline with no cache: excluded from the total, labelled, and the '
+    test(
+        'offline with no cache: excluded from the total, labelled, and the '
         'footer says so', () async {
       await start();
       api.offline = true;
@@ -158,16 +160,19 @@ void main() {
       final e = await settle();
       final dinner = e.lines[1];
       expect(dinner.kind, LineKind.needsRate);
-      expect(dinner.message,
-          'Needs a connection to get the ECB rate for 14 Sep');
+      expect(
+          dinner.message, 'Needs a connection to get the ECB rate for 14 Sep');
       expect(dinner.display, isNull);
       expect(e.totalDisplay, '20.00 USD');
       expect(e.excludedNote, 'Total excludes 1 line');
     });
 
-    test('a pinned undated line keeps its value after the latest rate '
+    test(
+        'a pinned undated line keeps its value after the latest rate '
         'changes, until Re-price is tapped', () async {
-      await start(table: usdTable('2026-10-09', eur: 0.89238));
+      // With automatic updates off (Settings → Rates).
+      await start(
+          table: usdTable('2026-10-09', eur: 0.89238), autoUpdate: false);
       sheets.setLineText(0, '100 EUR in USD');
       var e = await settle();
       expect(e.lines.single.display, '112.06 USD');

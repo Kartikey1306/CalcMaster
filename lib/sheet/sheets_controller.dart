@@ -84,6 +84,8 @@ class SheetsController extends ChangeNotifier with WidgetsBindingObserver {
     } else {
       _currentId = _blank().id;
     }
+    _autoUpdateRates = p.getBool(kAutoUpdateRates) ?? true;
+    _startRateTimer();
     _ready = true;
     _notify();
   }
@@ -286,6 +288,81 @@ class SheetsController extends ChangeNotifier with WidgetsBindingObserver {
     return RepriceResult(ok: true, asOf: table.date);
   }
 
+  // ---- automatic rate updates -------------------------------------------
+
+  /// Settings key for [autoUpdateRates].
+  static const kAutoUpdateRates = 'auto_update_rates_v1';
+
+  /// How old the latest table may get before it is fetched again. The ECB
+  /// publishes once per working day (about 16:00 CET), so this catches each
+  /// new publication within half an hour while the app is open.
+  static const rateRefreshEvery = Duration(minutes: 30);
+
+  bool _autoUpdateRates = true;
+  Timer? _rateTimer;
+
+  /// When on, undated currency lines move to each new ECB publication by
+  /// themselves. When off, a line keeps the rate it was first worked out at
+  /// until Re-price is tapped. Dated lines ("on 14 Sep") never move.
+  bool get autoUpdateRates => _autoUpdateRates;
+
+  Future<void> setAutoUpdateRates(bool on) async {
+    _autoUpdateRates = on;
+    await _store?.prefs.setBool(kAutoUpdateRates, on);
+    if (on) {
+      _moveToLatestRates();
+      await refreshRatesIfStale();
+    }
+    _notify();
+  }
+
+  /// Fetches the latest table when there is none or it is older than
+  /// [rateRefreshEvery]. Called on resume and on a timer.
+  Future<void> refreshRatesIfStale() async {
+    final t = rates.latestTable;
+    final age = t == null
+        ? null
+        : _now().difference(DateTime.fromMillisecondsSinceEpoch(t.fetchedAt));
+    if (t == null || !t.live || age! >= rateRefreshEvery) {
+      await rates.refreshRates();
+    }
+  }
+
+  void _startRateTimer() {
+    _rateTimer?.cancel();
+    // Widget tests run on a fake clock and fail on a timer left running.
+    if (WidgetsBinding.instance.runtimeType
+        .toString()
+        .contains('TestWidgetsFlutterBinding')) {
+      return;
+    }
+    _rateTimer =
+        Timer.periodic(rateRefreshEvery, (_) => refreshRatesIfStale());
+  }
+
+  /// Unpins every undated line priced at an older ECB publication than the
+  /// live table, in every sheet, so it is worked out (and pinned) again at
+  /// the new rate.
+  void _moveToLatestRates() {
+    if (!_autoUpdateRates || !_ready) return;
+    final t = rates.latestTable;
+    if (t == null || !t.live || t.date.isEmpty) return;
+    var changed = false;
+    for (final s in [..._sheets]) {
+      if (!s.lines.any((l) => l.pin != null && l.pin!.date != t.date)) {
+        continue;
+      }
+      final lines = [
+        for (final l in s.lines)
+          l.pin != null && l.pin!.date != t.date ? l.withPin(null) : l
+      ];
+      _replace(s.copyWith(lines: lines), touch: false, invalidate: false);
+      _evals.remove(s.id);
+      changed = true;
+    }
+    if (changed) _scheduleSave();
+  }
+
   /// Forgets cached dated rates (Settings → Rates). Pinned lines keep their
   /// pins; dated lines are fetched again.
   Future<void> clearRateCache() async {
@@ -333,6 +410,7 @@ class SheetsController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void _onRatesChanged() {
+    _moveToLatestRates();
     _evals.clear();
     _notify();
   }
@@ -348,6 +426,7 @@ class SheetsController extends ChangeNotifier with WidgetsBindingObserver {
       // lines that could not get a rate.
       _datedFailures.removeWhere((_, f) => f == RateFailure.offline);
       _latestAttempted = false;
+      refreshRatesIfStale();
       _evals.clear();
       _notify();
     }
@@ -418,6 +497,7 @@ class SheetsController extends ChangeNotifier with WidgetsBindingObserver {
   void dispose() {
     _disposed = true;
     _saveTimer?.cancel();
+    _rateTimer?.cancel();
     rates.removeListener(_onRatesChanged);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();

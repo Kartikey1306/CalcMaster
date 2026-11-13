@@ -247,6 +247,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get settingsClearRateCache => 'कैश साफ़ करें';
 
   @override
+  String get settingsAutoRates => 'शीट को नवीनतम दर पर रखें';
+
+  @override
+  String get settingsAutoRatesBody =>
+      'हर 30 मिनट में और ऐप खोलने पर ECB की नई दरें देखता है और पंक्तियाँ अपडेट करता है। बंद: हर पंक्ति अपनी पहली दर रखती है।';
+
+  @override
   String get helpHowLinesWork => 'लाइनें कैसे काम करती हैं';
 
   @override

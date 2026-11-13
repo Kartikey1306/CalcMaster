@@ -77,6 +77,8 @@
   "settingsRates": "Câmbio",
   "settingsRatesBody": "Taxas de referência do Banco Central Europeu. Taxas guardadas: {count}",
   "settingsClearRateCache": "Limpar cache",
+  "settingsAutoRates": "Manter as folhas na taxa mais recente",
+  "settingsAutoRatesBody": "Procura novas taxas do BCE a cada 30 minutos e ao abrir a app, e atualiza as linhas. Desligado: cada linha mantém a primeira taxa.",
   "helpHowLinesWork": "Como as linhas funcionam",
   "aboutTagline": "Contas em folhas pautadas, com taxas do BCE do dia",
   "sheetsTitle": "Folhas",

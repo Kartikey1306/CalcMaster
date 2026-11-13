@@ -245,6 +245,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsClearRateCache => '캐시 지우기';
 
   @override
+  String get settingsAutoRates => '시트를 최신 환율로 유지';
+
+  @override
+  String get settingsAutoRatesBody =>
+      '30분마다, 그리고 앱을 열 때 ECB의 새 환율을 확인해 줄을 업데이트합니다. 끄기: 각 줄은 처음 계산한 환율을 유지합니다.';
+
+  @override
   String get helpHowLinesWork => '줄 작성법';
 
   @override

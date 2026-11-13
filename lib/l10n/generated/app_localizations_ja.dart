@@ -245,6 +245,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsClearRateCache => 'キャッシュを消去';
 
   @override
+  String get settingsAutoRates => 'シートを最新レートに保つ';
+
+  @override
+  String get settingsAutoRatesBody =>
+      '30分ごととアプリを開いたときにECBの新しいレートを確認し、行を更新します。オフ：各行は最初に計算したレートのままです。';
+
+  @override
   String get helpHowLinesWork => '行の書き方';
 
   @override

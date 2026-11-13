@@ -247,6 +247,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsClearRateCache => 'مسح الذاكرة المؤقتة';
 
   @override
+  String get settingsAutoRates => 'إبقاء الأوراق على أحدث سعر';
+
+  @override
+  String get settingsAutoRatesBody =>
+      'يتحقق من أسعار البنك المركزي الأوروبي الجديدة كل 30 دقيقة وعند فتح التطبيق ويحدّث الأسطر. عند الإيقاف: يحتفظ كل سطر بسعره الأول.';
+
+  @override
   String get helpHowLinesWork => 'كيف تعمل الأسطر';
 
   @override

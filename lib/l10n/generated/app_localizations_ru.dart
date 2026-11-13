@@ -247,6 +247,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsClearRateCache => 'Очистить кэш';
 
   @override
+  String get settingsAutoRates => 'Обновлять листы по последнему курсу';
+
+  @override
+  String get settingsAutoRatesBody =>
+      'Проверяет новые курсы ЕЦБ каждые 30 минут и при открытии приложения и обновляет строки. Выкл.: каждая строка сохраняет первый курс.';
+
+  @override
   String get helpHowLinesWork => 'Как работают строки';
 
   @override

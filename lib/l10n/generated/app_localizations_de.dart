@@ -247,6 +247,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsClearRateCache => 'Cache leeren';
 
   @override
+  String get settingsAutoRates => 'Blätter auf dem neuesten Kurs halten';
+
+  @override
+  String get settingsAutoRatesBody =>
+      'Prüft alle 30 Minuten und beim Öffnen auf neue EZB-Kurse und aktualisiert die Zeilen. Aus: Jede Zeile behält ihren ersten Kurs.';
+
+  @override
   String get helpHowLinesWork => 'So funktionieren Zeilen';
 
   @override

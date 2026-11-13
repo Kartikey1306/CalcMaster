@@ -247,6 +247,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsClearRateCache => 'Clear cache';
 
   @override
+  String get settingsAutoRates => 'Keep sheets at the latest rate';
+
+  @override
+  String get settingsAutoRatesBody =>
+      'Checks for new ECB rates every 30 minutes and when you open the app, and moves lines to them. Off: each line keeps the rate it was first worked out at.';
+
+  @override
   String get helpHowLinesWork => 'How lines work';
 
   @override

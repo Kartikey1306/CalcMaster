@@ -77,6 +77,8 @@
   "settingsRates": "환율",
   "settingsRatesBody": "유럽중앙은행 기준 환율. 저장된 환율: {count}",
   "settingsClearRateCache": "캐시 지우기",
+  "settingsAutoRates": "시트를 최신 환율로 유지",
+  "settingsAutoRatesBody": "30분마다, 그리고 앱을 열 때 ECB의 새 환율을 확인해 줄을 업데이트합니다. 끄기: 각 줄은 처음 계산한 환율을 유지합니다.",
   "helpHowLinesWork": "줄 작성법",
   "aboutTagline": "줄 쳐진 시트 위의 계산, 그날의 ECB 환율로",
   "sheetsTitle": "시트",

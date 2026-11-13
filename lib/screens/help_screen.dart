@@ -17,7 +17,7 @@ class HelpScreen extends StatelessWidget {
     ('Just type it', 'dinner 18 euro for 2 people', 'Write it the way you\'d say it — typos are fine. The answer appears straight away, with the sheet\'s new total. Press Enter or Use to keep it, or tap another way to work it out (whole bill, with a tip, in your currency). It also reads "pizza 12 and drinks 8", "3 nights 120 EUR", "tip 15", "two people" and "1,200".'),
     ('Paid & due', 'Swipe a line → PAID   ← DUE', 'Rubber-stamp a line by swiping it, or from the line-number menu. The footer splits the total into paid and pending. Swipe again to lift the stamp.'),
     ('Units', '12 ft in m', 'Distance, volume, weight, temperature, speed, area, data, fuel, pressure, energy.'),
-    ('Currency', '38.50 EUR in USD', 'Converted at the European Central Bank reference rate. Undated lines keep (pin) the rate they were first worked out with; tap Re-price to move them to today\'s rate.'),
+    ('Currency', '38.50 EUR in USD', 'Converted at the European Central Bank reference rate. New ECB rates are fetched every 30 minutes and when you open the app, and lines move to them by themselves. To keep each line at the rate it was first worked out with, turn off Settings → Rates → Keep sheets at the latest rate (then Re-price moves them by hand).'),
     ('Rate on the day', '38.50 EUR on 14 Sep in USD', 'Converted at the ECB rate for that date (back to 4 Jan 1999). On a weekend or holiday the ECB\'s previous working day is used, and the line says which day that was.'),
     ('Total', 'total', 'Adds the lines above in the sheet\'s main currency or unit. Lines in anything else are left out, and the footer says how many.'),
     ('Headings', 'Trip to Lisbon', 'A line with no number is a heading.'),

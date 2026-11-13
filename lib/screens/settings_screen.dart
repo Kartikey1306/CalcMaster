@@ -193,6 +193,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           if (sheets != null) ...[
             _SectionHeader(label: loc.settingsRates),
+            _Tile(
+              icon: Icons.autorenew,
+              title: loc.settingsAutoRates,
+              subtitle: loc.settingsAutoRatesBody,
+              trailing: Switch(
+                key: const Key('auto-update-rates'),
+                value: sheets.autoUpdateRates,
+                onChanged: sheets.setAutoUpdateRates,
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
               child: Text(

@@ -77,6 +77,8 @@
   "settingsRates": "為替レート",
   "settingsRatesBody": "欧州中央銀行の参照レート。保存済みレート：{count}",
   "settingsClearRateCache": "キャッシュを消去",
+  "settingsAutoRates": "シートを最新レートに保つ",
+  "settingsAutoRatesBody": "30分ごととアプリを開いたときにECBの新しいレートを確認し、行を更新します。オフ：各行は最初に計算したレートのままです。",
   "helpHowLinesWork": "行の書き方",
   "aboutTagline": "罫線シートで計算、その日の ECB レートで",
   "sheetsTitle": "シート",

@@ -77,6 +77,8 @@
   "settingsRates": "Tassi",
   "settingsRatesBody": "Tassi di riferimento della Banca centrale europea. Tassi salvati: {count}",
   "settingsClearRateCache": "Svuota cache",
+  "settingsAutoRates": "Mantieni i fogli all’ultimo tasso",
+  "settingsAutoRatesBody": "Cerca nuovi tassi BCE ogni 30 minuti e all’apertura dell’app e aggiorna le righe. Disattivato: ogni riga mantiene il primo tasso.",
   "helpHowLinesWork": "Come funzionano le righe",
   "aboutTagline": "Conti su fogli a righe, con i tassi BCE del giorno",
   "sheetsTitle": "Fogli",

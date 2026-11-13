@@ -247,6 +247,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsClearRateCache => 'Limpar cache';
 
   @override
+  String get settingsAutoRates => 'Manter as folhas na taxa mais recente';
+
+  @override
+  String get settingsAutoRatesBody =>
+      'Procura novas taxas do BCE a cada 30 minutos e ao abrir a app, e atualiza as linhas. Desligado: cada linha mantém a primeira taxa.';
+
+  @override
   String get helpHowLinesWork => 'Como as linhas funcionam';
 
   @override

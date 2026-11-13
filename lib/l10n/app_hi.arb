@@ -77,6 +77,8 @@
   "settingsRates": "दरें",
   "settingsRatesBody": "यूरोपीय सेंट्रल बैंक की संदर्भ दरें। सहेजी गई दरें: {count}",
   "settingsClearRateCache": "कैश साफ़ करें",
+  "settingsAutoRates": "शीट को नवीनतम दर पर रखें",
+  "settingsAutoRatesBody": "हर 30 मिनट में और ऐप खोलने पर ECB की नई दरें देखता है और पंक्तियाँ अपडेट करता है। बंद: हर पंक्ति अपनी पहली दर रखती है।",
   "helpHowLinesWork": "लाइनें कैसे काम करती हैं",
   "aboutTagline": "रूल्ड शीट पर हिसाब, उसी दिन की ECB दरों के साथ",
   "sheetsTitle": "शीटें",

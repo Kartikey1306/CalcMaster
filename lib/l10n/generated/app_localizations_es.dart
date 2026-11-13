@@ -247,6 +247,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsClearRateCache => 'Borrar caché';
 
   @override
+  String get settingsAutoRates => 'Mantener las hojas al último tipo';
+
+  @override
+  String get settingsAutoRatesBody =>
+      'Busca nuevos tipos del BCE cada 30 minutos y al abrir la app, y actualiza las líneas. Desactivado: cada línea conserva el tipo con el que se calculó.';
+
+  @override
   String get helpHowLinesWork => 'Cómo funcionan las líneas';
 
   @override
