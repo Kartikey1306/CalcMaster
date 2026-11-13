@@ -7,6 +7,7 @@ import 'app_router.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'monetization/ad_service.dart';
 import 'monetization/analytics_service.dart';
+import 'monetization/monetization_config.dart';
 import 'monetization/tracking_service.dart';
 import 'services/error_reporter.dart';
 import 'sheet/sheets_controller.dart';
@@ -44,9 +45,12 @@ Future<void> main() async {
   // The ATT prompt goes up once the first screen has rendered and the app is
   // active (iOS drops a request made any earlier), and the ads SDK — consent,
   // initialisation, every ad request — only starts after it is answered.
-  TrackingService.instance
-      .requestWhenActive()
-      .whenComplete(AdService.instance.bootstrap);
+  // A screenshot build serves no ads, so it never asks.
+  if (!MonetizationConfig.screenshotMode) {
+    TrackingService.instance
+        .requestWhenActive()
+        .whenComplete(AdService.instance.bootstrap);
+  }
 }
 
 class CalcMasterApp extends StatefulWidget {

@@ -125,6 +125,7 @@ void main() {
       expect(r.parts, [12, 8]);
       expect(r.amount, 20);
       expect(r.people, 2);
+      expect(r.label, 'Pizza & drinks');
       final each = pick(suggestLines('pizza 12 and drinks 8 eur for 2 people'),
           'Per person');
       expect(work(each.line).value, 10);

@@ -467,6 +467,7 @@ SmartReading readLine(String input) {
   }
 
   // Whatever words are left (before the amount, mostly) are the label.
+  int? lastLabel;
   for (var i = 0; i < tokens.length; i++) {
     if (used[i]) continue;
     final w = lower[i];
@@ -477,7 +478,18 @@ SmartReading readLine(String input) {
       continue;
     }
     final fixed = _closest(w, _labelWords) ?? tokens[i];
+    // "pizza 12 and drinks 8": words either side of an added amount are
+    // separate items, so the label reads "Pizza & drinks".
+    if (parts.length > 1 && lastLabel != null) {
+      for (var k = lastLabel + 1; k < i; k++) {
+        if (used[k] && RegExp(r'^\d').hasMatch(lower[k])) {
+          labelWords.add('&');
+          break;
+        }
+      }
+    }
     labelWords.add(fixed);
+    lastLabel = i;
   }
   String? label;
   if (labelWords.isNotEmpty) {
