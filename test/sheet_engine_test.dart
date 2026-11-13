@@ -185,7 +185,7 @@ void main() {
         expect(r.message, isNotEmpty);
         expect(r.display, isNull);
       }
-      expect(_one('10/0').message, 'Not a number (division by zero?)');
+      expect(_one('10/0').message, 'Division by zero');
     });
   });
 

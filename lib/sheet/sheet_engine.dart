@@ -622,7 +622,8 @@ class _Pass {
 
     if (!_digit.hasMatch(body) &&
         !_refWord.hasMatch(body) &&
-        !_mentionsVariable(body)) {
+        !_mentionsVariable(body) &&
+        !isMathExpression(body)) {
       return LineResult(index: i, kind: LineKind.heading, label: t);
     }
 
@@ -989,7 +990,7 @@ class _Pass {
           'Only one amount on a line can carry a unit when multiplying or dividing');
     }
 
-    s = s
+    s = _argCommas(s)
         .replaceAll('×', '*')
         .replaceAll('÷', '/')
         .replaceAll('−', '-')
@@ -1005,6 +1006,7 @@ class _Pass {
     try {
       v = evaluate(s);
     } on CalcError catch (e) {
+      if (e.friendly) throw _LineError(e.message);
       final word = RegExp(r'Unsupported function (\w+)').firstMatch(e.message);
       if (word != null && word.group(1)!.length >= 3) {
         throw const _UnknownWord();
@@ -1018,6 +1020,31 @@ class _Pass {
   }
 
   double _num(String s) => double.parse(s.replaceAll(',', ''));
+
+  /// Inside a function's brackets a comma separates arguments —
+  /// `log(8,2)`, `nCr(10,100)` — so it must not be read as a thousands
+  /// separator. Those commas become `;`, which the evaluator also accepts.
+  static String _argCommas(String s) {
+    final out = StringBuffer();
+    final inCall = <bool>[];
+    for (var i = 0; i < s.length; i++) {
+      final c = s[i];
+      if (c == '(') {
+        final name = RegExp(r'([A-Za-z]+\d*)\s*$')
+            .firstMatch(s.substring(0, i))
+            ?.group(1)
+            ?.toLowerCase();
+        inCall.add(name != null && mathFunctions.contains(name));
+      } else if (c == ')') {
+        if (inCall.isNotEmpty) inCall.removeLast();
+      } else if (c == ',' && inCall.isNotEmpty && inCall.last) {
+        out.write(';');
+        continue;
+      }
+      out.write(c);
+    }
+    return out.toString();
+  }
 
   LineResult _ref(int i, int target, String name) {
     if (target < 0 || target >= lines.length) {

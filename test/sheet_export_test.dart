@@ -77,8 +77,8 @@ void main() {
         lines: const [SheetLine('10 / 0')]);
     final e = evaluateSheet(err.lines, today: DateTime(2026, 10, 13));
     final csv = sheetAsCsv(err, e).split('\n');
-    expect(csv[1], '1,,10 / 0,Not a number (division by zero?),,,');
-    expect(sheetAsText(err, e), contains('10 / 0  →  Not a number'));
+    expect(csv[1], '1,,10 / 0,Division by zero,,,');
+    expect(sheetAsText(err, e), contains('10 / 0  →  Division by zero'));
     expect(sheetAsText(err, e), isNot(contains('Infinity')));
     expect(sheetAsText(err, e), isNot(contains('Total')));
   });

@@ -91,10 +91,10 @@ void main() {
   });
 
   group('evaluate — edge cases', () {
-    test('division by zero returns infinity',
-        () => expect(evaluate('1/0'), double.infinity));
-    test('zero divided by zero returns NaN',
-        () => expect(evaluate('0/0').isNaN, isTrue));
+    test('division by zero is an error, not infinity',
+        () => expect(() => evaluate('1/0'), throwsA(isA<CalcError>().having((e) => e.message, 'message', 'Division by zero'))));
+    test('zero divided by zero is an error, not NaN',
+        () => expect(() => evaluate('0/0'), throwsA(isA<CalcError>())));
     test('empty string throws',
         () => expect(() => evaluate(''), throwsA(isA<CalcError>())));
     test('invalid expression throws',

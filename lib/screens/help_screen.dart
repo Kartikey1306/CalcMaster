@@ -9,6 +9,7 @@ class HelpScreen extends StatelessWidget {
 
   static const rules = <(String, String, String)>[
     ('Arithmetic', '12 * (3 + 4)', 'Brackets, + − × ÷, powers (^), sqrt, sin, log…'),
+    ('Scientific', '2pi · sin(30°) · 6.02e23 · nCr(52,5) · log(8,2)', 'Write 2(3+4) or 2pi without ×. sin, cos and tan work in radians; add ° or deg for degrees. Also: asin, sinh, ln, log2, root(x,n), x!, gamma, mod, max, min, gcd, lcm, round(x,2), atan2. Very large or tiny answers show as 1.2e+21. If there is no answer — 1/0, √−1, tan 90° — the line says why.'),
     ('A label', 'Hotel: 120 GBP', 'Text before ": " sits on the left; the result on the right.'),
     ('Other lines', '#2 * 3   or   prev + 10', '#n is line n\'s result; prev is the line above.'),
     ('Names', 'nights = 3   then   120 EUR * nights', 'Give a value a name and use it on any line below. Change it once and every line that uses it updates. A plain-number name is a setting and stays out of the total.'),
